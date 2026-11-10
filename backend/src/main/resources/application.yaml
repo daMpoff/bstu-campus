@@ -1,0 +1,23 @@
+spring:
+  mvc:
+    problemdetails:
+      enabled: true
+  datasource:
+    url: jdbc:postgresql://localhost:5432/campus
+    username: campus
+    password: campus-local
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 11MB
+server:
+  servlet:
+    session:
+      cookie:
+        http-only: true
+        same-site: lax
+campus:
+  demo: false
+  penalty:
+    amount: 20
+    interval: 60s

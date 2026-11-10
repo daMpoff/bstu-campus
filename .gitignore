@@ -1,0 +1,8 @@
+node_modules/
+dist/
+target/
+playwright-report/
+test-results/
+.idea/
+.env
+.verify/

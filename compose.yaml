@@ -1,0 +1,28 @@
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: campus
+      POSTGRES_USER: campus
+      POSTGRES_PASSWORD: campus-local
+    volumes:
+      - campus-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U campus -d campus"]
+      interval: 3s
+      timeout: 3s
+      retries: 15
+  app:
+    build: .
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/campus
+      SPRING_DATASOURCE_USERNAME: campus
+      SPRING_DATASOURCE_PASSWORD: campus-local
+      CAMPUS_DEMO: "true"
+    ports:
+      - "127.0.0.1:8080:8080"
+volumes:
+  campus-db:

@@ -1,0 +1,112 @@
+.header { background: var(--panel); border-bottom: 1px solid var(--border); }
+.headerInner {
+  max-width: 1320px; margin: auto; min-height: 72px; padding: .65rem clamp(1rem, 4vw, 3.25rem);
+  display: flex; justify-content: space-between; align-items: center; gap: 1.2rem;
+}
+.brand { color: var(--accent); display: flex; gap: .65rem; align-items: center; text-decoration: none; line-height: 1; flex: none; }
+.brandLogo { display: block; width: 48px; height: 48px; padding: 4px; border-radius: 50%; background: var(--accent-strong); }
+.brand strong { font-size: 1.62rem; letter-spacing: .035em; }
+.brand small { display: block; margin-top: .28rem; font-size: .58rem; font-weight: 800; color: var(--muted); letter-spacing: .1em; }
+.headerActions { display: flex; align-items: center; gap: clamp(.55rem, 2vw, 1.6rem); }
+.theme {
+  display: grid; place-items: center; width: 44px; height: 44px; background: var(--panel);
+  border: 1px solid var(--control-border); color: var(--accent); border-radius: 50%;
+  transition: background-color var(--interaction-duration);
+}
+.theme:hover { background: var(--tint); }
+.home { max-width: 1320px; margin: auto; padding: clamp(1rem, 2.4vw, 2rem) clamp(1rem, 4vw, 3.25rem) 0; }
+.hero {
+  --focus-ring: var(--on-accent-muted);
+  position: relative; display: flex; align-items: center; overflow: hidden; min-height: clamp(24rem, 37vw, 30rem);
+  border-radius: var(--radius-panel); color: var(--on-navy); background-color: var(--navy);
+  background-image: var(--hero-scrim), var(--hero-image);
+  background-size: cover; background-position: center, center 57%;
+}
+.heroContent { position: relative; padding: 2.5rem clamp(1.25rem, 5vw, 4rem) 3rem; max-width: 44rem; }
+.hero h1 { font-size: clamp(4.2rem, 10vw, 8.1rem); letter-spacing: .03em; line-height: 1; margin-top: .4rem; }
+.hero p { font-size: clamp(1.3rem, 2.7vw, 2rem); font-weight: 750; margin: .4rem 0 .25rem; }
+.heroDescription { color: var(--on-navy); max-width: 28rem; margin-bottom: 1.5rem; }
+.address { position: absolute; right: 1.2rem; bottom: .9rem; color: var(--on-navy); font-size: .7rem; letter-spacing: .09em; font-weight: 800; text-shadow: 0 1px 4px #000; }
+.photoCredit { margin-top: .5rem; color: var(--muted); font-size: .75rem; }
+.photoCredit a { text-underline-offset: .15em; }
+.process {
+  --process-divider: color-mix(in srgb, var(--on-navy) 24%, transparent);
+  margin-top: clamp(1.5rem, 3vw, 2.5rem);
+  padding: clamp(1.25rem, 3.4vw, 3rem);
+  color: var(--on-navy);
+  background: var(--navy);
+  border-radius: var(--radius-panel);
+}
+:global([data-theme='dark']) .process {
+  background: color-mix(in srgb, var(--panel) 90%, var(--accent));
+}
+.process h2 { font-size: clamp(1.25rem, 3.2vw, 2.5rem); }
+.processSteps {
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: clamp(1rem, 2.5vw, 1.75rem);
+  border-top: 1px solid var(--process-divider);
+  padding-top: 1.25rem;
+}
+.processStep { padding-inline: clamp(1rem, 2vw, 1.5rem); }
+.processStep + .processStep { border-inline-start: 1px solid var(--process-divider); }
+.processStep:first-child { padding-inline-start: 0; }
+.processStep:last-child { padding-inline-end: 0; }
+.processStep h3 { font-size: 1.05rem; line-height: 1.45; margin-bottom: .5rem; }
+.processStep p { max-width: 38ch; color: var(--on-navy-muted); }
+.sectionNumber { color: var(--accent); letter-spacing: .08em; font-size: .78rem; font-weight: 800; margin-bottom: .55rem; }
+.footer {
+  margin-top: clamp(1rem, 2.5vw, 2rem); padding: .75rem 0 1.3rem;
+  border-top: 1px solid var(--border); color: var(--muted); font-size: .78rem;
+}
+.login { max-width: 500px; padding: 2rem 1rem; margin: auto; }
+.login h1 { margin-bottom: .45rem; }
+.loginForm, .demo { display: grid; gap: .85rem; margin-top: 1.15rem; }
+.loginForm input { margin-top: .25rem; }
+.demo { border-top: 1px solid var(--border); padding-top: .9rem; }
+.demo small { color: var(--muted); font-weight: 800; letter-spacing: .07em; }
+.demo div { display: flex; gap: .55rem; flex-wrap: wrap; }
+.loading { text-align: center; padding: 3rem 1rem; }
+.workspace { max-width: 1400px; margin: auto; display: grid; grid-template-columns: 235px minmax(0, 1fr); gap: clamp(1rem, 3vw, 2rem); padding: 1.8rem clamp(1rem, 3vw, 2rem); }
+.workspaceContent { min-width: 0; }
+.sidebar {
+  --focus-ring: var(--nav-focus);
+  min-height: min(650px, 75vh); color: var(--on-navy); background: var(--navy);
+  padding: 1rem; border-radius: var(--radius-panel); display: flex; flex-direction: column;
+}
+.person { display: flex; gap: .65rem; align-items: center; padding: .45rem .25rem 1rem; border-bottom: 1px solid #ffffff38; }
+.person > span { display: grid; place-items: center; flex: none; width: 42px; height: 42px; border-radius: 50%; color: var(--accent); background: var(--tint); font-weight: 800; }
+.person strong, .person small { display: block; }
+.person small { color: var(--on-navy-muted); }
+.sidebar nav { display: grid; gap: .25rem; margin-top: 1rem; }
+.sidebar nav a, .logout { display: flex; align-items: center; gap: .7rem; min-height: 44px; padding: .65rem .7rem; border-radius: var(--radius-control); color: var(--on-navy); font-weight: 650; text-decoration: none; transition: background-color var(--interaction-duration); }
+.sidebar nav a:hover, .logout:hover { background: #ffffff17; }
+.sidebar nav a[aria-current='page'] { background: var(--accent-strong); color: var(--on-accent); }
+.logout { border: 0; background: transparent; margin-top: auto; }
+@media (max-width: 840px) {
+  .processSteps { grid-template-columns: 1fr; padding-top: 0; }
+  .processStep { padding: 1rem 0; }
+  .processStep + .processStep { border-inline-start: 0; border-top: 1px solid var(--process-divider); }
+  .processStep:last-child { padding-bottom: 0; }
+  .workspace { grid-template-columns: 185px minmax(0, 1fr); }
+}
+@media (max-width: 620px) {
+  .headerInner { gap: .45rem; }
+  .headerActions { gap: .4rem; }
+  .headerActions :global(.button) { padding-inline: .65rem; }
+  .headerActions :global(.button) span { display: none; }
+  .brandLogo { width: 38px; height: 38px; padding: 3px; }
+  .brand small { font-size: .51rem; letter-spacing: .075em; }
+  .workspace { grid-template-columns: 1fr; padding-top: .8rem; }
+  .sidebar { min-height: auto; gap: .35rem; }
+  .sidebar nav { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: .15rem; }
+  .person { padding-bottom: .65rem; }
+  .sidebar nav a, .logout { padding: .45rem .55rem; font-size: .9rem; }
+  .hero { min-height: 24rem; background-position: center, 59% center; }
+  .heroDescription { max-width: 17rem; }
+}
+@media (max-width: 360px) {
+  .brandLogo { width: 32px; height: 32px; }
+  .brand strong { font-size: 1.35rem; }
+  .brand small { font-size: .46rem; letter-spacing: .05em; }
+  .headerActions :global(.button) { padding-inline: .5rem; font-size: .86rem; }
+}

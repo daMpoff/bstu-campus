@@ -1,0 +1,59 @@
+.trail { color: var(--accent); font-size: .83rem; font-weight: 700; display: flex; align-items: center; gap: .65rem; margin-bottom: 1rem; }
+.trail a { text-decoration: none; }
+.trail span { color: var(--muted); }
+.heading { display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: .65rem; margin: 0 0 1.3rem; }
+.heading h1 { overflow-wrap: anywhere; }
+.heading p { margin-top: .4rem; color: var(--muted); }
+.formLayout { display: grid; grid-template-columns: minmax(0, 2.1fr) minmax(190px, 1fr); gap: 1rem; align-items: start; }
+.form { display: grid; gap: 1rem; }
+.field { display: grid; grid-template-columns: minmax(120px, .48fr) minmax(0, 1fr); align-items: start; gap: .8rem; }
+.field > span { padding-top: .55rem; font-weight: 750; }
+.field b, .groupField b { color: var(--accent); }
+.groupField { position: relative; border: 0; padding: 0 0 0 calc((100% - .8rem) * .3243 + .8rem); margin: 0; min-width: 0; }
+.groupField legend { position: absolute; left: 0; top: .55rem; padding: 0; font-weight: 750; }
+.groupOptions { display: flex; flex-wrap: wrap; align-items: center; min-height: 44px; padding: .3rem; gap: .35rem; border: 1px solid var(--control-border); border-radius: var(--radius-control); }
+.groupChoice { display: flex; gap: .25rem; align-items: center; min-height: 32px; padding: .16rem .45rem; color: var(--accent); background: var(--tint); border-radius: 6px; cursor: pointer; }
+.deadline { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; }
+.deadline label { min-width: 0; font-size: .82rem; }
+.formFooter { display: grid; justify-items: start; gap: .65rem; padding-top: .9rem; border-top: 1px solid var(--border); }
+.reminder { border: 1px solid var(--border); border-radius: var(--radius-panel); overflow: hidden; background: var(--panel); }
+.reminder h2 { background: var(--tint); color: var(--accent); padding: 1rem; font-size: 1.22rem; }
+.reminder ul { margin: 0; list-style: none; padding: .6rem 1rem; }
+.reminder li { padding: .42rem 0 .42rem 1.55rem; position: relative; font-size: .94rem; }
+.reminder li::before { content: '✓'; position: absolute; left: 0; font-weight: 800; color: var(--accent); }
+.rating { display: flex; flex-wrap: wrap; align-items: center; gap: .65rem 1rem; padding: 1rem 1.25rem; border-radius: var(--radius-panel); background: var(--tint); color: var(--accent); margin-bottom: 1rem; font-weight: 700; }
+.rating strong { font-size: 1.65rem; font-variant-numeric: tabular-nums; }
+.rating small { font-size: .85rem; }
+.empty p, .card p { color: var(--muted); margin-top: .3rem; }
+.cards { display: grid; gap: .65rem; margin-top: .65rem; }
+.card { display: flex; align-items: center; gap: .6rem 1rem; flex-wrap: wrap; color: var(--text); text-decoration: none; transition: border-color var(--interaction-duration); }
+.card:hover { border-color: var(--accent); }
+.card > div { flex: 1 1 220px; overflow-wrap: anywhere; }
+.card h2 { font-size: 1.25rem; }
+.arrow { color: var(--accent); font-weight: 800; }
+.status { display: inline-flex; align-items: center; padding: .25rem .65rem; border-radius: 20px; background: var(--tint); color: var(--accent); font-weight: 750; font-size: .8rem; width: fit-content; }
+.status[data-status='ACCEPTED'] { background: var(--accepted-bg); color: var(--accepted-text); }
+.status[data-status='SUBMITTED'] { background: var(--review-bg); color: var(--review-text); }
+.status[data-status='RETURNED'] { background: var(--returned-bg); color: var(--returned-text); }
+.status[data-status='OVERDUE'] { background: var(--error-bg); color: var(--error-text); }
+.status[data-status='OPEN'] { background: var(--paper); border: 1px solid var(--border); color: var(--muted); }
+.description { white-space: pre-wrap; overflow-wrap: anywhere; margin: .65rem 0 1rem; }
+.sectionHeading, .actions, .attachments { display: flex; align-items: center; flex-wrap: wrap; gap: .6rem; }
+.sectionHeading { justify-content: space-between; }
+.actions { margin: .8rem 0; }
+.attachments { font-size: .87rem; overflow-wrap: anywhere; }
+.works { list-style: none; padding: 0; margin: 1rem 0 0; }
+.works li { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) minmax(0, 1fr); gap: .5rem; align-items: center; border-top: 1px solid var(--border); padding: .7rem 0; }
+.workPerson { display: flex; align-items: center; gap: .45rem; overflow-wrap: anywhere; }
+.workPerson strong, .workPerson small { display: block; }
+.workPerson small { color: var(--muted); }
+.submission { display: grid; gap: .65rem; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+.submission input { margin-top: .2rem; }
+.submission button { justify-self: start; }
+@media (max-width: 1050px) { .formLayout { grid-template-columns: 1fr; } }
+@media (max-width: 680px) {
+  .field { grid-template-columns: 1fr; gap: .3rem; }
+  .groupField { padding: 0; }
+  .groupField legend { position: static; padding-bottom: .25rem; }
+  .works li { grid-template-columns: 1fr; }
+}
