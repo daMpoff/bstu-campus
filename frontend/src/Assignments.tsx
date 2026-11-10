@@ -78,6 +78,7 @@ export function AssignmentList({ user, reviewOnly = false }: { user: Account; re
 
 export function NewAssignment() {
   const [groups, setGroups] = useState<Group[]>();
+  const [groupSearch, setGroupSearch] = useState('');
   const [selected, setSelected] = useState<number[]>([]);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
@@ -112,6 +113,10 @@ export function NewAssignment() {
     }
   }
 
+  const query = groupSearch.trim().toLocaleLowerCase('ru-RU');
+  const visibleGroups = groups?.filter(group =>
+    selected.includes(group.id) || group.name.toLocaleLowerCase('ru-RU').includes(query));
+
   return <>
     <Heading trail={<><Link to="/assignments">Задания</Link><span>/</span> Новое задание</>} title="Новое задание"
       description="Назначьте задание учебным группам и задайте параметры выполнения." />
@@ -119,12 +124,21 @@ export function NewAssignment() {
       <form className={`panel ${s.form}`} onSubmit={submit}>
         <label className={s.field}><span>Название <b>*</b></span><input name="title" placeholder="Курсовая работа — этап 1" maxLength={160} required /></label>
         <label className={s.field}><span>Описание <b>*</b></span><textarea name="description" rows={3} maxLength={5000} required placeholder="Что нужно сделать и как сдать работу?" /></label>
-        <fieldset className={s.groupField}><legend>Учебные группы <b>*</b></legend><div className={s.groupOptions}>
-          {!groups && <span className="muted">Загрузка групп…</span>}
-          {groups?.map(group => <label key={group.id} className={s.groupChoice}>
-            <input type="checkbox" checked={selected.includes(group.id)} onChange={event => setSelected(ids => event.target.checked ? [...ids, group.id] : ids.filter(id => id !== group.id))} /> {group.name}
-          </label>)}
-        </div></fieldset>
+        <fieldset className={s.groupField}>
+          <legend>Учебные группы <b>*</b></legend>
+          <div className={s.groupPicker}>
+            <input type="search" aria-label="Поиск учебной группы" placeholder="Введите часть шифра группы"
+              value={groupSearch} onChange={event => setGroupSearch(event.target.value)} disabled={!groups} />
+            <div className={s.groupOptions}>
+              {!groups && <span className="muted">Загрузка групп…</span>}
+              {visibleGroups?.length === 0 && <span className="muted">Группы не найдены.</span>}
+              {visibleGroups?.map(group => <label key={group.id} className={s.groupChoice}>
+                <input type="checkbox" checked={selected.includes(group.id)} onChange={event => setSelected(ids => event.target.checked ? [...ids, group.id] : ids.filter(id => id !== group.id))} />
+                <span>{group.name}</span>
+              </label>)}
+            </div>
+          </div>
+        </fieldset>
         <div className={s.field}><span>Дедлайн <b>*</b></span><div className={s.deadline}><label>Дата<input type="date" name="date" required /></label><label>Время (МСК)<input type="time" name="time" defaultValue="23:59" required /></label></div></div>
         <label className={s.field}><span>Лимит списания, АР <b>*</b></span><input type="number" name="limit" min={0} max={1000} defaultValue={100} required /></label>
         <div className={s.formFooter}>

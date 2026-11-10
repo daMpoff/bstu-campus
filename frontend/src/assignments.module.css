@@ -11,8 +11,10 @@
 .field b, .groupField b { color: var(--accent); }
 .groupField { position: relative; border: 0; padding: 0 0 0 calc((100% - .8rem) * .3243 + .8rem); margin: 0; min-width: 0; }
 .groupField legend { position: absolute; left: 0; top: .55rem; padding: 0; font-weight: 750; }
-.groupOptions { display: flex; flex-wrap: wrap; align-items: center; min-height: 44px; padding: .3rem; gap: .35rem; border: 1px solid var(--control-border); border-radius: var(--radius-control); }
-.groupChoice { display: flex; gap: .25rem; align-items: center; min-height: 32px; padding: .16rem .45rem; color: var(--accent); background: var(--tint); border-radius: 6px; cursor: pointer; }
+.groupPicker { display: grid; gap: .45rem; min-width: 0; }
+.groupOptions { display: flex; flex-wrap: wrap; align-content: start; min-height: 44px; max-height: 10rem; overflow: auto; padding: .3rem; gap: .35rem; border: 1px solid var(--control-border); border-radius: var(--radius-control); }
+.groupChoice { display: flex; gap: .25rem; align-items: center; min-height: 32px; max-width: 100%; padding: .16rem .45rem; color: var(--accent); background: var(--tint); border-radius: 6px; cursor: pointer; }
+.groupChoice span { overflow-wrap: anywhere; }
 .deadline { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; }
 .deadline label { min-width: 0; font-size: .82rem; }
 .formFooter { display: grid; justify-items: start; gap: .65rem; padding-top: .9rem; border-top: 1px solid var(--border); }

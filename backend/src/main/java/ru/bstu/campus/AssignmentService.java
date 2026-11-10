@@ -27,7 +27,8 @@ class AssignmentService {
         this.interval = interval;
     }
 
-    record Account(long id, String fullName, String role, String groupName, int rating) {}
+    record Account(long id, String fullName, String role, String groupName, int rating,
+                   String facultyName, String departmentName) {}
     record Group(long id, String name) {}
     record Assignment(long id, String title, String description, Instant deadline, int penaltyLimit,
                       String groups, int waiting) {}
@@ -39,15 +40,20 @@ class AssignmentService {
 
     Account account(String email) {
         return db.sql("""
-            SELECT u.id, u.full_name, u.role, g.name, u.rating
-            FROM campus_user u LEFT JOIN study_group g ON g.id = u.group_id WHERE u.email = :email
+            SELECT u.id, u.full_name, u.role, g.name, u.rating, f.name, d.name
+            FROM campus_user u
+            LEFT JOIN study_group g ON g.id = u.group_id
+            LEFT JOIN department d ON d.id = u.department_id
+            LEFT JOIN faculty f ON f.id = COALESCE(u.faculty_id, d.faculty_id)
+            WHERE u.email = :email
             """).param("email", email).query((row, index) -> new Account(row.getLong(1), row.getString(2),
-                row.getString(3), row.getString(4), row.getInt(5))).optional()
+                row.getString(3), row.getString(4), row.getInt(5), row.getString(6), row.getString(7))).optional()
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
     }
 
     List<Group> groups() {
-        return db.sql("SELECT id, name FROM study_group ORDER BY name").query(Group.class).list();
+        return db.sql("SELECT id, name FROM study_group ORDER BY (study_form IS NOT NULL), name")
+            .query(Group.class).list();
     }
 
     List<Assignment> teaching(long teacher) {
@@ -72,9 +78,9 @@ class AssignmentService {
                 || groups.contains(null)) {
             throw badRequest("Заполните название, описание, группы, дедлайн и лимит списания от 0 до 1000.");
         }
-        int count = db.sql("SELECT count(*) FROM study_group WHERE id IN (:groups)")
-            .param("groups", groups).query(Integer.class).single();
-        if (count != groups.size()) {
+        var lockedGroups = db.sql("SELECT id FROM study_group WHERE id IN (:groups) ORDER BY id FOR UPDATE")
+            .param("groups", groups).query(Long.class).list();
+        if (lockedGroups.size() != groups.size()) {
             throw badRequest("Выберите группы из списка.");
         }
         long id = db.sql("""

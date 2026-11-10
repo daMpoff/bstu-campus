@@ -1,16 +1,18 @@
-import { useEffect, useState, type FormEvent, type ReactNode } from 'react';
-import { Link, Navigate, NavLink, Route, Routes, useNavigate } from 'react-router-dom';
+import { useEffect, useLayoutEffect, useRef, useState, type FormEvent, type ReactNode } from 'react';
+import { Link, Navigate, NavLink, Outlet, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { api, ApiError, type Account } from './api';
 import { AssignmentDetail, AssignmentList, NewAssignment } from './Assignments';
+import { Registration } from './Registration';
 import s from './layout.module.css';
 
-function Glyph({ name }: { name: 'sun' | 'moon' | 'tasks' | 'review' | 'logout' }) {
+function Glyph({ name }: { name: 'sun' | 'moon' | 'tasks' | 'review' | 'logout' | 'arrow' }) {
   const paths = {
     sun: 'M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.4 1.4m11.2 11.2L19 19M5 19l1.4-1.4M17.6 6.4 19 5M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0z',
     moon: 'M21 13a9 9 0 1 1-10-10 7 7 0 0 0 10 10z',
     tasks: 'M5 4h14v16H5zM8 12l2 2 5-5M9 4V2m6 2V2',
     review: 'M6 3h8l4 4v14H6zM14 3v5h4m-9 4h6m-6 4h6',
     logout: 'M10 4H4v16h6m4-12 4 4-4 4m-6-4h10',
+    arrow: 'M4 12h15m-6-6 6 6-6 6',
   };
   return <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={paths[name]} /></svg>;
 }
@@ -64,7 +66,10 @@ export function App() {
     </header>
     <Routes>
       <Route path="/" element={<Home account={account} />} />
-      <Route path="/login" element={account ? <Navigate to="/assignments" replace /> : <Login onLogin={setAccount} />} />
+      <Route element={account ? <Navigate to="/assignments" replace /> : <AuthLayout dark={theme === 'dark'} />}>
+        <Route path="/login" element={<Login onLogin={setAccount} />} />
+        <Route path="/register" element={<Registration />} />
+      </Route>
       <Route path="/assignments" element={requireAccount(user => <AssignmentList user={user} />)} />
       <Route path="/assignments/new" element={requireAccount(user => user.role === 'TEACHER' ? <NewAssignment /> : <Navigate to="/assignments" replace />)} />
       <Route path="/assignments/:id" element={requireAccount(user => <AssignmentDetail user={user} />)} />
@@ -82,7 +87,10 @@ function Home({ account }: { account?: Account | null }) {
         <h1 id="hero-title">БГТУ</h1>
         <p>Университетская среда</p>
         <div className={s.heroDescription}>Задания и академический рейтинг в одном месте.</div>
-        <Link to={destination} className="button primary">{account ? 'Открыть кабинет' : 'Войти'} <span aria-hidden="true">→</span></Link>
+        <Link to={destination} className={`button ${s.heroAction}`}>
+          {account ? 'Открыть кабинет' : 'Войти'}
+          <Glyph name="arrow" />
+        </Link>
       </div>
       <span className={s.address}>БРЯНСК · ИНСТИТУТСКАЯ, 16</span>
     </section>
@@ -111,8 +119,32 @@ function Home({ account }: { account?: Account | null }) {
   </main>;
 }
 
+function AuthLayout({ dark }: { dark: boolean }) {
+  const { pathname } = useLocation();
+  const panel = useRef<HTMLElement>(null);
+
+  useLayoutEffect(() => {
+    if (panel.current) panel.current.scrollTop = 0;
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return <main className={s.authPage}>
+    <div className={s.authVisual}>
+      <img src={dark ? '/images/bgtu-login-night.webp' : '/images/bgtu-login.webp'}
+        alt="Осенняя аллея вдоль корпуса БГТУ" width={957} height={1277} />
+    </div>
+    <section ref={panel} className={s.authSide} aria-labelledby="auth-title">
+      <div className={s.authContent}>
+        <Outlet />
+      </div>
+    </section>
+  </main>;
+}
+
 function Login({ onLogin }: { onLogin: (user: Account) => void }) {
-  const [email, setEmail] = useState('');
+  const { state } = useLocation();
+  const registeredEmail = typeof state?.registeredEmail === 'string' ? state.registeredEmail : '';
+  const [email, setEmail] = useState(registeredEmail);
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
@@ -134,24 +166,23 @@ function Login({ onLogin }: { onLogin: (user: Account) => void }) {
     setPassword('demo2026');
     setError('');
   }
-  return <main className={s.login}>
-    <Link className="back" to="/">← На главную</Link>
-    <section className="panel">
-      <div className={s.sectionNumber}>ЛИЧНЫЙ КАБИНЕТ</div>
-      <h1>Вход в БГТУ</h1>
-      <p className="muted">Войдите, чтобы открыть университетскую среду.</p>
-      <form onSubmit={submit} className={s.loginForm}>
-        <label>Email<input type="email" autoComplete="username" value={email} onChange={event => setEmail(event.target.value)} required /></label>
-        <label>Пароль<input type="password" autoComplete="current-password" value={password} onChange={event => setPassword(event.target.value)} required /></label>
-        {error && <p className="error" role="alert">{error}</p>}
-        <button type="submit" className="button primary" disabled={busy}>{busy ? 'Входим…' : 'Войти'} <span aria-hidden="true">→</span></button>
-      </form>
-      <div className={s.demo}><small>ДЕМО-АККАУНТЫ</small><div>
-        <button className="button outline" onClick={() => fillDemo('teacher')}>Преподаватель</button>
-        <button className="button outline" onClick={() => fillDemo('student')}>Студент</button>
-      </div></div>
-    </section>
-  </main>;
+  return <>
+    <h1 id="auth-title">Личный кабинет</h1>
+    {registeredEmail
+      ? <p className="muted" role="status">Аккаунт создан. Введите пароль, чтобы войти.</p>
+      : <p className="muted">Укажите email и пароль.</p>}
+    <form onSubmit={submit} className={s.loginForm}>
+      <label>Email<input type="email" autoComplete="username" value={email} onChange={event => setEmail(event.target.value)} required /></label>
+      <label>Пароль<input type="password" autoComplete="current-password" value={password} onChange={event => setPassword(event.target.value)} required /></label>
+      {error && <p className="error" role="alert">{error}</p>}
+      <button type="submit" className="button primary" disabled={busy}>{busy ? 'Входим…' : 'Войти'} <span aria-hidden="true">→</span></button>
+    </form>
+    <p className={s.registerPrompt}>Первый раз в системе? <Link to="/register">Зарегистрироваться</Link></p>
+    <div className={s.demo}><small>ДЕМО-АККАУНТЫ</small><div>
+      <button className="button outline" onClick={() => fillDemo('teacher')}>Преподаватель</button>
+      <button className="button outline" onClick={() => fillDemo('student')}>Студент</button>
+    </div></div>
+  </>;
 }
 
 function Workspace({ user, children, onLogout }: { user: Account; children: ReactNode; onLogout: () => Promise<void> }) {

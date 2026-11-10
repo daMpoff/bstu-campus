@@ -1,5 +1,14 @@
-export type Account = { id: number; fullName: string; role: 'TEACHER' | 'STUDENT'; groupName: string | null; rating: number };
+export type Role = 'TEACHER' | 'STUDENT';
+export type Account = {
+  id: number; fullName: string; role: Role; groupName: string | null; rating: number;
+  facultyName: string | null; departmentName: string | null;
+};
 export type Group = { id: number; name: string };
+export type RegistrationCatalog = {
+  faculties: { id: number; name: string }[];
+  departments: { id: number; name: string; facultyName: string }[];
+  groups: (Group & { studyForm: 'очная' | 'очно-заочное' | 'заочное'; facultyId: number })[];
+};
 export type Status = 'OPEN' | 'OVERDUE' | 'SUBMITTED' | 'RETURNED' | 'ACCEPTED';
 export type BaseAssignment = { id: number; title: string; description: string; deadline: string; penaltyLimit: number };
 export type TeacherAssignment = BaseAssignment & { groups: string; waiting: number };

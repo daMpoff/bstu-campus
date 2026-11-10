@@ -1,0 +1,493 @@
+# Все группы расписания по подразделениям БГТУ
+
+В списке 387 групп из каталога расписания на первый семестр 2026/27. Шифры сохранены в том виде, в каком их показывает регистрация.
+
+- Источник шифров и форм обучения. [Каталог расписания](https://raspisanie-bgtu.ru/api/catalog?semester=2026-2027_1_1)
+- Подразделение взято с титульной страницы программы или учебного плана, выбранных по профилю, уровню образования, году набора и форме. Это сопоставление по образовательным документам. [Каталог программ БГТУ](https://www.tu-bryansk.ru/sveden/education/eduop/) · [Структура БГТУ](https://www.tu-bryansk.ru/sveden/struct/)
+- Шифры дополнительно сверены по сводным и индивидуальному графикам. В них встречаются сокращённые записи, опечатки и пропуски. Для отдельных групп основанием остаются шифр из расписания и программа БГТУ. [Сводные графики БГТУ](https://www.tu-bryansk.ru/education/svodnye-uchebnye-grafiki)
+- Для 383 групп найден учебный документ того же года набора и формы. Для четырёх заочных групп ПСЖД набора 2024 года использована программа 2025 года. В графике на 2026/27 они записаны вместе как «З-24-ПСЖД-1,2,3,4-тпр-С». [Индивидуальный график, стр. 2](https://www.tu-bryansk.ru/upload/medialibrary/68e/wakipanyvog58wickrjtsthx2hc329ny/svgr_2026_i.pdf#page=2)
+- Шифр «З-24-ТБ-бттп-Б» сохранён по расписанию. В официальном графике профиль указан как «бтпп». [Заочный график, стр. 4](https://www.tu-bryansk.ru/upload/medialibrary/77d/mohcdmfhqennf5h9ppnjqxircqszxpea/svgr_2026_z.pdf#page=4)
+- У профилей «двс» и «ттнг» направления 13.03.03 подразделение различается по годам набора. Они распределены по титульным страницам соответствующих программ.
+
+## Факультет информационных технологий (ФИТ) — 92
+
+- **02.03.03 · Технология программирования**
+  - 2023, очная — `О-23-МОА-тп-Б`. [Программа 2023](https://www.tu-bryansk.ru/upload/sveden/education/eduop/02.03.03/%D1%82%D0%BF/2023/%D0%9E%D0%9F%D0%9E%D0%9F_2023_02.03.03_%D1%82%D0%BF_%D0%9E.pdf#page=1)
+  - 2024, очная — `О-24-МОА-тп-Б`. [Программа 2024](https://www.tu-bryansk.ru/upload/sveden/education/eduop/02.03.03/%D1%82%D0%BF/2024/%D0%9E%D0%9F%D0%9E%D0%9F_2024_02.03.03_%D1%82%D0%BF_%D0%9E.pdf#page=1)
+  - 2025, очная — `О-25-МОА-тп-Б`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/02.03.03/%D1%82%D0%BF/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_02.03.03_%D1%82%D0%BF_%D0%9E.pdf#page=1)
+  - 2026, очная — `О-26-МОА-тп-Б`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/02.03.03/%D1%82%D0%BF/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_02.03.03_%D1%82%D0%BF_%D0%9E.pdf#page=1)
+- **09.03.01 · Программное обеспечение вычислительной техники и автоматизированных систем**
+  - 2022, заочная — `З-22-ИВТ-по-Б`. [Программа 2022](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.03.01/%D0%BF%D0%BE/2022/%D0%9E%D0%9F%D0%9E%D0%9F_2022_09.03.01_%D0%BF%D0%BE_%D0%97.pdf#page=1)
+  - 2023, очная — `О-23-ИВТ-1-по-Б`, `О-23-ИВТ-2-по-Б`. [Программа 2023](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.03.01/%D0%BF%D0%BE/2023/%D0%9E%D0%9F%D0%9E%D0%9F_2023_09.03.01_%D0%BF%D0%BE_%D0%9E.pdf#page=1)
+  - 2024, очная — `О-24-ИВТ-1-по-Б`, `О-24-ИВТ-2-по-Б`, `О-24-ИВТ-3-по-Б`. [Программа 2024](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.03.01/%D0%BF%D0%BE/2024/%D0%9E%D0%9F%D0%9E%D0%9F_2024_09.03.01_%D0%BF%D0%BE_%D0%9E.pdf#page=1)
+  - 2025, очная — `О-25-ИВТ-1-по-Б`, `О-25-ИВТ-2-по-Б`, `О-25-ИВТ-3-по-Б`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.03.01/%D0%BF%D0%BE/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_09.03.01_%D0%BF%D0%BE_%D0%9E.pdf#page=1)
+  - 2026, очная — `О-26-ИВТ-1-по-Б`, `О-26-ИВТ-2-по-Б`, `О-26-ИВТ-3-по-Б`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.03.01/%D0%BF%D0%BE/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_09.03.01_%D0%BF%D0%BE_%D0%9E.pdf#page=1)
+- **09.03.01 · Сопровождение и поддержка информационных систем**
+  - 2023, очная — `О-23-ИВТ-спис-Б`. [Программа 2023](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.03.01/%D1%81%D0%BF%D0%B8%D1%81/2023/%D0%9E%D0%9F%D0%9E%D0%9F_2023_09.03.01_%D1%81%D0%BF%D0%B8%D1%81_%D0%9E.pdf#page=1)
+- **09.03.02 · Искусственный интеллект в автоматизированном проектировании**
+  - 2025, очная — `О-25-ИСТ-ииап-Б`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.03.02/%D0%B8%D0%B8%D0%B0%D0%BF/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_09.03.02_%D0%B8%D0%B8%D0%B0%D0%BF_%D0%9E.pdf#page=1)
+  - 2026, очная — `О-26-ИСТ-ииап-Б`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.03.02/%D0%B8%D0%B8%D0%B0%D0%BF/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_09.03.02_%D0%B8%D0%B8%D0%B0%D0%BF_%D0%9E.pdf#page=1)
+- **09.03.02 · Информационные системы и технологии в дизайне**
+  - 2022, заочная — `З-22-ИСТ-истд-Б`. [Программа 2022](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.03.02/%D0%B8%D1%81%D1%82%D0%B4/2022/%D0%9E%D0%9F%D0%9E%D0%9F_2022_09.03.02_%D0%B8%D1%81%D1%82%D0%B4_%D0%97.pdf#page=1)
+  - 2023, заочная — `З-23-ИСТ-истд-Б`. [Программа 2023](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.03.02/%D0%B8%D1%81%D1%82%D0%B4/2023/%D0%9E%D0%9F%D0%9E%D0%9F_2023_09.03.02_%D0%B8%D1%81%D1%82%D0%B4_%D0%97.pdf#page=1)
+  - 2023, очная — `О-23-ИСТ-истд-Б`. [Программа 2023](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.03.02/%D0%B8%D1%81%D1%82%D0%B4/2023/%D0%9E%D0%9F%D0%9E%D0%9F_2023_09.03.02_%D0%B8%D1%81%D1%82%D0%B4_%D0%9E.pdf#page=1)
+  - 2024, заочная — `З-24-ИСТ-истд-Б`. [Программа 2024](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.03.02/%D0%B8%D1%81%D1%82%D0%B4/2024/%D0%9E%D0%9F%D0%9E%D0%9F_2024_09.03.02_%D0%B8%D1%81%D1%82%D0%B4_%D0%97.pdf#page=1)
+  - 2024, очная — `О-24-ИСТ-истд-Б`. [Программа 2024](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.03.02/%D0%B8%D1%81%D1%82%D0%B4/2024/%D0%9E%D0%9F%D0%9E%D0%9F_2024_09.03.02_%D0%B8%D1%81%D1%82%D0%B4_%D0%9E.pdf#page=1)
+  - 2025, заочная — `З-25-ИСТ-истд-Б`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.03.02/%D0%B8%D1%81%D1%82%D0%B4/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_09.03.02_%D0%B8%D1%81%D1%82%D0%B4_%D0%97.pdf#page=1)
+  - 2025, очная — `О-25-ИСТ-истд-Б`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.03.02/%D0%B8%D1%81%D1%82%D0%B4/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_09.03.02_%D0%B8%D1%81%D1%82%D0%B4_%D0%9E.pdf#page=1)
+  - 2026, заочная — `З-26-ИСТ-истд-Б`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.03.02/%D0%B8%D1%81%D1%82%D0%B4/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_09.03.02_%D0%B8%D1%81%D1%82%D0%B4_%D0%97.pdf#page=1)
+  - 2026, очная — `О-26-ИСТ-истд-Б`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.03.02/%D0%B8%D1%81%D1%82%D0%B4/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_09.03.02_%D0%B8%D1%81%D1%82%D0%B4_%D0%9E.pdf#page=1)
+- **09.03.02 · Информационные технологии и программные комплексы**
+  - 2022, заочная — `З-22-ИСТ-итпк-Б`. [Программа 2022](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.03.02/%D0%B8%D1%82%D0%BF%D0%BA/2022/%D0%9E%D0%9F%D0%9E%D0%9F_2022_09.03.02_%D0%B8%D1%82%D0%BF%D0%BA_%D0%97.pdf#page=1)
+  - 2023, заочная — `З-23-ИСТ-итпк-Б`. [Программа 2023](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.03.02/%D0%B8%D1%82%D0%BF%D0%BA/2023/%D0%9E%D0%9F%D0%9E%D0%9F_2023_09.03.02_%D0%B8%D1%82%D0%BF%D0%BA_%D0%97.pdf#page=1)
+  - 2023, очная — `О-23-ИСТ-итпк-Б`. [Программа 2023](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.03.02/%D0%B8%D1%82%D0%BF%D0%BA/2023/%D0%9E%D0%9F%D0%9E%D0%9F_2023_09.03.02_%D0%B8%D1%82%D0%BF%D0%BA_%D0%9E.pdf#page=1)
+  - 2024, заочная — `З-24-ИСТ-1-итпк-Б`, `З-24-ИСТ-2-итпк-Б`. [Программа 2024](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.03.02/%D0%B8%D1%82%D0%BF%D0%BA/2024/%D0%9E%D0%9F%D0%9E%D0%9F_2024_09.03.02_%D0%B8%D1%82%D0%BF%D0%BA_%D0%97.pdf#page=1)
+  - 2024, очная — `О-24-ИСТ-итпк-Б`. [Программа 2024](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.03.02/%D0%B8%D1%82%D0%BF%D0%BA/2024/%D0%9E%D0%9F%D0%9E%D0%9F_2024_09.03.02_%D0%B8%D1%82%D0%BF%D0%BA_%D0%9E.pdf#page=1)
+  - 2025, заочная — `З-25-ИСТ-1-итпк-Б`, `З-25-ИСТ-2-итпк-Б`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.03.02/%D0%B8%D1%82%D0%BF%D0%BA/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_09.03.02_%D0%B8%D1%82%D0%BF%D0%BA_%D0%97.pdf#page=1)
+  - 2025, очная — `О-25-ИСТ-итпк-Б`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.03.02/%D0%B8%D1%82%D0%BF%D0%BA/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_09.03.02_%D0%B8%D1%82%D0%BF%D0%BA_%D0%9E.pdf#page=1)
+  - 2026, заочная — `З-26-ИСТ-итпк-Б`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.03.02/%D0%B8%D1%82%D0%BF%D0%BA/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_09.03.02_%D0%B8%D1%82%D0%BF%D0%BA_%D0%97.pdf#page=1)
+  - 2026, очная — `О-26-ИСТ-итпк-Б`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.03.02/%D0%B8%D1%82%D0%BF%D0%BA/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_09.03.02_%D0%B8%D1%82%D0%BF%D0%BA_%D0%9E.pdf#page=1)
+- **09.03.02 · Системы автоматизированного проектирования**
+  - 2023, очная — `О-23-ИСТ-сапр-Б`. [Программа 2023](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.03.02/%D1%81%D0%B0%D0%BF%D1%80/2023/%D0%9E%D0%9F%D0%9E%D0%9F_2023_09.03.02_%D1%81%D0%B0%D0%BF%D1%80_%D0%9E.pdf#page=1)
+  - 2024, очная — `О-24-ИСТ-сапр-Б`. [Программа 2024](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.03.02/%D1%81%D0%B0%D0%BF%D1%80/2024/%D0%9E%D0%9F%D0%9E%D0%9F_2024_09.03.02_%D1%81%D0%B0%D0%BF%D1%80_%D0%9E.pdf#page=1)
+- **09.03.02 · Системы искусственного интеллекта и обработка больших данных**
+  - 2024, очная — `О-24-ИСТ-сии-Б`. [Программа 2024](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.03.02/%D1%81%D0%B8%D0%B8/2024/%D0%9E%D0%9F%D0%9E%D0%9F_2024_09.03.02_%D1%81%D0%B8%D0%B8_%D0%9E.pdf#page=1)
+  - 2025, очная — `О-25-ИСТ-сии-Б`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.03.02/%D1%81%D0%B8%D0%B8/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_09.03.02_%D1%81%D0%B8%D0%B8_%D0%9E.pdf#page=1)
+  - 2026, очная — `О-26-ИСТ-сии-Б`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.03.02/%D1%81%D0%B8%D0%B8/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_09.03.02_%D1%81%D0%B8%D0%B8_%D0%9E.pdf#page=1)
+- **09.03.04 · Разработка программно-информационных систем**
+  - 2023, очная — `О-23-ПРИ-рпс-Б`. [Программа 2023](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.03.04/%D1%80%D0%BF%D1%81/2023/%D0%9E%D0%9F%D0%9E%D0%9F_2023_09.03.04_%D1%80%D0%BF%D1%81_%D0%9E.pdf#page=1)
+  - 2024, очная — `О-24-ПРИ-рпс-Б`. [Программа 2024](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.03.04/%D1%80%D0%BF%D1%81/2024/%D0%9E%D0%9F%D0%9E%D0%9F_2024_09.03.04_%D1%80%D0%BF%D1%81_%D0%9E.pdf#page=1)
+  - 2025, очная — `О-25-ПРИ-рпс-Б`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.03.04/%D1%80%D0%BF%D1%81/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_09.03.04_%D1%80%D0%BF%D1%81_%D0%9E.pdf#page=1)
+  - 2026, очная — `О-26-ПРИ-рпс-Б`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.03.04/%D1%80%D0%BF%D1%81/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_09.03.04_%D1%80%D0%BF%D1%81_%D0%9E.pdf#page=1)
+- **09.04.01 · Компьютерный анализ и интерпретация данных**
+  - 2025, очная — `О-25-ИВТ-каид-М`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.04.01/%D0%BA%D0%B0%D0%B8%D0%B4/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_09.04.01_%D0%BA%D0%B0%D0%B8%D0%B4_%D0%9E.pdf#page=1)
+  - 2026, очная — `О-26-ИВТ-каид-М`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.04.01/%D0%BA%D0%B0%D0%B8%D0%B4/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_09.04.01_%D0%BA%D0%B0%D0%B8%D0%B4_%D0%9E.pdf#page=1)
+- **09.04.02 · Веб-технологии, дизайн, продвижение интернет-проектов**
+  - 2025, заочная — `З-25-ИСТ-вд-М`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.04.02/%D0%B2%D0%B4/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_09.04.02_%D0%B2%D0%B4_%D0%97.pdf#page=1)
+  - 2025, очная — `О-25-ИСТ-вд-М`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.04.02/%D0%B2%D0%B4/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_09.04.02_%D0%B2%D0%B4_%D0%9E.pdf#page=1)
+  - 2026, заочная — `З-26-ИСТ-вд-М`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.04.02/%D0%B2%D0%B4/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_09.04.02_%D0%B2%D0%B4_%D0%97.pdf#page=1)
+  - 2026, очная — `О-26-ИСТ-вд-М`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.04.02/%D0%B2%D0%B4/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_09.04.02_%D0%B2%D0%B4_%D0%9E.pdf#page=1)
+- **09.04.02 · Искусственный интеллект в киберфизических системах**
+  - 2025, очная — `О-25-ИСТ-иикс-М`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.04.02/%D0%B8%D0%B8%D0%BA%D1%81/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_09.04.02_%D0%B8%D0%B8%D0%BA%D1%81_%D0%9E.pdf#page=1)
+- **09.04.02 · Искусственный интеллект в киберфизических системах промышленных комплексов**
+  - 2026, очная — `О-26-ИСТ-иипк-М`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.04.02/%D0%B8%D0%B8%D0%BF%D0%BA/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_09.04.02_%D0%B8%D0%B8%D0%BF%D0%BA_%D0%9E.pdf#page=1)
+- **09.04.04 · Проектирование программно-информационных систем**
+  - 2025, очная — `О-25-ПРИ-ппс-М`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.04.04/%D0%BF%D0%BF%D1%81/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_09.04.04_%D0%BF%D0%BF%D1%81_%D0%9E.pdf#page=1)
+  - 2026, очная — `О-26-ПРИ-ппс-М`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.04.04/%D0%BF%D0%BF%D1%81/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_09.04.04_%D0%BF%D0%BF%D1%81_%D0%9E.pdf#page=1)
+- **10.03.01 · Организация и технологии защиты информации (по отрасли или в сфере профессиональной деятельности)**
+  - 2023, очная — `О-23-ИБ-1-ози-Б`, `О-23-ИБ-2-ози-Б`. [Программа 2023](https://www.tu-bryansk.ru/upload/sveden/education/eduop/10.03.01/%D0%BE%D0%B7%D0%B8/2023/%D0%9E%D0%9F%D0%9E%D0%9F_2023_10.03.01_%D0%BE%D0%B7%D0%B8_%D0%9E.pdf#page=1)
+  - 2023, очно-заочная — `ОЗ-23-ИБ-ози-Б`. [Программа 2023](https://www.tu-bryansk.ru/upload/sveden/education/eduop/10.03.01/%D0%BE%D0%B7%D0%B8/2023/%D0%9E%D0%9F%D0%9E%D0%9F_2023_10.03.01_%D0%BE%D0%B7%D0%B8_%D0%9E%D0%97.pdf#page=1)
+  - 2024, очная — `О-24-ИБ-1-ози-Б`, `О-24-ИБ-2-ози-Б`. [Программа 2024](https://www.tu-bryansk.ru/upload/sveden/education/eduop/10.03.01/%D0%BE%D0%B7%D0%B8/2024/%D0%9E%D0%9F%D0%9E%D0%9F_2024_10.03.01_%D0%BE%D0%B7%D0%B8_%D0%9E.pdf#page=1)
+  - 2024, очно-заочная — `ОЗ-24-ИБ-ози-Б`. [Программа 2024](https://www.tu-bryansk.ru/upload/sveden/education/eduop/10.03.01/%D0%BE%D0%B7%D0%B8/2024/%D0%9E%D0%9F%D0%9E%D0%9F_2024_10.03.01_%D0%BE%D0%B7%D0%B8_%D0%9E%D0%97.pdf#page=1)
+  - 2025, очная — `О-25-ИБ-1-ози-Б`, `О-25-ИБ-2-ози-Б`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/10.03.01/%D0%BE%D0%B7%D0%B8/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_10.03.01_%D0%BE%D0%B7%D0%B8_%D0%9E.pdf#page=1)
+  - 2025, очно-заочная — `ОЗ-25-ИБ-ози-Б`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/10.03.01/%D0%BE%D0%B7%D0%B8/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_10.03.01_%D0%BE%D0%B7%D0%B8_%D0%9E%D0%97.pdf#page=1)
+  - 2026, очная — `О-26-ИБ-1-ози-Б`, `О-26-ИБ-2-ози-Б`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/10.03.01/%D0%BE%D0%B7%D0%B8/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_10.03.01_%D0%BE%D0%B7%D0%B8_%D0%9E.pdf#page=1)
+  - 2026, очно-заочная — `ОЗ-26-ИБ-ози-Б`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/10.03.01/%D0%BE%D0%B7%D0%B8/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_10.03.01_%D0%BE%D0%B7%D0%B8_%D0%9E%D0%97.pdf#page=1)
+- **10.04.01 · Организация и технологии защиты информации**
+  - 2025, очная — `О-25-ИБ-ози-М`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/10.04.01/%D0%BE%D0%B7%D0%B8/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_10.04.01_%D0%BE%D0%B7%D0%B8_%D0%9E.pdf#page=1)
+  - 2025, очно-заочная — `ОЗ-25-ИБ-ози-М`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/10.04.01/%D0%BE%D0%B7%D0%B8/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_10.04.01_%D0%BE%D0%B7%D0%B8_%D0%9E%D0%97.pdf#page=1)
+  - 2026, очная — `О-26-ИБ-ози-М`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/10.04.01/%D0%BE%D0%B7%D0%B8/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_10.04.01_%D0%BE%D0%B7%D0%B8_%D0%9E.pdf#page=1)
+  - 2026, очно-заочная — `ОЗ-26-ИБ-ози-М`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/10.04.01/%D0%BE%D0%B7%D0%B8/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_10.04.01_%D0%BE%D0%B7%D0%B8_%D0%9E%D0%97.pdf#page=1)
+- **10.05.03 · Безопасность открытых информационных систем**
+  - 2022, очная — `О-22-БАС-1-боис-С`, `О-22-БАС-2-боис-С`. [Программа 2022](https://www.tu-bryansk.ru/upload/sveden/education/eduop/10.05.03/%D0%B1%D0%BE%D0%B8%D1%81/2022/%D0%9E%D0%9F%D0%9E%D0%9F_2022_10.05.03_%D0%B1%D0%BE%D0%B8%D1%81_%D0%9E.pdf#page=1)
+  - 2023, очная — `О-23-БАС-боис-С`. [Программа 2023](https://www.tu-bryansk.ru/upload/sveden/education/eduop/10.05.03/%D0%B1%D0%BE%D0%B8%D1%81/2023/%D0%9E%D0%9F%D0%9E%D0%9F_2023_10.05.03_%D0%B1%D0%BE%D0%B8%D1%81_%D0%9E.pdf#page=1)
+  - 2024, очная — `О-24-БАС-боис-С`. [Программа 2024](https://www.tu-bryansk.ru/upload/sveden/education/eduop/10.05.03/%D0%B1%D0%BE%D0%B8%D1%81/2024/%D0%9E%D0%9F%D0%9E%D0%9F_2024_10.05.03_%D0%B1%D0%BE%D0%B8%D1%81_%D0%9E.pdf#page=1)
+  - 2025, очная — `О-25-БАС-боис-С`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/10.05.03/%D0%B1%D0%BE%D0%B8%D1%81/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_10.05.03_%D0%B1%D0%BE%D0%B8%D1%81_%D0%9E.pdf#page=1)
+  - 2026, очная — `О-26-БАС-боис-С`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/10.05.03/%D0%B1%D0%BE%D0%B8%D1%81/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_10.05.03_%D0%B1%D0%BE%D0%B8%D1%81_%D0%9E.pdf#page=1)
+- **10.05.04 · Автоматизация информационно-аналитической деятельности**
+  - 2022, очная — `О-22-ИАС-аид-С`. [Программа 2022](https://www.tu-bryansk.ru/upload/sveden/education/eduop/10.05.04/%D0%B0%D0%B8%D0%B4/2022/%D0%9E%D0%9F%D0%9E%D0%9F_2022_10.05.04_%D0%B0%D0%B8%D0%B4_%D0%9E.pdf#page=1)
+  - 2023, очная — `О-23-ИАС-аид-С`. [Программа 2023](https://www.tu-bryansk.ru/upload/sveden/education/eduop/10.05.04/%D0%B0%D0%B8%D0%B4/2023/%D0%9E%D0%9F%D0%9E%D0%9F_2023_10.05.04_%D0%B0%D0%B8%D0%B4_%D0%9E.pdf#page=1)
+  - 2024, очная — `О-24-ИАС-аид-С`. [Программа 2024](https://www.tu-bryansk.ru/upload/sveden/education/eduop/10.05.04/%D0%B0%D0%B8%D0%B4/2024/%D0%9E%D0%9F%D0%9E%D0%9F_2024_10.05.04_%D0%B0%D0%B8%D0%B4_%D0%9E.pdf#page=1)
+  - 2025, очная — `О-25-ИАС-аид-С`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/10.05.04/%D0%B0%D0%B8%D0%B4/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_10.05.04_%D0%B0%D0%B8%D0%B4_%D0%9E.pdf#page=1)
+  - 2026, очная — `О-26-ИАС-аид-С`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/10.05.04/%D0%B0%D0%B8%D0%B4/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_10.05.04_%D0%B0%D0%B8%D0%B4_%D0%9E.pdf#page=1)
+- **2.3.1 · 2.3.1. Системный анализ, управление и обработка информации, статистика**
+  - 2024, очная — `О-24-САУ-А`. [Программа 2024](https://www.tu-bryansk.ru/upload/sveden/education/eduop/2.3.1/%D1%81%D0%B0%D1%83/2024/%D0%9E%D0%9F%D0%9E%D0%9F_2024_2.3.1_%D1%81%D0%B0%D1%83_%D0%9E.pdf#page=1)
+  - 2026, очная — `О-26-САУ-А`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/2.3.1/%D1%81%D0%B0%D1%83/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_2.3.1_%D1%81%D0%B0%D1%83_%D0%9E.pdf#page=1)
+- **2.3.4 · 2.3.4. Управление в организационных системах**
+  - 2024, очная — `О-24-УОС-А`. [Программа 2024](https://www.tu-bryansk.ru/upload/sveden/education/eduop/2.3.4/%D1%83%D0%BE%D1%81/2024/%D0%9E%D0%9F%D0%9E%D0%9F_2024_2.3.4_%D1%83%D0%BE%D1%81_%D0%9E.pdf#page=1)
+  - 2026, очная — `О-26-УОС-А`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/2.3.4/%D1%83%D0%BE%D1%81/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_2.3.4_%D1%83%D0%BE%D1%81_%D0%9E.pdf#page=1)
+- **2.3.6 · 2.3.6. Методы и системы защиты информации, информационная безопасность**
+  - 2024, очная — `О-24-МСЗИ-А`. [Программа 2024](https://www.tu-bryansk.ru/upload/sveden/education/eduop/2.3.6/%D0%BC%D1%81%D0%B7%D0%B8/2024/%D0%9E%D0%9F%D0%9E%D0%9F_2024_2.3.6_%D0%BC%D1%81%D0%B7%D0%B8_%D0%9E.pdf#page=1)
+  - 2026, очная — `О-26-МСЗИ-А`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/2.3.6/%D0%BC%D1%81%D0%B7%D0%B8/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_2.3.6_%D0%BC%D1%81%D0%B7%D0%B8_%D0%9E.pdf#page=1)
+- **2.3.7 · 2.3.7. Компьютерное моделирование и автоматизация проектирования**
+  - 2026, очная — `О-26-КМАП-А`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/2.3.7/%D0%BA%D0%BC%D0%B0%D0%BF/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_2.3.7_%D0%BA%D0%BC%D0%B0%D0%BF_%D0%9E.pdf#page=1)
+
+## Факультет отраслевой и цифровой экономики (ФОЦЭ) — 52
+
+- **09.03.03 · Информационные технологии в цифровой экономике**
+  - 2022, заочная — `З-22-ПИ-итцэ-Б`. [Программа 2022](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.03.03/%D0%B8%D1%82%D1%86%D1%8D/2022/%D0%9E%D0%9F%D0%9E%D0%9F_2022_09.03.03_%D0%B8%D1%82%D1%86%D1%8D_%D0%97.pdf#page=1)
+  - 2023, заочная — `З-23-ПИ-1-итцэ-Б`, `З-23-ПИ-2-итцэ-Б`. [Программа 2023](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.03.03/%D0%B8%D1%82%D1%86%D1%8D/2023/%D0%9E%D0%9F%D0%9E%D0%9F_2023_09.03.03_%D0%B8%D1%82%D1%86%D1%8D_%D0%97.pdf#page=1)
+  - 2023, очная — `О-23-ПИ-итцэ-Б`. [Программа 2023](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.03.03/%D0%B8%D1%82%D1%86%D1%8D/2023/%D0%9E%D0%9F%D0%9E%D0%9F_2023_09.03.03_%D0%B8%D1%82%D1%86%D1%8D_%D0%9E.pdf#page=1)
+  - 2024, заочная — `З-24-ПИ-итцэ-Б`. [Программа 2024](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.03.03/%D0%B8%D1%82%D1%86%D1%8D/2024/%D0%9E%D0%9F%D0%9E%D0%9F_2024_09.03.03_%D0%B8%D1%82%D1%86%D1%8D_%D0%97.pdf#page=1)
+  - 2024, очная — `О-24-ПИ-итцэ-Б`. [Программа 2024](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.03.03/%D0%B8%D1%82%D1%86%D1%8D/2024/%D0%9E%D0%9F%D0%9E%D0%9F_2024_09.03.03_%D0%B8%D1%82%D1%86%D1%8D_%D0%9E.pdf#page=1)
+  - 2025, заочная — `З-25-ПИ-1-итцэ-Б`, `З-25-ПИ-2-итцэ-Б`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.03.03/%D0%B8%D1%82%D1%86%D1%8D/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_09.03.03_%D0%B8%D1%82%D1%86%D1%8D_%D0%97.pdf#page=1)
+  - 2025, очная — `О-25-ПИ-итцэ-Б`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.03.03/%D0%B8%D1%82%D1%86%D1%8D/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_09.03.03_%D0%B8%D1%82%D1%86%D1%8D_%D0%9E.pdf#page=1)
+  - 2026, заочная — `З-26-ПИ-итцэ-Б`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.03.03/%D0%B8%D1%82%D1%86%D1%8D/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_09.03.03_%D0%B8%D1%82%D1%86%D1%8D_%D0%97.pdf#page=1)
+  - 2026, очная — `О-26-ПИ-1-итцэ-Б`, `О-26-ПИ-2-итцэ-Б`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.03.03/%D0%B8%D1%82%D1%86%D1%8D/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_09.03.03_%D0%B8%D1%82%D1%86%D1%8D_%D0%9E.pdf#page=1)
+- **09.03.03 · Управление проектами в сфере информационных технологий**
+  - 2023, очная — `О-23-ПИ-уп-Б`. [Программа 2023](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.03.03/%D1%83%D0%BF/2023/%D0%9E%D0%9F%D0%9E%D0%9F_2023_09.03.03_%D1%83%D0%BF_%D0%9E.pdf#page=1)
+  - 2024, заочная — `З-24-ПИ-уп-Б`. [Программа 2024](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.03.03/%D1%83%D0%BF/2024/%D0%9E%D0%9F%D0%9E%D0%9F_2024_09.03.03_%D1%83%D0%BF_%D0%97.pdf#page=1)
+  - 2024, очная — `О-24-ПИ-уп-Б`. [Программа 2024](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.03.03/%D1%83%D0%BF/2024/%D0%9E%D0%9F%D0%9E%D0%9F_2024_09.03.03_%D1%83%D0%BF_%D0%9E.pdf#page=1)
+  - 2025, заочная — `З-25-ПИ-уп-Б`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.03.03/%D1%83%D0%BF/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_09.03.03_%D1%83%D0%BF_%D0%97.pdf#page=1)
+  - 2025, очная — `О-25-ПИ-уп-Б`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.03.03/%D1%83%D0%BF/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_09.03.03_%D1%83%D0%BF_%D0%9E.pdf#page=1)
+  - 2026, заочная — `З-26-ПИ-уп-Б`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.03.03/%D1%83%D0%BF/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_09.03.03_%D1%83%D0%BF_%D0%97.pdf#page=1)
+  - 2026, очная — `О-26-ПИ-уп-Б`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.03.03/%D1%83%D0%BF/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_09.03.03_%D1%83%D0%BF_%D0%9E.pdf#page=1)
+- **09.04.03 · Информационная аналитика в цифровой экономике**
+  - 2025, заочная — `З-25-ПИ-иацэ-М`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.04.03/%D0%B8%D0%B0%D1%86%D1%8D/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_09.04.03_%D0%B8%D0%B0%D1%86%D1%8D_%D0%97.pdf#page=1)
+  - 2025, очная — `О-25-ПИ-иацэ-М`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.04.03/%D0%B8%D0%B0%D1%86%D1%8D/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_09.04.03_%D0%B8%D0%B0%D1%86%D1%8D_%D0%9E.pdf#page=1)
+  - 2026, заочная — `З-26-ПИ-иацэ-М`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.04.03/%D0%B8%D0%B0%D1%86%D1%8D/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_09.04.03_%D0%B8%D0%B0%D1%86%D1%8D_%D0%97.pdf#page=1)
+  - 2026, очная — `О-26-ПИ-иацэ-М`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.04.03/%D0%B8%D0%B0%D1%86%D1%8D/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_09.04.03_%D0%B8%D0%B0%D1%86%D1%8D_%D0%9E.pdf#page=1)
+- **27.04.05 · Стратегии и менеджмент инноваций**
+  - 2025, заочная — `З-25-ИН-сми-М`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/27.04.05/%D1%81%D0%BC%D0%B8/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_27.04.05_%D1%81%D0%BC%D0%B8_%D0%97.pdf#page=1)
+- **38.03.01 · Финансы**
+  - 2022, очно-заочная — `ОЗ-22-ЭК-ф-Б`. [Программа 2022](https://www.tu-bryansk.ru/upload/sveden/education/eduop/38.03.01/%D1%84/2022/%D0%9E%D0%9F%D0%9E%D0%9F_2022_38.03.01_%D1%84_%D0%9E%D0%97.pdf#page=1)
+- **38.03.01 · Финансы и бизнес-аналитика**
+  - 2023, очно-заочная — `ОЗ-23-ЭК-фба-Б`. [Программа 2023](https://www.tu-bryansk.ru/upload/sveden/education/eduop/38.03.01/%D1%84%D0%B1%D0%B0/2023/%D0%9E%D0%9F%D0%9E%D0%9F_2023_38.03.01_%D1%84%D0%B1%D0%B0_%D0%9E%D0%97.pdf#page=1)
+  - 2024, очно-заочная — `ОЗ-24-ЭК-фба-Б`. [Программа 2024](https://www.tu-bryansk.ru/upload/sveden/education/eduop/38.03.01/%D1%84%D0%B1%D0%B0/2024/%D0%9E%D0%9F%D0%9E%D0%9F_2024_38.03.01_%D1%84%D0%B1%D0%B0_%D0%9E%D0%97.pdf#page=1)
+  - 2025, очно-заочная — `ОЗ-25-ЭК-фба-Б`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/38.03.01/%D1%84%D0%B1%D0%B0/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_38.03.01_%D1%84%D0%B1%D0%B0_%D0%9E%D0%97.pdf#page=1)
+  - 2026, очно-заочная — `ОЗ-26-ЭК-фба-Б`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/38.03.01/%D1%84%D0%B1%D0%B0/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_38.03.01_%D1%84%D0%B1%D0%B0_%D0%9E%D0%97.pdf#page=1)
+- **38.03.02 · Экономика и управление на предприятии**
+  - 2022, очно-заочная — `ОЗ-22-МНТ-1-эуп-Б`, `ОЗ-22-МНТ-2-эуп-Б`. [Программа 2022](https://www.tu-bryansk.ru/upload/sveden/education/eduop/38.03.02/%D1%8D%D1%83%D0%BF/2022/%D0%9E%D0%9F%D0%9E%D0%9F_2022_38.03.02_%D1%8D%D1%83%D0%BF_%D0%9E%D0%97.pdf#page=1)
+  - 2023, очная — `О-23-МНТ-эуп-Б`. [Программа 2023](https://www.tu-bryansk.ru/upload/sveden/education/eduop/38.03.02/%D1%8D%D1%83%D0%BF/2023/%D0%9E%D0%9F%D0%9E%D0%9F_2023_38.03.02_%D1%8D%D1%83%D0%BF_%D0%9E.pdf#page=1)
+  - 2023, очно-заочная — `ОЗ-23-МНТ-эуп-Б`. [Программа 2023](https://www.tu-bryansk.ru/upload/sveden/education/eduop/38.03.02/%D1%8D%D1%83%D0%BF/2023/%D0%9E%D0%9F%D0%9E%D0%9F_2023_38.03.02_%D1%8D%D1%83%D0%BF_%D0%9E%D0%97.pdf#page=1)
+  - 2024, очная — `О-24-МНТ-эуп-Б`. [Программа 2024](https://www.tu-bryansk.ru/upload/sveden/education/eduop/38.03.02/%D1%8D%D1%83%D0%BF/2024/%D0%9E%D0%9F%D0%9E%D0%9F_2024_38.03.02_%D1%8D%D1%83%D0%BF_%D0%9E.pdf#page=1)
+  - 2025, очная — `О-25-МНТ-эуп-Б`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/38.03.02/%D1%8D%D1%83%D0%BF/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_38.03.02_%D1%8D%D1%83%D0%BF_%D0%9E.pdf#page=1)
+  - 2025, очно-заочная — `ОЗ-25-МНТ-эуп-Б`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/38.03.02/%D1%8D%D1%83%D0%BF/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_38.03.02_%D1%8D%D1%83%D0%BF_%D0%9E%D0%97.pdf#page=1)
+  - 2026, очная — `О-26-МНТ-эуп-Б`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/38.03.02/%D1%8D%D1%83%D0%BF/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_38.03.02_%D1%8D%D1%83%D0%BF_%D0%9E.pdf#page=1)
+  - 2026, очно-заочная — `ОЗ-26-МНТ-эуп-Б`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/38.03.02/%D1%8D%D1%83%D0%BF/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_38.03.02_%D1%8D%D1%83%D0%BF_%D0%9E%D0%97.pdf#page=1)
+- **38.03.05 · Цифровая экономика**
+  - 2023, очная — `О-23-БИ-цэ-Б`. [Программа 2023](https://www.tu-bryansk.ru/upload/sveden/education/eduop/38.03.05/%D1%86%D1%8D/2023/%D0%9E%D0%9F%D0%9E%D0%9F_2023_38.03.05_%D1%86%D1%8D_%D0%9E.pdf#page=1)
+  - 2024, очная — `О-24-БИ-цэ-Б`. [Программа 2024](https://www.tu-bryansk.ru/upload/sveden/education/eduop/38.03.05/%D1%86%D1%8D/2024/%D0%9E%D0%9F%D0%9E%D0%9F_2024_38.03.05_%D1%86%D1%8D_%D0%9E.pdf#page=1)
+  - 2025, очная — `О-25-БИ-цэ-Б`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/38.03.05/%D1%86%D1%8D/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_38.03.05_%D1%86%D1%8D_%D0%9E.pdf#page=1)
+  - 2026, очная — `О-26-БИ-цэ-Б`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/38.03.05/%D1%86%D1%8D/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_38.03.05_%D1%86%D1%8D_%D0%9E.pdf#page=1)
+- **38.04.02 · Технологическое предпринимательство**
+  - 2026, заочная — `З-26-МНТ-тп-М`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/38.04.02/%D1%82%D0%BF/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_38.04.02_%D1%82%D0%BF_%D0%97.pdf#page=1)
+- **44.03.04 · Инжиниринг информационных систем**
+  - 2024, заочная — `З-24-ПРО-иис-Б`. [Программа 2024](https://www.tu-bryansk.ru/upload/sveden/education/eduop/44.03.04/%D0%B8%D0%B8%D1%81/2024/%D0%9E%D0%9F%D0%9E%D0%9F_2024_44.03.04_%D0%B8%D0%B8%D1%81_%D0%97.pdf#page=1)
+  - 2024, очная — `О-24-ПРО-иис-Б`. [Программа 2024](https://www.tu-bryansk.ru/upload/sveden/education/eduop/44.03.04/%D0%B8%D0%B8%D1%81/2024/%D0%9E%D0%9F%D0%9E%D0%9F_2024_44.03.04_%D0%B8%D0%B8%D1%81_%D0%9E.pdf#page=1)
+  - 2025, заочная — `З-25-ПРО-иис-Б`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/44.03.04/%D0%B8%D0%B8%D1%81/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_44.03.04_%D0%B8%D0%B8%D1%81_%D0%97.pdf#page=1)
+  - 2025, очная — `О-25-ПРО-иис-Б`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/44.03.04/%D0%B8%D0%B8%D1%81/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_44.03.04_%D0%B8%D0%B8%D1%81_%D0%9E.pdf#page=1)
+- **44.03.04 · Организация образовательной деятельности на основе цифровых технологий**
+  - 2026, заочная — `З-26-ПРО-оод-Б`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/44.03.04/%D0%BE%D0%BE%D0%B4/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_44.03.04_%D0%BE%D0%BE%D0%B4_%D0%97.pdf#page=1)
+  - 2026, очная — `О-26-ПРО-1-оод-Б`, `О-26-ПРО-2-оод-Б`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/44.03.04/%D0%BE%D0%BE%D0%B4/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_44.03.04_%D0%BE%D0%BE%D0%B4_%D0%9E.pdf#page=1)
+- **44.03.04 · Педагогический дизайн в цифровой среде**
+  - 2025, заочная — `З-25-ПРО-пд-Б`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/44.03.04/%D0%BF%D0%B4/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_44.03.04_%D0%BF%D0%B4_%D0%97.pdf#page=1)
+  - 2025, очная — `О-25-ПРО-пд-Б`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/44.03.04/%D0%BF%D0%B4/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_44.03.04_%D0%BF%D0%B4_%D0%9E.pdf#page=1)
+
+## Факультет энергетики и электроники (ФЭЭ) — 54
+
+- **1.3.12 · 1.3.12. Физика магнитных явлений**
+  - 2026, очная — `О-26-ФМЯ-А`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/1.3.12/%D1%84%D0%BC%D1%8F/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_1.3.12_%D1%84%D0%BC%D1%8F_%D0%9E.pdf#page=1)
+- **11.03.01 · Радиоэлектронные системы**
+  - 2023, очная — `О-23-РАД-рс-Б`. [Программа 2023](https://www.tu-bryansk.ru/upload/sveden/education/eduop/11.03.01/%D1%80%D1%81/2023/%D0%9E%D0%9F%D0%9E%D0%9F_2023_11.03.01_%D1%80%D1%81_%D0%9E.pdf#page=1)
+  - 2024, очная — `О-24-РАД-рс-Б`. [Программа 2024](https://www.tu-bryansk.ru/upload/sveden/education/eduop/11.03.01/%D1%80%D1%81/2024/%D0%9E%D0%9F%D0%9E%D0%9F_2024_11.03.01_%D1%80%D1%81_%D0%9E.pdf#page=1)
+  - 2026, очная — `О-26-РАД-рс-Б`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/11.03.01/%D1%80%D1%81/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_11.03.01_%D1%80%D1%81_%D0%9E.pdf#page=1)
+- **11.03.04 · Микроэлектроника и твердотельная электроника**
+  - 2023, очная — `О-23-ЭиН-мтэ-Б`. [Учебный план 2023](https://www.tu-bryansk.ru/upload/sveden/education/eduop/11.03.04/%D0%BC%D1%82%D1%8D/2023/%D0%A3%D0%9F_2023_11.03.04_%D0%BC%D1%82%D1%8D_%D0%9E.pdf#page=1)
+  - 2024, очная — `О-24-ЭиН-мтэ-Б`. [Программа 2024](https://www.tu-bryansk.ru/upload/sveden/education/eduop/11.03.04/%D0%BC%D1%82%D1%8D/2024/%D0%9E%D0%9F%D0%9E%D0%9F_2024_11.03.04_%D0%BC%D1%82%D1%8D_%D0%9E.pdf#page=1)
+  - 2025, очная — `О-25-ЭиН-мтэ-Б`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/11.03.04/%D0%BC%D1%82%D1%8D/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_11.03.04_%D0%BC%D1%82%D1%8D_%D0%9E.pdf#page=1)
+  - 2026, очная — `О-26-ЭиН-мтэ-Б`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/11.03.04/%D0%BC%D1%82%D1%8D/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_11.03.04_%D0%BC%D1%82%D1%8D_%D0%9E.pdf#page=1)
+- **11.03.04 · Промышленная электроника**
+  - 2023, очная — `О-23-ЭиН-пэ-Б`. [Программа 2023](https://www.tu-bryansk.ru/upload/sveden/education/eduop/11.03.04/%D0%BF%D1%8D/2023/%D0%9E%D0%9F%D0%9E%D0%9F_2023_11.03.04_%D0%BF%D1%8D_%D0%9E.pdf#page=1)
+  - 2024, очная — `О-24-ЭиН-пэ-Б`. [Программа 2024](https://www.tu-bryansk.ru/upload/sveden/education/eduop/11.03.04/%D0%BF%D1%8D/2024/%D0%9E%D0%9F%D0%9E%D0%9F_2024_11.03.04_%D0%BF%D1%8D_%D0%9E.pdf#page=1)
+  - 2025, очная — `О-25-ЭиН-пэ-Б`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/11.03.04/%D0%BF%D1%8D/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_11.03.04_%D0%BF%D1%8D_%D0%9E.pdf#page=1)
+- **11.03.04 · Электроника и программирование микропроцессорных систем**
+  - 2026, очная — `О-26-ЭиН-эпмс-Б`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/11.03.04/%D1%8D%D0%BF%D0%BC%D1%81/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_11.03.04_%D1%8D%D0%BF%D0%BC%D1%81_%D0%9E.pdf#page=1)
+- **11.04.04 · Промышленная электроника и микропроцессорная техника**
+  - 2025, очная — `О-25-ЭиН-пэ-М`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/11.04.04/%D0%BF%D1%8D/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_11.04.04_%D0%BF%D1%8D_%D0%9E.pdf#page=1)
+  - 2026, очная — `О-26-ЭиН-пэ-М`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/11.04.04/%D0%BF%D1%8D/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_11.04.04_%D0%BF%D1%8D_%D0%9E.pdf#page=1)
+- **13.03.01 · Промышленная теплоэнергетика**
+  - 2023, очная — `О-23-ТиТ-птэ-Б`. [Программа 2023](https://www.tu-bryansk.ru/upload/sveden/education/eduop/13.03.01/%D0%BF%D1%82%D1%8D/2023/%D0%9E%D0%9F%D0%9E%D0%9F_2023_13.03.01_%D0%BF%D1%82%D1%8D_%D0%9E.pdf#page=1)
+- **13.03.01 · Теплоэнергетика. Цифровые системы**
+  - 2025, очная — `О-25-ТиТ-тцс-Б`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/13.03.01/%D1%82%D1%86%D1%81/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_13.03.01_%D1%82%D1%86%D1%81_%D0%9E.pdf#page=1)
+  - 2026, очная — `О-26-ТиТ-тцс-Б`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/13.03.01/%D1%82%D1%86%D1%81/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_13.03.01_%D1%82%D1%86%D1%81_%D0%9E.pdf#page=1)
+- **13.03.01 · Энерго и ресурсоснабжение городов и промышленных предприятий**
+  - 2022, заочная — `З-22-ТиТ-эрс-Б`. [Программа 2022](https://www.tu-bryansk.ru/upload/sveden/education/eduop/13.03.01/%D1%8D%D1%80%D1%81/2022/%D0%9E%D0%9F%D0%9E%D0%9F_2022_13.03.01_%D1%8D%D1%80%D1%81_%D0%97.pdf#page=1)
+  - 2023, заочная — `З-23-ТиТ-эрс-Б`. [Программа 2023](https://www.tu-bryansk.ru/upload/sveden/education/eduop/13.03.01/%D1%8D%D1%80%D1%81/2023/%D0%9E%D0%9F%D0%9E%D0%9F_2023_13.03.01_%D1%8D%D1%80%D1%81_%D0%97.pdf#page=1)
+  - 2024, заочная — `З-24-ТиТ-эрс-Б`. [Программа 2024](https://www.tu-bryansk.ru/upload/sveden/education/eduop/13.03.01/%D1%8D%D1%80%D1%81/2024/%D0%9E%D0%9F%D0%9E%D0%9F_2024_13.03.01_%D1%8D%D1%80%D1%81_%D0%97.pdf#page=1)
+  - 2026, заочная — `З-26-ТиТ-эрс-Б`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/13.03.01/%D1%8D%D1%80%D1%81/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_13.03.01_%D1%8D%D1%80%D1%81_%D0%97.pdf#page=1)
+- **13.03.02 · Электропривод и автоматика**
+  - 2023, очная — `О-23-ЭиЭ-эиа-Б`. [Программа 2023](https://www.tu-bryansk.ru/upload/sveden/education/eduop/13.03.02/%D1%8D%D0%B8%D0%B0/2023/%D0%9E%D0%9F%D0%9E%D0%9F_2023_13.03.02_%D1%8D%D0%B8%D0%B0_%D0%9E.pdf#page=1)
+  - 2024, очная — `О-24-ЭиЭ-эиа-Б`. [Программа 2024](https://www.tu-bryansk.ru/upload/sveden/education/eduop/13.03.02/%D1%8D%D0%B8%D0%B0/2024/%D0%9E%D0%9F%D0%9E%D0%9F_2024_13.03.02_%D1%8D%D0%B8%D0%B0_%D0%9E.pdf#page=1)
+- **13.03.02 · Электроснабжение**
+  - 2026, очная — `О-26-ЭиЭ-элс-Б`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/13.03.02/%D1%8D%D0%BB%D1%81/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_13.03.02_%D1%8D%D0%BB%D1%81_%D0%9E.pdf#page=1)
+- **13.03.02 · Электрооборудование и электрохозяйство предприятий, организаций и учреждений**
+  - 2022, заочная — `З-22-ЭиЭ-ээпо-Б`. [Программа 2022](https://www.tu-bryansk.ru/upload/sveden/education/eduop/13.03.02/%D1%8D%D1%8D%D0%BF%D0%BE/2022/%D0%9E%D0%9F%D0%9E%D0%9F_2022_13.03.02_%D1%8D%D1%8D%D0%BF%D0%BE_%D0%97.pdf#page=1)
+  - 2023, заочная — `З-23-ЭиЭ-ээпо-Б`. [Программа 2023](https://www.tu-bryansk.ru/upload/sveden/education/eduop/13.03.02/%D1%8D%D1%8D%D0%BF%D0%BE/2023/%D0%9E%D0%9F%D0%9E%D0%9F_2023_13.03.02_%D1%8D%D1%8D%D0%BF%D0%BE_%D0%97.pdf#page=1)
+  - 2024, заочная — `З-24-ЭиЭ-ээпо-Б`. [Программа 2024](https://www.tu-bryansk.ru/upload/sveden/education/eduop/13.03.02/%D1%8D%D1%8D%D0%BF%D0%BE/2024/%D0%9E%D0%9F%D0%9E%D0%9F_2024_13.03.02_%D1%8D%D1%8D%D0%BF%D0%BE_%D0%97.pdf#page=1)
+  - 2025, заочная — `З-25-ЭиЭ-ээпо-Б`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/13.03.02/%D1%8D%D1%8D%D0%BF%D0%BE/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_13.03.02_%D1%8D%D1%8D%D0%BF%D0%BE_%D0%97.pdf#page=1)
+  - 2026, заочная — `З-26-ЭиЭ-ээпо-Б`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/13.03.02/%D1%8D%D1%8D%D0%BF%D0%BE/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_13.03.02_%D1%8D%D1%8D%D0%BF%D0%BE_%D0%97.pdf#page=1)
+- **13.03.03 · Двигатели внутреннего сгорания**
+  - 2022, заочная — `З-22-ЭМ-двс-Б`. [Программа 2022](https://www.tu-bryansk.ru/upload/sveden/education/eduop/13.03.03/%D0%B4%D0%B2%D1%81/2022/%D0%9E%D0%9F%D0%9E%D0%9F_2022_13.03.03_%D0%B4%D0%B2%D1%81_%D0%97.pdf#page=1)
+  - 2023, заочная — `З-23-ЭМ-двс-Б`. [Программа 2023](https://www.tu-bryansk.ru/upload/sveden/education/eduop/13.03.03/%D0%B4%D0%B2%D1%81/2023/%D0%9E%D0%9F%D0%9E%D0%9F_2023_13.03.03_%D0%B4%D0%B2%D1%81_%D0%97.pdf#page=1)
+  - 2024, заочная — `З-24-ЭМ-двс-Б`. [Программа 2024](https://www.tu-bryansk.ru/upload/sveden/education/eduop/13.03.03/%D0%B4%D0%B2%D1%81/2024/%D0%9E%D0%9F%D0%9E%D0%9F_2024_13.03.03_%D0%B4%D0%B2%D1%81_%D0%97.pdf#page=1)
+- **13.03.03 · Паро- и газотурбинные установки и двигатели**
+  - 2023, очная — `О-23-ЭМ-т-Б`. [Программа 2023](https://www.tu-bryansk.ru/upload/sveden/education/eduop/13.03.03/%D1%82/2023/%D0%9E%D0%9F%D0%9E%D0%9F_2023_13.03.03_%D1%82_%D0%9E.pdf#page=1)
+  - 2024, очная — `О-24-ЭМ-т-Б`. [Программа 2024](https://www.tu-bryansk.ru/upload/sveden/education/eduop/13.03.03/%D1%82/2024/%D0%9E%D0%9F%D0%9E%D0%9F_2024_13.03.03_%D1%82_%D0%9E.pdf#page=1)
+  - 2025, очная — `О-25-ЭМ-т-Б`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/13.03.03/%D1%82/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_13.03.03_%D1%82_%D0%9E.pdf#page=1)
+  - 2026, очная — `О-26-ЭМ-т-Б`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/13.03.03/%D1%82/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_13.03.03_%D1%82_%D0%9E.pdf#page=1)
+- **13.03.03 · Трубопроводный транспорт нефти, газа и нефтепродуктов**
+  - 2025, заочная — `З-25-ЭМ-ттнг-Б`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/13.03.03/%D1%82%D1%82%D0%BD%D0%B3/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_13.03.03_%D1%82%D1%82%D0%BD%D0%B3_%D0%97.pdf#page=1)
+  - 2025, очная — `О-25-ЭМ-ттнг-Б`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/13.03.03/%D1%82%D1%82%D0%BD%D0%B3/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_13.03.03_%D1%82%D1%82%D0%BD%D0%B3_%D0%9E.pdf#page=1)
+  - 2026, заочная — `З-26-ЭМ-ттнг-Б`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/13.03.03/%D1%82%D1%82%D0%BD%D0%B3/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_13.03.03_%D1%82%D1%82%D0%BD%D0%B3_%D0%97.pdf#page=1)
+  - 2026, очная — `О-26-ЭМ-ттнг-Б`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/13.03.03/%D1%82%D1%82%D0%BD%D0%B3/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_13.03.03_%D1%82%D1%82%D0%BD%D0%B3_%D0%9E.pdf#page=1)
+- **13.03.03 · Энергоустановки для наземного, водного и трубопроводного транспорта**
+  - 2024, очная — `О-24-ЭМ-энвт-Б`. [Программа 2024](https://www.tu-bryansk.ru/upload/sveden/education/eduop/13.03.03/%D1%8D%D0%BD%D0%B2%D1%82/2024/%D0%9E%D0%9F%D0%9E%D0%9F_2024_13.03.03_%D1%8D%D0%BD%D0%B2%D1%82_%D0%9E.pdf#page=1)
+- **13.04.03 · Газотурбинные агрегаты газокомпрессорных станций**
+  - 2026, заочная — `З-26-ЭМ-гагс-М`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/13.04.03/%D0%B3%D0%B0%D0%B3%D1%81/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_13.04.03_%D0%B3%D0%B0%D0%B3%D1%81_%D0%97.pdf#page=1)
+- **13.04.03 · Паро- и газотурбинные установки и двигатели**
+  - 2025, очная — `О-25-ЭМ-т-М`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/13.04.03/%D1%82/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_13.04.03_%D1%82_%D0%9E.pdf#page=1)
+  - 2026, очная — `О-26-ЭМ-т-М`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/13.04.03/%D1%82/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_13.04.03_%D1%82_%D0%9E.pdf#page=1)
+- **13.04.03 · Эксплуатация и машины нефтегазопроводов**
+  - 2025, заочная — `З-25-ЭМ-эмн-М`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/13.04.03/%D1%8D%D0%BC%D0%BD/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_13.04.03_%D1%8D%D0%BC%D0%BD_%D0%97.pdf#page=1)
+  - 2025, очная — `О-25-ЭМ-эмн-М`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/13.04.03/%D1%8D%D0%BC%D0%BD/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_13.04.03_%D1%8D%D0%BC%D0%BD_%D0%9E.pdf#page=1)
+  - 2026, заочная — `З-26-ЭМ-эмн-М`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/13.04.03/%D1%8D%D0%BC%D0%BD/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_13.04.03_%D1%8D%D0%BC%D0%BD_%D0%97.pdf#page=1)
+  - 2026, очная — `О-26-ЭМ-эмн-М`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/13.04.03/%D1%8D%D0%BC%D0%BD/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_13.04.03_%D1%8D%D0%BC%D0%BD_%D0%9E.pdf#page=1)
+- **2.4.2 · 2.4.2. Электротехнические комплексы и системы**
+  - 2023, очная — `О-23-ЭКС-А`. [Программа 2023](https://www.tu-bryansk.ru/upload/sveden/education/eduop/2.4.2/%D1%8D%D0%BA%D1%81/2023/%D0%9E%D0%9F%D0%9E%D0%9F_2023_2.4.2_%D1%8D%D0%BA%D1%81_%D0%9E.pdf#page=1)
+  - 2026, очная — `О-26-ЭКС-А`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/2.4.2/%D1%8D%D0%BA%D1%81/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_2.4.2_%D1%8D%D0%BA%D1%81_%D0%9E.pdf#page=1)
+- **2.4.7 · 2.4.7. Турбомашины и поршневые двигатели**
+  - 2023, очная — `О-23-ТПД-А`. [Программа 2023](https://www.tu-bryansk.ru/upload/sveden/education/eduop/2.4.7/%D1%82%D0%BF%D0%B4/2023/%D0%9E%D0%9F%D0%9E%D0%9F_2023_2.4.7_%D1%82%D0%BF%D0%B4_%D0%9E.pdf#page=1)
+  - 2026, очная — `О-26-ТПД-А`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/2.4.7/%D1%82%D0%BF%D0%B4/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_2.4.7_%D1%82%D0%BF%D0%B4_%D0%9E.pdf#page=1)
+- **2.5.3 · 2.5.3. Трение и износ в машинах**
+  - 2023, очная — `О-23-ТИМ-А`. [Программа 2023](https://www.tu-bryansk.ru/upload/sveden/education/eduop/2.5.3/%D1%82%D0%B8%D0%BC/2023/%D0%9E%D0%9F%D0%9E%D0%9F_2023_2.5.3_%D1%82%D0%B8%D0%BC_%D0%9E.pdf#page=1)
+  - 2026, очная — `О-26-ТИМ-А`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/2.5.3/%D1%82%D0%B8%D0%BC/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_2.5.3_%D1%82%D0%B8%D0%BC_%D0%9E.pdf#page=1)
+
+## Механико-технологический факультет (МТФ) — 51
+
+- **15.03.01 · Инженерия и реновация машин**
+  - 2022, заочная — `З-22-МАШ-ирм-Б`. [Программа 2022](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.03.01/%D0%B8%D1%80%D0%BC/2022/%D0%9E%D0%9F%D0%9E%D0%9F_2022_15.03.01_%D0%B8%D1%80%D0%BC_%D0%97.pdf#page=1)
+  - 2023, заочная — `З-23-МАШ-ирм-Б`. [Программа 2023](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.03.01/%D0%B8%D1%80%D0%BC/2023/%D0%9E%D0%9F%D0%9E%D0%9F_2023_15.03.01_%D0%B8%D1%80%D0%BC_%D0%97.pdf#page=1)
+  - 2024, заочная — `З-24-МАШ-ирм-Б`. [Программа 2024](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.03.01/%D0%B8%D1%80%D0%BC/2024/%D0%9E%D0%9F%D0%9E%D0%9F_2024_15.03.01_%D0%B8%D1%80%D0%BC_%D0%97.pdf#page=1)
+  - 2025, заочная — `З-25-МАШ-ирм-Б`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.03.01/%D0%B8%D1%80%D0%BC/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_15.03.01_%D0%B8%D1%80%D0%BC_%D0%97.pdf#page=1)
+  - 2026, заочная — `З-26-МАШ-ирм-Б`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.03.01/%D0%B8%D1%80%D0%BC/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_15.03.01_%D0%B8%D1%80%D0%BC_%D0%97.pdf#page=1)
+- **15.03.01 · Оборудование и технология сварочного производства**
+  - 2022, заочная — `З-22-МАШ-отсп-Б`. [Программа 2022](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.03.01/%D0%BE%D1%82%D1%81%D0%BF/2022/%D0%9E%D0%9F%D0%9E%D0%9F_2022_15.03.01_%D0%BE%D1%82%D1%81%D0%BF_%D0%97.pdf#page=1)
+  - 2023, заочная — `З-23-МАШ-отсп-Б`. [Программа 2023](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.03.01/%D0%BE%D1%82%D1%81%D0%BF/2023/%D0%9E%D0%9F%D0%9E%D0%9F_2023_15.03.01_%D0%BE%D1%82%D1%81%D0%BF_%D0%97.pdf#page=1)
+  - 2023, очная — `О-23-МАШ-отсп-Б`. [Программа 2023](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.03.01/%D0%BE%D1%82%D1%81%D0%BF/2023/%D0%9E%D0%9F%D0%9E%D0%9F_2023_15.03.01_%D0%BE%D1%82%D1%81%D0%BF_%D0%9E.pdf#page=1)
+  - 2024, заочная — `З-24-МАШ-отсп-Б`. [Программа 2024](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.03.01/%D0%BE%D1%82%D1%81%D0%BF/2024/%D0%9E%D0%9F%D0%9E%D0%9F_2024_15.03.01_%D0%BE%D1%82%D1%81%D0%BF_%D0%97.pdf#page=1)
+  - 2024, очная — `О-24-МАШ-отсп-Б`. [Программа 2024](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.03.01/%D0%BE%D1%82%D1%81%D0%BF/2024/%D0%9E%D0%9F%D0%9E%D0%9F_2024_15.03.01_%D0%BE%D1%82%D1%81%D0%BF_%D0%9E.pdf#page=1)
+  - 2025, заочная — `З-25-МАШ-отсп-Б`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.03.01/%D0%BE%D1%82%D1%81%D0%BF/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_15.03.01_%D0%BE%D1%82%D1%81%D0%BF_%D0%97.pdf#page=1)
+  - 2025, очная — `О-25-МАШ-отсп-Б`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.03.01/%D0%BE%D1%82%D1%81%D0%BF/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_15.03.01_%D0%BE%D1%82%D1%81%D0%BF_%D0%9E.pdf#page=1)
+  - 2026, заочная — `З-26-МАШ-отсп-Б`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.03.01/%D0%BE%D1%82%D1%81%D0%BF/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_15.03.01_%D0%BE%D1%82%D1%81%D0%BF_%D0%97.pdf#page=1)
+  - 2026, очная — `О-26-МАШ-отсп-Б`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.03.01/%D0%BE%D1%82%D1%81%D0%BF/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_15.03.01_%D0%BE%D1%82%D1%81%D0%BF_%D0%9E.pdf#page=1)
+- **15.03.01 · Прогрессивные технологии литья**
+  - 2022, заочная — `З-22-МАШ-птл-Б`. [Программа 2022](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.03.01/%D0%BF%D1%82%D0%BB/2022/%D0%9E%D0%9F%D0%9E%D0%9F_2022_15.03.01_%D0%BF%D1%82%D0%BB_%D0%97.pdf#page=1)
+  - 2023, заочная — `З-23-МАШ-птл-Б`. [Программа 2023](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.03.01/%D0%BF%D1%82%D0%BB/2023/%D0%9E%D0%9F%D0%9E%D0%9F_2023_15.03.01_%D0%BF%D1%82%D0%BB_%D0%97.pdf#page=1)
+  - 2024, заочная — `З-24-МАШ-птл-Б`. [Программа 2024](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.03.01/%D0%BF%D1%82%D0%BB/2024/%D0%9E%D0%9F%D0%9E%D0%9F_2024_15.03.01_%D0%BF%D1%82%D0%BB_%D0%97.pdf#page=1)
+  - 2025, заочная — `З-25-МАШ-птл-Б`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.03.01/%D0%BF%D1%82%D0%BB/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_15.03.01_%D0%BF%D1%82%D0%BB_%D0%97.pdf#page=1)
+  - 2026, заочная — `З-26-МАШ-птл-Б`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.03.01/%D0%BF%D1%82%D0%BB/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_15.03.01_%D0%BF%D1%82%D0%BB_%D0%97.pdf#page=1)
+- **15.04.01 · Современные технологии сварки, литья и реновации машин**
+  - 2025, заочная — `З-25-МАШ-тслр-М`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.04.01/%D1%82%D1%81%D0%BB%D1%80/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_15.04.01_%D1%82%D1%81%D0%BB%D1%80_%D0%97.pdf#page=1)
+  - 2025, очная — `О-25-МАШ-тслр-М`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.04.01/%D1%82%D1%81%D0%BB%D1%80/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_15.04.01_%D1%82%D1%81%D0%BB%D1%80_%D0%9E.pdf#page=1)
+  - 2026, заочная — `З-26-МАШ-тслр-М`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.04.01/%D1%82%D1%81%D0%BB%D1%80/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_15.04.01_%D1%82%D1%81%D0%BB%D1%80_%D0%97.pdf#page=1)
+  - 2026, очная — `О-26-МАШ-тслр-М`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.04.01/%D1%82%D1%81%D0%BB%D1%80/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_15.04.01_%D1%82%D1%81%D0%BB%D1%80_%D0%9E.pdf#page=1)
+- **2.5.22 · 2.5.22. Управление качеством продукции. Стандартизация. Организация производства**
+  - 2026, очная — `О-26-УКП-А`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/2.5.22/%D1%83%D0%BA%D0%BF/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_2.5.22_%D1%83%D0%BA%D0%BF_%D0%9E.pdf#page=1)
+- **2.6.17 · 2.6.17. Материаловедение**
+  - 2023, очная — `О-23-М-А`. [Программа 2023](https://www.tu-bryansk.ru/upload/sveden/education/eduop/2.6.17/%D0%BC/2023/%D0%9E%D0%9F%D0%9E%D0%9F_2023_2.6.17_%D0%BC_%D0%9E.pdf#page=1)
+  - 2026, очная — `О-26-М-А`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/2.6.17/%D0%BC/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_2.6.17_%D0%BC_%D0%9E.pdf#page=1)
+- **20.03.01 · Безопасность технологических процессов и производств**
+  - 2022, заочная — `З-22-ТБ-бтпп-Б`. [Программа 2022](https://www.tu-bryansk.ru/upload/sveden/education/eduop/20.03.01/%D0%B1%D1%82%D0%BF%D0%BF/2022/%D0%9E%D0%9F%D0%9E%D0%9F_2022_20.03.01_%D0%B1%D1%82%D0%BF%D0%BF_%D0%97.pdf#page=1)
+  - 2023, заочная — `З-23-ТБ-бтпп-Б`. [Программа 2023](https://www.tu-bryansk.ru/upload/sveden/education/eduop/20.03.01/%D0%B1%D1%82%D0%BF%D0%BF/2023/%D0%9E%D0%9F%D0%9E%D0%9F_2023_20.03.01_%D0%B1%D1%82%D0%BF%D0%BF_%D0%97.pdf#page=1)
+  - 2024, заочная — `З-24-ТБ-бттп-Б`. [Программа 2024](https://www.tu-bryansk.ru/upload/sveden/education/eduop/20.03.01/%D0%B1%D1%82%D0%BF%D0%BF/2024/%D0%9E%D0%9F%D0%9E%D0%9F_2024_20.03.01_%D0%B1%D1%82%D0%BF%D0%BF_%D0%97.pdf#page=1)
+  - 2024, очная — `О-24-ТБ-бтпп-Б`. [Программа 2024](https://www.tu-bryansk.ru/upload/sveden/education/eduop/20.03.01/%D0%B1%D1%82%D0%BF%D0%BF/2024/%D0%9E%D0%9F%D0%9E%D0%9F_2024_20.03.01_%D0%B1%D1%82%D0%BF%D0%BF_%D0%9E.pdf#page=1)
+  - 2025, заочная — `З-25-ТБ-бтпп-Б`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/20.03.01/%D0%B1%D1%82%D0%BF%D0%BF/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_20.03.01_%D0%B1%D1%82%D0%BF%D0%BF_%D0%97.pdf#page=1)
+  - 2025, очная — `О-25-ТБ-бтпп-Б`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/20.03.01/%D0%B1%D1%82%D0%BF%D0%BF/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_20.03.01_%D0%B1%D1%82%D0%BF%D0%BF_%D0%9E.pdf#page=1)
+  - 2026, заочная — `З-26-ТБ-бтпп-Б`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/20.03.01/%D0%B1%D1%82%D0%BF%D0%BF/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_20.03.01_%D0%B1%D1%82%D0%BF%D0%BF_%D0%97.pdf#page=1)
+  - 2026, очная — `О-26-ТБ-бтпп-Б`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/20.03.01/%D0%B1%D1%82%D0%BF%D0%BF/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_20.03.01_%D0%B1%D1%82%D0%BF%D0%BF_%D0%9E.pdf#page=1)
+- **20.04.01 · Безопасность технологических процессов и производств**
+  - 2025, очная — `О-25-ТБ-бтпп-М`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/20.04.01/%D0%B1%D1%82%D0%BF%D0%BF/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_20.04.01_%D0%B1%D1%82%D0%BF%D0%BF_%D0%9E.pdf#page=1)
+  - 2026, заочная — `З-26-ТБ-бтпп-М`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/20.04.01/%D0%B1%D1%82%D0%BF%D0%BF/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_20.04.01_%D0%B1%D1%82%D0%BF%D0%BF_%D0%97.pdf#page=1)
+  - 2026, очная — `О-26-ТБ-бтпп-М`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/20.04.01/%D0%B1%D1%82%D0%BF%D0%BF/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_20.04.01_%D0%B1%D1%82%D0%BF%D0%BF_%D0%9E.pdf#page=1)
+- **27.03.01 · Стандартизация и метрологическое обеспечение производства**
+  - 2023, очная — `О-23-СИМ-смоп-Б`. [Программа 2023](https://www.tu-bryansk.ru/upload/sveden/education/eduop/27.03.01/%D1%81%D0%BC%D0%BE%D0%BF/2023/%D0%9E%D0%9F%D0%9E%D0%9F_2023_27.03.01_%D1%81%D0%BC%D0%BE%D0%BF_%D0%9E.pdf#page=1)
+  - 2024, очная — `О-24-СИМ-смоп-Б`. [Программа 2024](https://www.tu-bryansk.ru/upload/sveden/education/eduop/27.03.01/%D1%81%D0%BC%D0%BE%D0%BF/2024/%D0%9E%D0%9F%D0%9E%D0%9F_2024_27.03.01_%D1%81%D0%BC%D0%BE%D0%BF_%D0%9E.pdf#page=1)
+  - 2025, очная — `О-25-СИМ-смоп-Б`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/27.03.01/%D1%81%D0%BC%D0%BE%D0%BF/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_27.03.01_%D1%81%D0%BC%D0%BE%D0%BF_%D0%9E.pdf#page=1)
+  - 2026, очная — `О-26-СиМ-смоп-Б`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/27.03.01/%D1%81%D0%BC%D0%BE%D0%BF/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_27.03.01_%D1%81%D0%BC%D0%BE%D0%BF_%D0%9E.pdf#page=1)
+- **27.03.01 · Управление качеством в производственно-технологических системах**
+  - 2025, очная — `О-25-СиМ-укс-Б`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/27.03.01/%D1%83%D0%BA%D1%81/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_27.03.01_%D1%83%D0%BA%D1%81_%D0%9E.pdf#page=1)
+- **27.03.02 · Управление качеством в производственно-технологических системах**
+  - 2023, очная — `О-23-УК-укс-Б`. [Программа 2023](https://www.tu-bryansk.ru/upload/sveden/education/eduop/27.03.02/%D1%83%D0%BA%D1%81/2023/%D0%9E%D0%9F%D0%9E%D0%9F_2023_27.03.02_%D1%83%D0%BA%D1%81_%D0%9E.pdf#page=1)
+  - 2024, заочная — `З-24-УК-укс-Б`. [Программа 2024](https://www.tu-bryansk.ru/upload/sveden/education/eduop/27.03.02/%D1%83%D0%BA%D1%81/2024/%D0%9E%D0%9F%D0%9E%D0%9F_2024_27.03.02_%D1%83%D0%BA%D1%81_%D0%97.pdf#page=1)
+  - 2025, заочная — `З-25-УК-укс-Б`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/27.03.02/%D1%83%D0%BA%D1%81/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_27.03.02_%D1%83%D0%BA%D1%81_%D0%97.pdf#page=1)
+  - 2026, заочная — `З-26-УК-укс-Б`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/27.03.02/%D1%83%D0%BA%D1%81/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_27.03.02_%D1%83%D0%BA%D1%81_%D0%97.pdf#page=1)
+  - 2026, очная — `О-26-УК-укс-Б`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/27.03.02/%D1%83%D0%BA%D1%81/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_27.03.02_%D1%83%D0%BA%D1%81_%D0%9E.pdf#page=1)
+- **27.04.01 · Стандартизация и метрологическое обеспечение производства**
+  - 2025, очная — `О-25-СиМ-смоп-М`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/27.04.01/%D1%81%D0%BC%D0%BE%D0%BF/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_27.04.01_%D1%81%D0%BC%D0%BE%D0%BF_%D0%9E.pdf#page=1)
+  - 2026, очная — `О-26-СиМ-смоп-М`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/27.04.01/%D1%81%D0%BC%D0%BE%D0%BF/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_27.04.01_%D1%81%D0%BC%D0%BE%D0%BF_%D0%9E.pdf#page=1)
+- **27.04.02 · Управление качеством в производственно-технологических системах**
+  - 2025, очная — `О-25-УК-укс-М`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/27.04.02/%D1%83%D0%BA%D1%81/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_27.04.02_%D1%83%D0%BA%D1%81_%D0%9E.pdf#page=1)
+  - 2026, очная — `О-26-УК-укс-М`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/27.04.02/%D1%83%D0%BA%D1%81/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_27.04.02_%D1%83%D0%BA%D1%81_%D0%9E.pdf#page=1)
+
+## Учебно-научный технологический институт (УНТИ) — 73
+
+- **15.03.02 · Оборудование, инструмент и процессы механической и физико-технической обработки**
+  - 2022, заочная — `З-22-ТМО-оип-Б`. [Программа 2022](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.03.02/%D0%BE%D0%B8%D0%BF/2022/%D0%9E%D0%9F%D0%9E%D0%9F_2022_15.03.02_%D0%BE%D0%B8%D0%BF_%D0%97.pdf#page=1)
+  - 2023, заочная — `З-23-ТМО-оип-Б`. [Программа 2023](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.03.02/%D0%BE%D0%B8%D0%BF/2023/%D0%9E%D0%9F%D0%9E%D0%9F_2023_15.03.02_%D0%BE%D0%B8%D0%BF_%D0%97.pdf#page=1)
+  - 2023, очная — `О-23-ТМО-оип-Б`. [Программа 2023](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.03.02/%D0%BE%D0%B8%D0%BF/2023/%D0%9E%D0%9F%D0%9E%D0%9F_2023_15.03.02_%D0%BE%D0%B8%D0%BF_%D0%9E.pdf#page=1)
+  - 2024, очная — `О-24-ТМО-оип-Б`. [Программа 2024](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.03.02/%D0%BE%D0%B8%D0%BF/2024/%D0%9E%D0%9F%D0%9E%D0%9F_2024_15.03.02_%D0%BE%D0%B8%D0%BF_%D0%9E.pdf#page=1)
+  - 2025, заочная — `З-25-ТМО-оип-Б`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.03.02/%D0%BE%D0%B8%D0%BF/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_15.03.02_%D0%BE%D0%B8%D0%BF_%D0%97.pdf#page=1)
+  - 2025, очная — `О-25-ТМО-оип-Б`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.03.02/%D0%BE%D0%B8%D0%BF/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_15.03.02_%D0%BE%D0%B8%D0%BF_%D0%9E.pdf#page=1)
+  - 2026, заочная — `З-26-ТМО-оип-Б`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.03.02/%D0%BE%D0%B8%D0%BF/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_15.03.02_%D0%BE%D0%B8%D0%BF_%D0%97.pdf#page=1)
+  - 2026, очная — `О-26-ТМО-оип-Б`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.03.02/%D0%BE%D0%B8%D0%BF/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_15.03.02_%D0%BE%D0%B8%D0%BF_%D0%9E.pdf#page=1)
+- **15.03.04 · Автоматизация и управление технологическими процессами и производствами**
+  - 2022, заочная — `З-22-АТП-1-аутп-Б`, `З-22-АТП-2-аутп-Б`. [Программа 2022](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.03.04/%D0%B0%D1%83%D1%82%D0%BF/2022/%D0%9E%D0%9F%D0%9E%D0%9F_2022_15.03.04_%D0%B0%D1%83%D1%82%D0%BF_%D0%97.pdf#page=1)
+  - 2023, заочная — `З-23-АТП-1-аутп-Б`, `З-23-АТП-2-аутп-Б`. [Программа 2023](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.03.04/%D0%B0%D1%83%D1%82%D0%BF/2023/%D0%9E%D0%9F%D0%9E%D0%9F_2023_15.03.04_%D0%B0%D1%83%D1%82%D0%BF_%D0%97.pdf#page=1)
+  - 2023, очная — `О-23-АТП-аутп-Б`. [Программа 2023](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.03.04/%D0%B0%D1%83%D1%82%D0%BF/2023/%D0%9E%D0%9F%D0%9E%D0%9F_2023_15.03.04_%D0%B0%D1%83%D1%82%D0%BF_%D0%9E.pdf#page=1)
+  - 2024, заочная — `З-24-АТП-аутп-Б`. [Программа 2024](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.03.04/%D0%B0%D1%83%D1%82%D0%BF/2024/%D0%9E%D0%9F%D0%9E%D0%9F_2024_15.03.04_%D0%B0%D1%83%D1%82%D0%BF_%D0%97.pdf#page=1)
+  - 2024, очная — `О-24-АТП-аутп-Б`. [Программа 2024](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.03.04/%D0%B0%D1%83%D1%82%D0%BF/2024/%D0%9E%D0%9F%D0%9E%D0%9F_2024_15.03.04_%D0%B0%D1%83%D1%82%D0%BF_%D0%9E.pdf#page=1)
+  - 2025, заочная — `З-25-АТП-1-аутп-Б`, `З-25-АТП-2-аутп-Б`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.03.04/%D0%B0%D1%83%D1%82%D0%BF/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_15.03.04_%D0%B0%D1%83%D1%82%D0%BF_%D0%97.pdf#page=1)
+  - 2025, очная — `О-25-АТП-аутп-Б`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.03.04/%D0%B0%D1%83%D1%82%D0%BF/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_15.03.04_%D0%B0%D1%83%D1%82%D0%BF_%D0%9E.pdf#page=1)
+  - 2026, заочная — `З-26-АТП-1-аутп-Б`, `З-26-АТП-2-аутп-Б`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.03.04/%D0%B0%D1%83%D1%82%D0%BF/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_15.03.04_%D0%B0%D1%83%D1%82%D0%BF_%D0%97.pdf#page=1)
+  - 2026, очная — `О-26-АТП-аутп-Б`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.03.04/%D0%B0%D1%83%D1%82%D0%BF/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_15.03.04_%D0%B0%D1%83%D1%82%D0%BF_%D0%9E.pdf#page=1)
+- **15.03.05 · Технология машиностроения**
+  - 2022, заочная — `З-22-КТО-тм-Б`. [Программа 2022](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.03.05/%D1%82%D0%BC/2022/%D0%9E%D0%9F%D0%9E%D0%9F_2022_15.03.05_%D1%82%D0%BC_%D0%97.pdf#page=1)
+  - 2023, очная — `О-23-КТО-тм-Б`. [Программа 2023](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.03.05/%D1%82%D0%BC/2023/%D0%9E%D0%9F%D0%9E%D0%9F_2023_15.03.05_%D1%82%D0%BC_%D0%9E.pdf#page=1)
+  - 2024, заочная — `З-24-КТО-тм-Б`. [Программа 2024](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.03.05/%D1%82%D0%BC/2024/%D0%9E%D0%9F%D0%9E%D0%9F_2024_15.03.05_%D1%82%D0%BC_%D0%97.pdf#page=1)
+  - 2024, очная — `О-24-КТО-тм-Б`. [Программа 2024](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.03.05/%D1%82%D0%BC/2024/%D0%9E%D0%9F%D0%9E%D0%9F_2024_15.03.05_%D1%82%D0%BC_%D0%9E.pdf#page=1)
+  - 2024, очно-заочная — `ОЗ-24-КТО-тм-Б`. [Программа 2024](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.03.05/%D1%82%D0%BC/2024/%D0%9E%D0%9F%D0%9E%D0%9F_2024_15.03.05_%D1%82%D0%BC_%D0%9E%D0%97.pdf#page=1)
+  - 2025, заочная — `З-25-КТО-тм-Б`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.03.05/%D1%82%D0%BC/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_15.03.05_%D1%82%D0%BC_%D0%97.pdf#page=1)
+  - 2025, очная — `О-25-КТО-тм-Б`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.03.05/%D1%82%D0%BC/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_15.03.05_%D1%82%D0%BC_%D0%9E.pdf#page=1)
+  - 2025, очно-заочная — `ОЗ-25-КТО-тм-Б`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.03.05/%D1%82%D0%BC/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_15.03.05_%D1%82%D0%BC_%D0%9E%D0%97.pdf#page=1)
+  - 2026, заочная — `З-26-КТО-тм-Б`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.03.05/%D1%82%D0%BC/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_15.03.05_%D1%82%D0%BC_%D0%97.pdf#page=1)
+  - 2026, очная — `О-26-КТО-тм-Б`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.03.05/%D1%82%D0%BC/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_15.03.05_%D1%82%D0%BC_%D0%9E.pdf#page=1)
+  - 2026, очно-заочная — `ОЗ-26-КТО-тм-Б`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.03.05/%D1%82%D0%BC/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_15.03.05_%D1%82%D0%BC_%D0%9E%D0%97.pdf#page=1)
+- **15.03.06 · Мехатроника**
+  - 2024, очная — `О-24-МиР-мхт-Б`. [Программа 2024](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.03.06/%D0%BC%D1%85%D1%82/2024/%D0%9E%D0%9F%D0%9E%D0%9F_2024_15.03.06_%D0%BC%D1%85%D1%82_%D0%9E.pdf#page=1)
+  - 2025, очная — `О-25-МиР-мхт-Б`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.03.06/%D0%BC%D1%85%D1%82/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_15.03.06_%D0%BC%D1%85%D1%82_%D0%9E.pdf#page=1)
+  - 2026, очная — `О-26-МиР-мхт-Б`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.03.06/%D0%BC%D1%85%D1%82/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_15.03.06_%D0%BC%D1%85%D1%82_%D0%9E.pdf#page=1)
+- **15.04.02 · Технологическое оборудование и инструментальная техника**
+  - 2025, очная — `О-25-ТМО-тоит-М`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.04.02/%D1%82%D0%BE%D0%B8%D1%82/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_15.04.02_%D1%82%D0%BE%D0%B8%D1%82_%D0%9E.pdf#page=1)
+  - 2026, очная — `О-26-ТМО-тоит-М`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.04.02/%D1%82%D0%BE%D0%B8%D1%82/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_15.04.02_%D1%82%D0%BE%D0%B8%D1%82_%D0%9E.pdf#page=1)
+- **15.04.04 · Автоматизация и управление технологическими процессами и производствами**
+  - 2025, заочная — `З-25-АТП-аутп-М`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.04.04/%D0%B0%D1%83%D1%82%D0%BF/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_15.04.04_%D0%B0%D1%83%D1%82%D0%BF_%D0%97.pdf#page=1)
+  - 2025, очная — `О-25-АТП-аутп-М`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.04.04/%D0%B0%D1%83%D1%82%D0%BF/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_15.04.04_%D0%B0%D1%83%D1%82%D0%BF_%D0%9E.pdf#page=1)
+  - 2026, заочная — `З-26-АТП-аутп-М`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.04.04/%D0%B0%D1%83%D1%82%D0%BF/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_15.04.04_%D0%B0%D1%83%D1%82%D0%BF_%D0%97.pdf#page=1)
+  - 2026, очная — `О-26-АТП-аутп-М`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.04.04/%D0%B0%D1%83%D1%82%D0%BF/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_15.04.04_%D0%B0%D1%83%D1%82%D0%BF_%D0%9E.pdf#page=1)
+- **15.04.05 · Технология машиностроения**
+  - 2025, очная — `О-25-КТО-тм-М`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.04.05/%D1%82%D0%BC/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_15.04.05_%D1%82%D0%BC_%D0%9E.pdf#page=1)
+  - 2025, очно-заочная — `ОЗ-25-КТО-тм-М`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.04.05/%D1%82%D0%BC/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_15.04.05_%D1%82%D0%BC_%D0%9E%D0%97.pdf#page=1)
+  - 2026, очная — `О-26-КТО-тм-М`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.04.05/%D1%82%D0%BC/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_15.04.05_%D1%82%D0%BC_%D0%9E.pdf#page=1)
+  - 2026, очно-заочная — `ОЗ-26-КТО-тм-М`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.04.05/%D1%82%D0%BC/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_15.04.05_%D1%82%D0%BC_%D0%9E%D0%97.pdf#page=1)
+- **15.05.01 · Проектирование технологических комплексов механосборочных производств**
+  - 2021, заочная — `З-21-ПТМК-1-птк-С`, `З-21-ПТМК-2-птк-С`. [Программа 2021](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.05.01/%D0%BF%D1%82%D0%BA/2021/%D0%9E%D0%9F%D0%9E%D0%9F_2021_15.05.01_%D0%BF%D1%82%D0%BA_%D0%97.pdf#page=1)
+  - 2022, заочная — `З-22-ПТМК-1-птк-С`, `З-22-ПТМК-2-птк-С`. [Программа 2022](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.05.01/%D0%BF%D1%82%D0%BA/2022/%D0%9E%D0%9F%D0%9E%D0%9F_2022_15.05.01_%D0%BF%D1%82%D0%BA_%D0%97.pdf#page=1)
+  - 2023, заочная — `З-23-ПТМК-1-птк-С`, `З-23-ПТМК-2-птк-С`. [Программа 2023](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.05.01/%D0%BF%D1%82%D0%BA/2023/%D0%9E%D0%9F%D0%9E%D0%9F_2023_15.05.01_%D0%BF%D1%82%D0%BA_%D0%97.pdf#page=1)
+  - 2024, заочная — `З-24-ПТМК-1-птк-С`, `З-24-ПТМК-2-птк-С`. [Программа 2024](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.05.01/%D0%BF%D1%82%D0%BA/2024/%D0%9E%D0%9F%D0%9E%D0%9F_2024_15.05.01_%D0%BF%D1%82%D0%BA_%D0%97.pdf#page=1)
+  - 2025, заочная — `З-25-ПТМК-1-птк-С`, `З-25-ПТМК-2-птк-С`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.05.01/%D0%BF%D1%82%D0%BA/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_15.05.01_%D0%BF%D1%82%D0%BA_%D0%97.pdf#page=1)
+  - 2026, заочная — `З-26-ПТМК-птк-С`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.05.01/%D0%BF%D1%82%D0%BA/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_15.05.01_%D0%BF%D1%82%D0%BA_%D0%97.pdf#page=1)
+- **15.05.01 · Проектирование технологических машин и комплексов**
+  - 2022, очная — `О-22-ПТМК-птмк-С`. [Программа 2022](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.05.01/%D0%BF%D1%82%D0%BC%D0%BA/2022/%D0%9E%D0%9F%D0%9E%D0%9F_2022_15.05.01_%D0%BF%D1%82%D0%BC%D0%BA_%D0%9E.pdf#page=1)
+  - 2023, очная — `О-23-ПТМК-птмк-С`. [Программа 2023](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.05.01/%D0%BF%D1%82%D0%BC%D0%BA/2023/%D0%9E%D0%9F%D0%9E%D0%9F_2023_15.05.01_%D0%BF%D1%82%D0%BC%D0%BA_%D0%9E.pdf#page=1)
+  - 2024, очная — `О-24-ПТМК-птмк-С`. [Программа 2024](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.05.01/%D0%BF%D1%82%D0%BC%D0%BA/2024/%D0%9E%D0%9F%D0%9E%D0%9F_2024_15.05.01_%D0%BF%D1%82%D0%BC%D0%BA_%D0%9E.pdf#page=1)
+  - 2025, очная — `О-25-ПТМК-птмк-С`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.05.01/%D0%BF%D1%82%D0%BC%D0%BA/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_15.05.01_%D0%BF%D1%82%D0%BC%D0%BA_%D0%9E.pdf#page=1)
+  - 2026, очная — `О-26-ПТМК-птмк-С`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.05.01/%D0%BF%D1%82%D0%BC%D0%BA/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_15.05.01_%D0%BF%D1%82%D0%BC%D0%BA_%D0%9E.pdf#page=1)
+- **2.3.3 · 2.3.3. Автоматизация и управление технологическими процессами и производствами**
+  - 2026, очная — `О-26-АУТП-А`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/2.3.3/%D0%B0%D1%83%D1%82%D0%BF/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_2.3.3_%D0%B0%D1%83%D1%82%D0%BF_%D0%9E.pdf#page=1)
+- **2.5.5 · 2.5.5. Технология и оборудование механической и физико-технической обработки**
+  - 2026, очная — `О-26-ТОМО-А`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/2.5.5/%D1%82%D0%BE%D0%BC%D0%BE/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_2.5.5_%D1%82%D0%BE%D0%BC%D0%BE_%D0%9E.pdf#page=1)
+- **2.5.6 · 2.5.6. Технология машиностроения**
+  - 2023, очная — `О-23-ТМ-А`. [Программа 2023](https://www.tu-bryansk.ru/upload/sveden/education/eduop/2.5.6/%D1%82%D0%BC/2023/%D0%9E%D0%9F%D0%9E%D0%9F_2023_2.5.6_%D1%82%D0%BC_%D0%9E.pdf#page=1)
+  - 2026, очная — `О-26-ТМ-А`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/2.5.6/%D1%82%D0%BC/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_2.5.6_%D1%82%D0%BC_%D0%9E.pdf#page=1)
+- **22.03.01 · Аддитивные технологии и материаловедение**
+  - 2023, очная — `О-23-МТМ-атм-Б`. [Программа 2023](https://www.tu-bryansk.ru/upload/sveden/education/eduop/22.03.01/%D0%B0%D1%82%D0%BC/2023/%D0%9E%D0%9F%D0%9E%D0%9F_2023_22.03.01_%D0%B0%D1%82%D0%BC_%D0%9E.pdf#page=1)
+  - 2024, очная — `О-24-МТМ-атм-Б`. [Программа 2024](https://www.tu-bryansk.ru/upload/sveden/education/eduop/22.03.01/%D0%B0%D1%82%D0%BC/2024/%D0%9E%D0%9F%D0%9E%D0%9F_2024_22.03.01_%D0%B0%D1%82%D0%BC_%D0%9E.pdf#page=1)
+  - 2025, очная — `О-25-МТМ-атм-Б`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/22.03.01/%D0%B0%D1%82%D0%BC/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_22.03.01_%D0%B0%D1%82%D0%BC_%D0%9E.pdf#page=1)
+  - 2026, очная — `О-26-МТМ-атм-Б`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/22.03.01/%D0%B0%D1%82%D0%BC/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_22.03.01_%D0%B0%D1%82%D0%BC_%D0%9E.pdf#page=1)
+- **22.04.01 · Аддитивные технологии и материаловедение**
+  - 2025, очная — `О-25-МТМ-атм-М`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/22.04.01/%D0%B0%D1%82%D0%BC/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_22.04.01_%D0%B0%D1%82%D0%BC_%D0%9E.pdf#page=1)
+  - 2026, очная — `О-26-МТМ-атм-М`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/22.04.01/%D0%B0%D1%82%D0%BC/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_22.04.01_%D0%B0%D1%82%D0%BC_%D0%9E.pdf#page=1)
+- **23.03.03 · Эксплуатация строительных и дорожных машин**
+  - 2023, заочная — `З-23-ЭТТК-эсдм-Б`. [Программа 2023](https://www.tu-bryansk.ru/upload/sveden/education/eduop/23.03.03/%D1%8D%D1%81%D0%B4%D0%BC/2023/%D0%9E%D0%9F%D0%9E%D0%9F_2023_23.03.03_%D1%8D%D1%81%D0%B4%D0%BC_%D0%97.pdf#page=1)
+- **27.03.04 · Управление и диспетчеризация нефтегазового оборудования**
+  - 2024, очная — `О-24-УТС-удно-Б`. [Программа 2024](https://www.tu-bryansk.ru/upload/sveden/education/eduop/27.03.04/%D1%83%D0%B4%D0%BD%D0%BE/2024/%D0%9E%D0%9F%D0%9E%D0%9F_2024_27.03.04_%D1%83%D0%B4%D0%BD%D0%BE_%D0%9E.pdf#page=1)
+
+## Учебно-научный институт транспорта (УНИТ) — 65
+
+- **09.03.03 · Компьютерное проектирование и дизайн**
+  - 2025, очная — `О-25-ПИ-кпд-Б`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.03.03/%D0%BA%D0%BF%D0%B4/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_09.03.03_%D0%BA%D0%BF%D0%B4_%D0%9E.pdf#page=1)
+  - 2026, заочная — `З-26-ПИ-кпд-Б`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.03.03/%D0%BA%D0%BF%D0%B4/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_09.03.03_%D0%BA%D0%BF%D0%B4_%D0%97.pdf#page=1)
+  - 2026, очная — `О-26-ПИ-кпд-Б`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/09.03.03/%D0%BA%D0%BF%D0%B4/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_09.03.03_%D0%BA%D0%BF%D0%B4_%D0%9E.pdf#page=1)
+- **11.03.01 · Радиотехнические системы и управление беспилотными транспортными средствами**
+  - 2025, очная — `О-25-РАД-1-рсу-Б`, `О-25-РАД-2-рсу-Б`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/11.03.01/%D1%80%D1%81%D1%83/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_11.03.01_%D1%80%D1%81%D1%83_%D0%9E.pdf#page=1)
+  - 2026, заочная — `З-26-РАД-рсу-Б`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/11.03.01/%D1%80%D1%81%D1%83/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_11.03.01_%D1%80%D1%81%D1%83_%D0%97.pdf#page=1)
+  - 2026, очная — `О-26-РАД-рсу-Б`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/11.03.01/%D1%80%D1%81%D1%83/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_11.03.01_%D1%80%D1%81%D1%83_%D0%9E.pdf#page=1)
+- **11.03.04 · Интеллектуальная электроника и системы управления наземного транспорта**
+  - 2026, очная — `О-26-ЭиН-эсут-Б`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/11.03.04/%D1%8D%D1%81%D1%83%D1%82/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_11.03.04_%D1%8D%D1%81%D1%83%D1%82_%D0%9E.pdf#page=1)
+- **11.04.04 · Силовая преобразовательная техника наземного транспорта**
+  - 2026, очная — `О-26-ЭиН-спт-М`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/11.04.04/%D1%81%D0%BF%D1%82/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_11.04.04_%D1%81%D0%BF%D1%82_%D0%9E.pdf#page=1)
+- **13.03.02 · Интеллектуальный электропривод и системы управления транспортных средств и промышленных установок**
+  - 2025, очная — `О-25-ЭиЭ-иэсу-Б`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/13.03.02/%D0%B8%D1%8D%D1%81%D1%83/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_13.03.02_%D0%B8%D1%8D%D1%81%D1%83_%D0%9E.pdf#page=1)
+  - 2026, очная — `О-26-ЭиЭ-иэсу-Б`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/13.03.02/%D0%B8%D1%8D%D1%81%D1%83/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_13.03.02_%D0%B8%D1%8D%D1%81%D1%83_%D0%9E.pdf#page=1)
+- **13.03.02 · Энергоэффективные силовые установки наземного транспорта**
+  - 2025, очная — `О-25-ЭиЭ-эсу-Б`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/13.03.02/%D1%8D%D1%81%D1%83/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_13.03.02_%D1%8D%D1%81%D1%83_%D0%9E.pdf#page=1)
+  - 2026, заочная — `З-26-ЭиЭ-эсу-Б`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/13.03.02/%D1%8D%D1%81%D1%83/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_13.03.02_%D1%8D%D1%81%D1%83_%D0%97.pdf#page=1)
+  - 2026, очная — `О-26-ЭиЭ-эсу-Б`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/13.03.02/%D1%8D%D1%81%D1%83/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_13.03.02_%D1%8D%D1%81%D1%83_%D0%9E.pdf#page=1)
+- **13.03.03 · Двигатели внутреннего сгорания**
+  - 2025, заочная — `З-25-ЭМ-двс-Б`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/13.03.03/%D0%B4%D0%B2%D1%81/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_13.03.03_%D0%B4%D0%B2%D1%81_%D0%97.pdf#page=1)
+- **13.03.03 · Трубопроводный транспорт нефти и нефтепродуктов**
+  - 2022, заочная — `З-22-ЭМ-ттн-Б`. [Программа 2022](https://www.tu-bryansk.ru/upload/sveden/education/eduop/13.03.03/%D1%82%D1%82%D0%BD/2022/%D0%9E%D0%9F%D0%9E%D0%9F_2022_13.03.03_%D1%82%D1%82%D0%BD_%D0%97.pdf#page=1)
+- **13.03.03 · Трубопроводный транспорт нефти, газа и нефтепродуктов**
+  - 2023, заочная — `З-23-ЭМ-ттнг-Б`. [Программа 2023](https://www.tu-bryansk.ru/upload/sveden/education/eduop/13.03.03/%D1%82%D1%82%D0%BD%D0%B3/2023/%D0%9E%D0%9F%D0%9E%D0%9F_2023_13.03.03_%D1%82%D1%82%D0%BD%D0%B3_%D0%97.pdf#page=1)
+  - 2023, очная — `О-23-ЭМ-ттнг-Б`. [Программа 2023](https://www.tu-bryansk.ru/upload/sveden/education/eduop/13.03.03/%D1%82%D1%82%D0%BD%D0%B3/2023/%D0%9E%D0%9F%D0%9E%D0%9F_2023_13.03.03_%D1%82%D1%82%D0%BD%D0%B3_%D0%9E.pdf#page=1)
+  - 2024, заочная — `З-24-ЭМ-ттнг-Б`. [Программа 2024](https://www.tu-bryansk.ru/upload/sveden/education/eduop/13.03.03/%D1%82%D1%82%D0%BD%D0%B3/2024/%D0%9E%D0%9F%D0%9E%D0%9F_2024_13.03.03_%D1%82%D1%82%D0%BD%D0%B3_%D0%97.pdf#page=1)
+  - 2024, очная — `О-24-ЭМ-ттнг-Б`. [Программа 2024](https://www.tu-bryansk.ru/upload/sveden/education/eduop/13.03.03/%D1%82%D1%82%D0%BD%D0%B3/2024/%D0%9E%D0%9F%D0%9E%D0%9F_2024_13.03.03_%D1%82%D1%82%D0%BD%D0%B3_%D0%9E.pdf#page=1)
+- **13.04.02 · Интеллектуальный электропривод транспортных систем, технологических комплексов и промышленных установок**
+  - 2026, очная — `О-26-ЭиЭ-иэтс-М`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/13.04.02/%D0%B8%D1%8D%D1%82%D1%81/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_13.04.02_%D0%B8%D1%8D%D1%82%D1%81_%D0%9E.pdf#page=1)
+- **13.04.02 · Электрический привод и автоматика механизмов и технологических комплексов**
+  - 2025, очная — `О-25-ЭиЭ-эпа-М`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/13.04.02/%D1%8D%D0%BF%D0%B0/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_13.04.02_%D1%8D%D0%BF%D0%B0_%D0%9E.pdf#page=1)
+- **13.04.03 · Двигатели внутреннего сгорания**
+  - 2025, заочная — `З-25-ЭМ-двс-М`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/13.04.03/%D0%B4%D0%B2%D1%81/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_13.04.03_%D0%B4%D0%B2%D1%81_%D0%97.pdf#page=1)
+  - 2026, заочная — `З-26-ЭМ-двс-М`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/13.04.03/%D0%B4%D0%B2%D1%81/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_13.04.03_%D0%B4%D0%B2%D1%81_%D0%97.pdf#page=1)
+- **15.03.03 · Динамика и прочность машин, приборов и аппаратуры**
+  - 2023, очная — `О-23-ПМ-1-дпм-Б`. [Программа 2023](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.03.03/%D0%B4%D0%BF%D0%BC/2023/%D0%9E%D0%9F%D0%9E%D0%9F_2023_15.03.03_%D0%B4%D0%BF%D0%BC_%D0%9E.pdf#page=1)
+- **15.03.03 · Механика беспилотных транспортных систем**
+  - 2025, очная — `О-25-ПМ-мбтс-Б`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.03.03/%D0%BC%D0%B1%D1%82%D1%81/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_15.03.03_%D0%BC%D0%B1%D1%82%D1%81_%D0%9E.pdf#page=1)
+- **15.03.03 · Программное обеспечение инженерных исследований**
+  - 2024, очная — `О-24-ПМ-поии-Б`. [Программа 2024](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.03.03/%D0%BF%D0%BE%D0%B8%D0%B8/2024/%D0%9E%D0%9F%D0%9E%D0%9F_2024_15.03.03_%D0%BF%D0%BE%D0%B8%D0%B8_%D0%9E.pdf#page=1)
+- **15.04.03 · Программное и математическое обеспечение инженерных исследований**
+  - 2025, очная — `О-25-ПМ-пмо-М`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.04.03/%D0%BF%D0%BC%D0%BE/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_15.04.03_%D0%BF%D0%BC%D0%BE_%D0%9E.pdf#page=1)
+  - 2026, очная — `О-26-ПМ-пмо-М`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/15.04.03/%D0%BF%D0%BC%D0%BE/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_15.04.03_%D0%BF%D0%BC%D0%BE_%D0%9E.pdf#page=1)
+- **2.5.11 · 2.5.11. Наземные транспортно-технологические средства и комплексы**
+  - 2023, очная — `О-23-НТТС-А`. [Программа 2023](https://www.tu-bryansk.ru/upload/sveden/education/eduop/2.5.11/%D0%BD%D1%82%D1%82%D1%81/2023/%D0%9E%D0%9F%D0%9E%D0%9F_2023_2.5.11_%D0%BD%D1%82%D1%82%D1%81_%D0%9E.pdf#page=1)
+- **2.9.3 · 2.9.3. Подвижной состав железных дорог, тяга поездов и электрификация**
+  - 2023, очная — `О-23-ПСЖД-А`. [Программа 2023](https://www.tu-bryansk.ru/upload/sveden/education/eduop/2.9.3/%D0%BF%D1%81%D0%B6%D0%B4/2023/%D0%9E%D0%9F%D0%9E%D0%9F_2023_2.9.3_%D0%BF%D1%81%D0%B6%D0%B4_%D0%9E.pdf#page=1)
+  - 2026, очная — `О-26-ПСЖД-А`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/2.9.3/%D0%BF%D1%81%D0%B6%D0%B4/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_2.9.3_%D0%BF%D1%81%D0%B6%D0%B4_%D0%9E.pdf#page=1)
+- **23.03.01 · Аналитика для цифровой трансформации на транспорте**
+  - 2025, очная — `О-25-ТТП-ацтт-Б`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/23.03.01/%D0%B0%D1%86%D1%82%D1%82/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_23.03.01_%D0%B0%D1%86%D1%82%D1%82_%D0%9E.pdf#page=1)
+  - 2026, очная — `О-26-ТТП-ацтт-Б`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/23.03.01/%D0%B0%D1%86%D1%82%D1%82/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_23.03.01_%D0%B0%D1%86%D1%82%D1%82_%D0%9E.pdf#page=1)
+- **23.04.01 · Организация перевозок на автомобильном транспорте**
+  - 2025, очная — `О-25-ТТП-опат-М`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/23.04.01/%D0%BE%D0%BF%D0%B0%D1%82/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_23.04.01_%D0%BE%D0%BF%D0%B0%D1%82_%D0%9E.pdf#page=1)
+- **23.04.01 · Организация транспортных процессов и эксплуатации подвижного состава на основе технологий искусственного интеллекта**
+  - 2026, очная — `О-26-ТТП-отп-М`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/23.04.01/%D0%BE%D1%82%D0%BF/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_23.04.01_%D0%BE%D1%82%D0%BF_%D0%9E.pdf#page=1)
+- **23.05.01 · Автомобильная техника в транспортных технологиях**
+  - 2022, заочная — `З-22-НТТС-аттт-С`. [Программа 2022](https://www.tu-bryansk.ru/upload/sveden/education/eduop/23.05.01/%D0%B0%D1%82%D1%82%D1%82/2022/%D0%9E%D0%9F%D0%9E%D0%9F_2022_23.05.01_%D0%B0%D1%82%D1%82%D1%82_%D0%97.pdf#page=1)
+  - 2022, очная — `О-22-НТТС-аттт-С`. [Программа 2022](https://www.tu-bryansk.ru/upload/sveden/education/eduop/23.05.01/%D0%B0%D1%82%D1%82%D1%82/2022/%D0%9E%D0%9F%D0%9E%D0%9F_2022_23.05.01_%D0%B0%D1%82%D1%82%D1%82_%D0%9E.pdf#page=1)
+  - 2023, заочная — `З-23-НТТС-аттт-С`. [Программа 2023](https://www.tu-bryansk.ru/upload/sveden/education/eduop/23.05.01/%D0%B0%D1%82%D1%82%D1%82/2023/%D0%9E%D0%9F%D0%9E%D0%9F_2023_23.05.01_%D0%B0%D1%82%D1%82%D1%82_%D0%97.pdf#page=1)
+  - 2023, очная — `О-23-НТТС-аттт-С`. [Программа 2023](https://www.tu-bryansk.ru/upload/sveden/education/eduop/23.05.01/%D0%B0%D1%82%D1%82%D1%82/2023/%D0%9E%D0%9F%D0%9E%D0%9F_2023_23.05.01_%D0%B0%D1%82%D1%82%D1%82_%D0%9E.pdf#page=1)
+  - 2024, заочная — `З-24-НТТС- аттт-С`. [Программа 2024](https://www.tu-bryansk.ru/upload/sveden/education/eduop/23.05.01/%D0%B0%D1%82%D1%82%D1%82/2024/%D0%9E%D0%9F%D0%9E%D0%9F_2024_23.05.01_%D0%B0%D1%82%D1%82%D1%82_%D0%97.pdf#page=1)
+  - 2024, очная — `О-24-НТТС-аттт-С`. [Программа 2024](https://www.tu-bryansk.ru/upload/sveden/education/eduop/23.05.01/%D0%B0%D1%82%D1%82%D1%82/2024/%D0%9E%D0%9F%D0%9E%D0%9F_2024_23.05.01_%D0%B0%D1%82%D1%82%D1%82_%D0%9E.pdf#page=1)
+  - 2025, заочная — `З-25-НТТС-аттт-С`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/23.05.01/%D0%B0%D1%82%D1%82%D1%82/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_23.05.01_%D0%B0%D1%82%D1%82%D1%82_%D0%97.pdf#page=1)
+- **23.05.01 · Подъёмно-транспортные, строительные, дорожные средства и оборудование**
+  - 2022, очная — `О-22-НТТС-птсо-С`. [Программа 2022](https://www.tu-bryansk.ru/upload/sveden/education/eduop/23.05.01/%D0%BF%D1%82%D1%81%D0%BE/2022/%D0%9E%D0%9F%D0%9E%D0%9F_2022_23.05.01_%D0%BF%D1%82%D1%81%D0%BE_%D0%9E.pdf#page=1)
+  - 2023, очная — `О-23-НТТС-птсо-С`. [Программа 2023](https://www.tu-bryansk.ru/upload/sveden/education/eduop/23.05.01/%D0%BF%D1%82%D1%81%D0%BE/2023/%D0%9E%D0%9F%D0%9E%D0%9F_2023_23.05.01_%D0%BF%D1%82%D1%81%D0%BE_%D0%9E.pdf#page=1)
+- **23.05.03 · Локомотивы**
+  - 2022, очная — `О-22-ПСЖД-лк-С`. [Программа 2022](https://www.tu-bryansk.ru/upload/sveden/education/eduop/23.05.03/%D0%BB%D0%BA/2022/%D0%9E%D0%9F%D0%9E%D0%9F_2022_23.05.03_%D0%BB%D0%BA_%D0%9E.pdf#page=1)
+  - 2023, очная — `О-23-ПСЖД-лк-С`. [Программа 2023](https://www.tu-bryansk.ru/upload/sveden/education/eduop/23.05.03/%D0%BB%D0%BA/2023/%D0%9E%D0%9F%D0%9E%D0%9F_2023_23.05.03_%D0%BB%D0%BA_%D0%9E.pdf#page=1)
+  - 2024, очная — `О-24-ПСЖД-лк-С`. [Программа 2024](https://www.tu-bryansk.ru/upload/sveden/education/eduop/23.05.03/%D0%BB%D0%BA/2024/%D0%9E%D0%9F%D0%9E%D0%9F_2024_23.05.03_%D0%BB%D0%BA_%D0%9E.pdf#page=1)
+  - 2025, очная — `О-25-ПСЖД-лк-С`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/23.05.03/%D0%BB%D0%BA/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_23.05.03_%D0%BB%D0%BA_%D0%9E.pdf#page=1)
+  - 2026, очная — `О-26-ПСЖД-лк-С`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/23.05.03/%D0%BB%D0%BA/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_23.05.03_%D0%BB%D0%BA_%D0%9E.pdf#page=1)
+- **23.05.03 · Пассажирские вагоны**
+  - 2023, очная — `О-23-ПСЖД-пв-С`. [Программа 2023](https://www.tu-bryansk.ru/upload/sveden/education/eduop/23.05.03/%D0%BF%D0%B2/2023/%D0%9E%D0%9F%D0%9E%D0%9F_2023_23.05.03_%D0%BF%D0%B2_%D0%9E.pdf#page=1)
+  - 2026, очная — `О-26-ПСЖД-пв-С`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/23.05.03/%D0%BF%D0%B2/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_23.05.03_%D0%BF%D0%B2_%D0%9E.pdf#page=1)
+- **23.05.03 · Технология производства и ремонта подвижного состава**
+  - 2024, заочная — `З-24-ПСЖД-1-тпр-С`, `З-24-ПСЖД-2-тпр-С`, `З-24-ПСЖД-3-тпр-С`, `З-24-ПСЖД-4-тпр-С`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/23.05.03/%D1%82%D0%BF%D1%80/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_23.05.03_%D1%82%D0%BF%D1%80_%D0%97.pdf#page=1)
+  - 2025, заочная — `З-25-ПСЖД-1-тпр-С`, `З-25-ПСЖД-2-тпр-С`, `З-25-ПСЖД-3-тпр-С`, `З-25-ПСЖД-4-тпр-С`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/23.05.03/%D1%82%D0%BF%D1%80/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_23.05.03_%D1%82%D0%BF%D1%80_%D0%97.pdf#page=1)
+  - 2025, очная — `О-25-ПСЖД-1-тпр-С`. [Программа 2025](https://www.tu-bryansk.ru/upload/sveden/education/eduop/23.05.03/%D1%82%D0%BF%D1%80/2025/%D0%9E%D0%9F%D0%9E%D0%9F_2025_23.05.03_%D1%82%D0%BF%D1%80_%D0%9E.pdf#page=1)
+  - 2026, заочная — `З-26-ПСЖД-1-тпр-С`, `З-26-ПСЖД-2-тпр-С`, `З-26-ПСЖД-3-тпр-С`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/23.05.03/%D1%82%D0%BF%D1%80/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_23.05.03_%D1%82%D0%BF%D1%80_%D0%97.pdf#page=1)
+  - 2026, очная — `О-26-ПСЖД-1-тпр-С`. [Программа 2026](https://www.tu-bryansk.ru/upload/sveden/education/eduop/23.05.03/%D1%82%D0%BF%D1%80/2026/%D0%9E%D0%9F%D0%9E%D0%9F_2026_23.05.03_%D1%82%D0%BF%D1%80_%D0%9E.pdf#page=1)
+
+## Политехнический колледж (ПК) — 0
+
+В этом каталоге нет групп, сопоставленных с колледжем.

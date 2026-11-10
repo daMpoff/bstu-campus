@@ -4,6 +4,7 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -26,6 +27,8 @@ class SecurityConfig {
         return http
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/csrf", "/api/login").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/registration/catalog").permitAll()
+                .requestMatchers(HttpMethod.POST, "/api/registration").permitAll()
                 .requestMatchers("/api/teacher/**").hasRole("TEACHER")
                 .requestMatchers("/api/student/**").hasRole("STUDENT")
                 .requestMatchers("/api/**").authenticated()
@@ -76,7 +79,7 @@ class SecurityConfig {
 
 @Controller
 class PageController {
-    @GetMapping({"/login", "/assignments", "/assignments/new", "/assignments/{id:[0-9]+}", "/review"})
+    @GetMapping({"/login", "/register", "/assignments", "/assignments/new", "/assignments/{id:[0-9]+}", "/review"})
     String page() {
         return "forward:/index.html";
     }
