@@ -14,6 +14,7 @@ import { PersonalFeed } from './PersonalFeed';
 import { Admin } from './Admin';
 import { Analytics } from './Analytics';
 import { CampusAssistant } from './CampusAssistant';
+import { ProfileSettings } from './ProfileSettings';
 import { StudentRanking } from './StudentRanking';
 import s from './layout.module.css';
 
@@ -42,8 +43,8 @@ function cabinetPath(role: Role) {
   return role === 'STUDENT' ? '/profile' : '/assignments';
 }
 
-const cabinetRoute = /^\/(?:profile|profiles\/[^/]+|assignments(?:\/[^/]+)?|activities(?:\/[^/]+)?|polls(?:\/[^/]+)?|review|rating|rewards|feed|admin|analytics|group-approval)\/?$/i;
-const sharedRoute = /^\/(?:profiles\/[^/]+|rewards)\/?$/i;
+const cabinetRoute = /^\/(?:profile|profiles\/[^/]+|assignments(?:\/[^/]+)?|activities(?:\/[^/]+)?|polls(?:\/[^/]+)?|review|rating|rewards|feed|admin|analytics|group-approval|settings)\/?$/i;
+const sharedRoute = /^\/(?:profiles\/[^/]+|rewards|settings)\/?$/i;
 
 function afterLogin(role: Role, returnTo: unknown) {
   if (typeof returnTo === 'string' && cabinetRoute.test(returnTo)) {
@@ -155,6 +156,7 @@ export function App() {
       <Route path="/activities/new" element={requireAccount(user => user.role === 'TEACHER' ? <NewActivity /> : <Navigate to="/activities" replace />)} />
       <Route path="/activities/:id" element={requireAccount(user => user.role === 'TEACHER' ? <TeacherActivityDetail /> : <Navigate to="/activities" replace />)} />
       <Route path="/rewards" element={requireAccount(() => <Rewards />)} />
+      <Route path="/settings" element={requireAccount(() => <ProfileSettings />)} />
       <Route path="/feed" element={requireAccount(() => <PersonalFeed />)} />
       <Route path="/polls" element={requireAccount(user => <Polls teacher={user.role === 'TEACHER'} />)} />
       <Route path="/polls/new" element={requireAccount(user => user.role === 'TEACHER' ? <NewPoll /> : <Navigate to="/polls" replace />)} />
@@ -320,6 +322,7 @@ function Workspace({ user, children, onLogout }: {
           <NavLink to="/feed"><Glyph name="feed" /> Мои события</NavLink>
         </>}
         <NavLink to="/rewards"><Glyph name="rewards" /> Лента наград</NavLink>
+        <NavLink to="/settings"><Glyph name="settings" /> Настройки профиля</NavLink>
       </nav>
       <button type="button" className={s.logout} aria-label="Выйти"
         onClick={() => onLogout().catch(() => setError('Не удалось выйти. Попробуйте ещё раз.'))}>

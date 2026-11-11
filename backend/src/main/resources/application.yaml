@@ -2,7 +2,7 @@ spring:
   task:
     scheduling:
       pool:
-        size: 3
+        size: 5
   mail:
     host: ${CAMPUS_SMTP_HOST:localhost}
     port: ${CAMPUS_SMTP_PORT:1025}
@@ -38,6 +38,10 @@ campus:
   public-url: ${CAMPUS_PUBLIC_URL:http://localhost:8080}
   mail:
     from: ${CAMPUS_MAIL_FROM:campus@bgtu.test}
+  telegram:
+    bot-token: ${CAMPUS_TELEGRAM_BOT_TOKEN:}
+    bot-username: ${CAMPUS_TELEGRAM_BOT_USERNAME:}
+    api-base-url: ${CAMPUS_TELEGRAM_API_BASE_URL:https://api.telegram.org}
   llm:
     provider: ${CAMPUS_LLM_PROVIDER:auto}
     url: ${CAMPUS_LLM_URL:}

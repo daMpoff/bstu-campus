@@ -73,7 +73,7 @@ class PageController {
     @GetMapping({"/login", "/register", "/confirm-email", "/assignments", "/assignments/new", "/assignments/{id:[0-9]+}",
                  "/review", "/rating", "/profile", "/profiles/{id:[0-9]+}",
                  "/activities", "/activities/new", "/activities/{id:[0-9]+}", "/rewards", "/group-approval",
-                 "/polls", "/polls/new", "/polls/{id:[0-9]+}", "/feed", "/analytics", "/admin"})
+                 "/polls", "/polls/new", "/polls/{id:[0-9]+}", "/feed", "/analytics", "/admin", "/settings"})
     String page() {
         return "forward:/index.html";
     }

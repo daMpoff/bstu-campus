@@ -1,0 +1,16 @@
+.heading { margin-bottom: 20px; }
+.panel { max-width: 680px; }
+.panel > * + * { margin-top: 14px; }
+.header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; }
+.status { padding: 4px 10px; border-radius: 999px; background: var(--paper); color: var(--muted); font-size: .8125rem; font-weight: 700; }
+.status[data-connected='true'] { background: var(--accepted-bg); color: var(--accepted-text); }
+.hint { color: var(--muted); font-size: .875rem; line-height: 1.5; }
+.codeRow { display: grid; gap: 6px; justify-items: start; }
+.codeLabel { font-size: .875rem; font-weight: 700; }
+.code {
+  display: block; max-width: 100%; padding: 10px 14px; border: 1px solid var(--border);
+  border-radius: 8px; background: var(--paper); overflow-wrap: anywhere;
+  font: 700 1rem/1.4 ui-monospace, Consolas, monospace; letter-spacing: .04em;
+}
+.actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.actions > :is(a, button) { min-height: 44px; }
