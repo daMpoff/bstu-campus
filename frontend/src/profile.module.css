@@ -21,6 +21,7 @@ dd.ratingValue small { font-size: 1rem; }
 .assignmentRow > [data-status] { border-radius: 8px; }
 .historyRow { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: baseline; }
 .historyTitle { font-weight: 700; overflow-wrap: anywhere; }
-.deduction { white-space: nowrap; color: var(--error-text); font-weight: 750; font-variant-numeric: tabular-nums; }
+.ratingChange { white-space: nowrap; color: var(--error-text); font-weight: 750; font-variant-numeric: tabular-nums; }
+.ratingChange[data-credit='true'] { color: var(--accepted-text); }
 .date { display: block; margin-top: .2rem; color: var(--muted); font-size: .875rem; }
 .empty { margin-top: .85rem; color: var(--muted); }

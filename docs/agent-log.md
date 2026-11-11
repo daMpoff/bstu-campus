@@ -89,6 +89,12 @@
 - Сравнили рендер приложения с HTML-макетом в Chrome на одинаковых демонстрационных данных. При ширине 1440 и 1672 px границы шапки, карточек, панелей и первой полосы прогресса совпали. При 320 и 390 px основные элементы смещены не больше чем на 0,5 px, нижняя граница очереди отличается примерно на 10 px. В приложении добавлена кнопка выхода и используется название кафедры из справочника.
 - Прошли пять модульных и пять сквозных тестов на отдельной PostgreSQL 17. Проверили прогресс на назначенной работе, возврат через очередь, принятие, переключение групп и отказ студенту в доступе к API рейтинга. Обновили демо на 5173 с сохранением базы и проверили обе роли, рейтинг и выход на ширине 320 px.
 
+### Семестровое пополнение АР
+
+- Добавили настраиваемое пополнение АР по московскому календарю. Баланс, запись в истории и отметка об обработке семестра сохраняются в одной транзакции. История отображает фактическую прибавку со знаком плюс.
+- Прошли девять модульных и пять сквозных тестов. На отдельной PostgreSQL проверили пропущенную дату, параллельный запуск, повторный запуск с изменёнными настройками, потолок 1000, пропуск новых аккаунтов и отображение начисления рядом со старым списанием.
+- Проверили миграцию с V5 и на чистой базе. Обновили локальное демо на порту 5173. По обычному календарю начислений задним числом не произошло.
+
 ### Промпт для вечернего фото страницы входа
 
 > Use case: lighting-weather. Asset: portrait photograph for the dark theme of the university login page. Edit Image 1, the daylight portrait of the BGTU alley. Use Image 2, the existing night hero, for lighting and color only. Convert Image 1 to photorealistic late evening with a deep navy sky, naturally dark foliage, warm amber light in a few existing windows, and subtle warm spill onto the brick facade and pavement. Keep the alley and the facade readable in the narrow center-right crop used on the site. Preserve Image 1’s portrait aspect ratio (957:1277), camera position, framing, perspective, building geometry, path, stairs, trees and railings. Change only time of day and lighting. No added objects, graphics, text, or watermark.

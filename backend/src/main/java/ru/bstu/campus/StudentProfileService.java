@@ -1,6 +1,7 @@
 package ru.bstu.campus;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.List;
 
@@ -23,7 +24,7 @@ class StudentProfileService {
 
     record Student(long id, String fullName, String facultyName, String groupName, int rating) {}
     record Assignment(long id, String title, Instant deadline, String status) {}
-    record RatingEntry(long id, String assignmentTitle, int amount, Instant recordedAt) {}
+    record RatingEntry(long id, String assignmentTitle, LocalDate semesterStart, int amount, Instant recordedAt) {}
     record PersonalDetails(List<Assignment> assignments, List<RatingEntry> ratingHistory) {}
     record Profile(Student student, PersonalDetails personal) {}
 
@@ -45,13 +46,13 @@ class StudentProfileService {
         List<Assignment> studentAssignments = assignments.studying(studentId).stream()
             .map(item -> new Assignment(item.id(), item.title(), item.deadline(), item.status())).toList();
         List<RatingEntry> ratingHistory = db.sql("""
-            SELECT r.id, a.title, r.amount, r.recorded_at
+            SELECT r.id, a.title, r.semester_start, r.amount, r.recorded_at
             FROM rating_entry r
-            JOIN assignment a ON a.id = r.assignment_id
+            LEFT JOIN assignment a ON a.id = r.assignment_id
             WHERE r.student_id = :id
             ORDER BY r.recorded_at DESC, r.id DESC
             """).param("id", studentId).query((row, index) -> new RatingEntry(
-                row.getLong("id"), row.getString("title"), row.getInt("amount"),
+                row.getLong("id"), row.getString("title"), row.getObject("semester_start", LocalDate.class), row.getInt("amount"),
                 row.getObject("recorded_at", OffsetDateTime.class).toInstant())).list();
         return new Profile(student, new PersonalDetails(studentAssignments, ratingHistory));
     }

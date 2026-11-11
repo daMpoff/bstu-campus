@@ -21,3 +21,6 @@ campus:
   penalty:
     amount: 20
     interval: 60s
+  semester:
+    amount: ${CAMPUS_SEMESTER_AMOUNT:200}
+    start-days: "${CAMPUS_SEMESTER_START_DAYS:02-01,09-01}"

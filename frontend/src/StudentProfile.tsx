@@ -102,10 +102,13 @@ function ProfileScreen({ studentId, ownProfile, themeToggle }: {
         {personal.ratingHistory.length ? <ul className={s.list}>
           {personal.ratingHistory.map(entry => <li key={entry.id} className={s.historyRow}>
             <div>
-              <p className={s.historyTitle}>Просрочка: {entry.assignmentTitle}</p>
+              <p className={s.historyTitle}>{entry.semesterStart
+                ? 'Пополнение в начале семестра' : `Просрочка: ${entry.assignmentTitle}`}</p>
               <time className={s.date} dateTime={entry.recordedAt}>{dateTime(entry.recordedAt)} МСК</time>
             </div>
-            <span className={s.deduction}>−{Math.abs(entry.amount)} АР</span>
+            <span className={s.ratingChange} data-credit={entry.amount > 0}>
+              {entry.amount > 0 ? '+' : '−'}{Math.abs(entry.amount)} АР
+            </span>
           </li>)}
         </ul> : <p className={s.empty}>Изменений рейтинга пока нет.</p>}
       </section>

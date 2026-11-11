@@ -25,7 +25,9 @@ export type StudentProfileData = {
   student: { id: number; fullName: string; facultyName: string | null; groupName: string; rating: number };
   personal: {
     assignments: ProfileAssignment[];
-    ratingHistory: { id: number; assignmentTitle: string; amount: number; recordedAt: string }[];
+    ratingHistory: {
+      id: number; assignmentTitle: string | null; semesterStart: string | null; amount: number; recordedAt: string;
+    }[];
   } | null;
 };
 
