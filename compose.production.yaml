@@ -1,0 +1,70 @@
+name: bstu-campus
+
+x-campus-logging: &campus-logging
+  driver: json-file
+  options:
+    max-size: 10m
+    max-file: '3'
+
+services:
+  db:
+    image: postgres:17
+    restart: unless-stopped
+    mem_limit: 512m
+    logging: *campus-logging
+    environment:
+      POSTGRES_DB: campus
+      POSTGRES_USER: campus
+      POSTGRES_PASSWORD: "${CAMPUS_DB_PASSWORD:?Set CAMPUS_DB_PASSWORD}"
+    volumes:
+      - campus-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-h", "127.0.0.1", "-U", "campus", "-d", "campus"]
+      interval: 3s
+      timeout: 3s
+      retries: 15
+
+  app:
+    image: "${CAMPUS_APP_IMAGE:-bstu-campus:vps}"
+    pull_policy: never
+    restart: unless-stopped
+    mem_limit: 1536m
+    logging: *campus-logging
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/campus
+      SPRING_DATASOURCE_USERNAME: campus
+      SPRING_DATASOURCE_PASSWORD: "${CAMPUS_DB_PASSWORD:?Set CAMPUS_DB_PASSWORD}"
+      SERVER_FORWARD_HEADERS_STRATEGY: framework
+      SERVER_SERVLET_SESSION_COOKIE_SECURE: "${CAMPUS_SECURE_COOKIES:-false}"
+      CAMPUS_PUBLIC_URL: "${CAMPUS_PUBLIC_URL:?Set CAMPUS_PUBLIC_URL}"
+      CAMPUS_DEMO: "${CAMPUS_DEMO:-false}"
+      CAMPUS_SEMESTER_AMOUNT: "${CAMPUS_SEMESTER_AMOUNT:-200}"
+      CAMPUS_SEMESTER_START_DAYS: "${CAMPUS_SEMESTER_START_DAYS:-02-01,09-01}"
+      CAMPUS_ACTIVITY_MONTHLY_LIMIT: "${CAMPUS_ACTIVITY_MONTHLY_LIMIT:-1000}"
+      CAMPUS_SMTP_HOST: "${CAMPUS_SMTP_HOST:-127.0.0.1}"
+      CAMPUS_SMTP_PORT: "${CAMPUS_SMTP_PORT:-587}"
+      CAMPUS_SMTP_USERNAME: "${CAMPUS_SMTP_USERNAME:-}"
+      CAMPUS_SMTP_PASSWORD: "${CAMPUS_SMTP_PASSWORD:-}"
+      CAMPUS_SMTP_AUTH: "${CAMPUS_SMTP_AUTH:-true}"
+      CAMPUS_SMTP_STARTTLS: "${CAMPUS_SMTP_STARTTLS:-true}"
+      CAMPUS_SMTP_SSL: "${CAMPUS_SMTP_SSL:-false}"
+      CAMPUS_MAIL_FROM: "${CAMPUS_MAIL_FROM:-campus@bgtu.test}"
+      CAMPUS_TELEGRAM_BOT_TOKEN: "${CAMPUS_TELEGRAM_BOT_TOKEN:-}"
+      CAMPUS_TELEGRAM_BOT_USERNAME: "${CAMPUS_TELEGRAM_BOT_USERNAME:-}"
+      CAMPUS_TELEGRAM_API_BASE_URL: "${CAMPUS_TELEGRAM_API_BASE_URL:-https://api.telegram.org}"
+      CAMPUS_LLM_PROVIDER: "${CAMPUS_LLM_PROVIDER:-auto}"
+      CAMPUS_LLM_URL: "${CAMPUS_LLM_URL:-}"
+      CAMPUS_LLM_BASE_URL: "${CAMPUS_LLM_BASE_URL:-}"
+      CAMPUS_LLM_MODEL: "${CAMPUS_LLM_MODEL:-}"
+      CAMPUS_LLM_API_KEY: "${CAMPUS_LLM_API_KEY:-}"
+      CAMPUS_LLM_REASONING_EFFORT: "${CAMPUS_LLM_REASONING_EFFORT:-}"
+      CAMPUS_LLM_JSON_MODE: "${CAMPUS_LLM_JSON_MODE:-true}"
+      CAMPUS_LLM_TOKEN_FIELD: "${CAMPUS_LLM_TOKEN_FIELD:-}"
+    ports:
+      - "127.0.0.1:${CAMPUS_BIND_PORT:-18080}:8080"
+
+volumes:
+  campus-db:
