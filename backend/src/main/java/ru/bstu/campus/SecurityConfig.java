@@ -1,7 +1,5 @@
 package ru.bstu.campus;
 
-import org.springframework.boot.ApplicationRunner;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -62,32 +60,6 @@ class SecurityConfig {
             .optional().orElseThrow(() -> new UsernameNotFoundException("Пользователь не найден"));
     }
 
-    @Bean
-    @ConditionalOnProperty(name = "campus.demo", havingValue = "true")
-    ApplicationRunner demoUsers(JdbcClient db, PasswordEncoder passwords) {
-        return args -> {
-            db.sql("INSERT INTO study_group(name) VALUES ('ИВТ-24'), ('ИВТ-25') ON CONFLICT DO NOTHING").update();
-            db.sql("""
-                UPDATE study_group SET faculty_id = (SELECT id FROM faculty WHERE code = 'fit')
-                WHERE name IN ('ИВТ-24', 'ИВТ-25') AND study_form IS NULL AND faculty_id IS NULL
-                """).update();
-            String password = passwords.encode("demo2026");
-            db.sql("""
-                INSERT INTO campus_user(email, password_hash, full_name, role, group_id, email_verified, group_verified)
-                VALUES
-                    ('teacher@bgtu.test', :password, 'Елена Крылова', 'TEACHER', NULL, true, true),
-                    ('student@bgtu.test', :password, 'Алексей Смирнов', 'STUDENT', (SELECT id FROM study_group WHERE name = 'ИВТ-24'), true, true),
-                    ('student2@bgtu.test', :password, 'Мария Волкова', 'STUDENT', (SELECT id FROM study_group WHERE name = 'ИВТ-24'), true, true),
-                    ('student3@bgtu.test', :password, 'Даниил Петров', 'STUDENT', (SELECT id FROM study_group WHERE name = 'ИВТ-25'), true, true),
-                    ('admin@bgtu.test', :password, 'Администратор БГТУ', 'ADMIN', NULL, true, true)
-                ON CONFLICT (email) DO NOTHING
-                """).param("password", password).update();
-            db.sql("""
-                UPDATE campus_user SET department_id = (SELECT id FROM department WHERE code = 'iipo')
-                WHERE email = 'teacher@bgtu.test' AND role = 'TEACHER' AND department_id IS NULL
-                """).update();
-        };
-    }
 }
 
 @Controller
