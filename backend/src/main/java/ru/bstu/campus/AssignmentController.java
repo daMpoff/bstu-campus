@@ -117,4 +117,19 @@ class AssignmentController {
             .header(HttpHeaders.CACHE_CONTROL, "private, no-store")
             .body(file.content());
     }
+
+    @GetMapping("/teacher/assignments/{id}/works/{studentId}/preview")
+    ResponseEntity<byte[]> preview(Principal principal, @PathVariable long id, @PathVariable long studentId) {
+        var account = me(principal);
+        if (!"TEACHER".equals(account.role())) throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        var file = service.attachment(account, id, studentId);
+        MediaType type = AttachmentPreview.type(file.name(), file.content()).orElseThrow(() ->
+            new ResponseStatusException(HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Файл доступен для скачивания."));
+        return ResponseEntity.ok().contentType(type)
+            .header(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.inline()
+                .filename(file.name(), StandardCharsets.UTF_8).build().toString())
+            .header(HttpHeaders.CACHE_CONTROL, "private, no-store")
+            .header("X-Content-Type-Options", "nosniff")
+            .body(file.content());
+    }
 }

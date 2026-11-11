@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import type { StudentAssignment } from '../src/api';
 
 async function login(page: Page, role: string) {
   await page.goto('/login');
@@ -9,7 +10,12 @@ async function login(page: Page, role: string) {
   await expect(page.getByRole('heading', { name: 'Задания', exact: true })).toBeVisible();
 }
 
-test('группа получает задание, студент сдаёт работу, преподаватель возвращает и принимает', async ({ browser }) => {
+function penaltyValue(page: Page, label: string) {
+  return page.getByRole('region', { name: 'Списание по заданию' })
+    .getByText(label, { exact: true }).locator('..').locator('dd');
+}
+
+test('группа получает задание, студент сдаёт работу, преподаватель возвращает и принимает', async ({ browser, request }) => {
   const teacher = await browser.newPage();
   const student = await browser.newPage();
   const outsider = await browser.newPage();
@@ -34,7 +40,10 @@ test('группа получает задание, студент сдаёт р
     await login(student, 'student');
     await student.getByRole('link', { name: new RegExp(title) }).click();
     await expect(student.getByText('Просрочено', { exact: true })).toBeVisible();
-    await expect(student.getByText('Списано за задание:').getByText('20 АР')).toBeVisible({ timeout: 15_000 });
+    await expect(penaltyValue(student, 'Списано за задание')).toHaveText('20 АР', { timeout: 15_000 });
+    await expect(penaltyValue(student, 'Ещё может списаться')).toHaveText('0 АР');
+    const penaltySummary = student.getByRole('region', { name: 'Списание по заданию' });
+    await expect(penaltySummary).toContainText('После сдачи списание по этому заданию остановится.');
     const me = await (await student.request.get('/api/me')).json();
     expect((await outsider.request.get(`/api/profiles/${me.id}`)).status()).toBe(401);
     await student.getByRole('link', { name: 'Профиль' }).click();
@@ -52,6 +61,7 @@ test('группа получает задание, студент сдаёт р
     await student.getByLabel('Ссылка на работу').fill('https://example.org/work');
     await student.getByRole('button', { name: 'Сдать работу' }).click();
     await expect(student.getByText('Сдано на проверку', { exact: true })).toBeVisible();
+    await expect(penaltySummary).toHaveCount(0);
 
     await login(outsider, 'student3');
     await expect(outsider.getByText(title)).toHaveCount(0);
@@ -90,8 +100,29 @@ test('группа получает задание, студент сдаёт р
     });
     await student.getByRole('button', { name: 'Сдать работу' }).click();
     await expect(student.getByText('Сдано на проверку', { exact: true })).toBeVisible();
+    await expect(student.getByRole('link', { name: 'Открыть в браузере', exact: true })).toHaveCount(0);
+
+    const previewPath = `/api/teacher${detailPath}/works/${me.id}/preview`;
+    await teacher.goto('/review');
+    const queuePreview = pending.getByRole('link', { name: 'Открыть в браузере', exact: true });
+    await expect(queuePreview).toHaveAttribute('href', previewPath);
+    await expect(queuePreview).toHaveAttribute('target', '_blank');
+    const [previewTab] = await Promise.all([teacher.context().waitForEvent('page'), queuePreview.click()]);
+    await expect(previewTab.locator('body')).toHaveText('Исправленная работа');
+    await previewTab.close();
 
     await teacher.goto(detailPath);
+    const cardPreview = row.getByRole('link', { name: 'Открыть в браузере', exact: true });
+    await expect(cardPreview).toHaveAttribute('href', previewPath);
+    await expect(cardPreview).toHaveAttribute('target', '_blank');
+    const preview = await teacher.request.get(previewPath);
+    expect(preview.status()).toBe(200);
+    expect(preview.headers()['content-type']).toMatch(/^text\/plain\b/i);
+    expect(preview.headers()['content-disposition']).toMatch(/^inline\b/i);
+    expect(await preview.text()).toBe('Исправленная работа');
+    expect((await request.get(previewPath)).status()).toBe(401);
+    expect((await student.request.get(previewPath)).status()).toBe(403);
+    expect((await outsider.request.get(previewPath)).status()).toBe(403);
     const downloadLink = row.getByRole('link', { name: /Скачать работа.txt/ });
     await expect(downloadLink).toBeVisible();
     const download = await teacher.request.get((await downloadLink.getAttribute('href'))!);
@@ -145,6 +176,31 @@ test('группа получает задание, студент сдаёт р
   } finally {
     await Promise.all([teacher.close(), student.close(), outsider.close()]);
   }
+});
+
+test('сводка списания учитывает остаток лимита задания и текущий АР', async ({ page }) => {
+  await login(page, 'student');
+  const account = await (await page.request.get('/api/me')).json();
+  const item: StudentAssignment = {
+    id: 99999999, title: 'Проверка остатка списания', description: 'Сдайте работу.',
+    teacherName: 'Елена Крылова', deadline: new Date(Date.now() - 60_000).toISOString(),
+    penaltyLimit: 100, deducted: 40, status: 'OVERDUE', link: null, fileName: null,
+  };
+  let rating = 15;
+  await page.route('**/api/me', route => route.fulfill({ json: { ...account, rating } }));
+  await page.route('**/api/student/assignments', route => route.fulfill({ json: [item] }));
+
+  await page.goto(`/assignments/${item.id}`);
+  await expect(penaltyValue(page, 'Списано за задание')).toHaveText('40 АР');
+  await expect(penaltyValue(page, 'Ещё может списаться')).toHaveText('до 15 АР');
+
+  rating = 1000;
+  await page.reload();
+  await expect(penaltyValue(page, 'Ещё может списаться')).toHaveText('до 60 АР');
+
+  rating = 0;
+  await page.reload();
+  await expect(penaltyValue(page, 'Ещё может списаться')).toHaveText('0 АР');
 });
 
 test('главная переключает дневное и ночное фото', async ({ page }) => {

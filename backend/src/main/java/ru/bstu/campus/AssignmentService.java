@@ -34,11 +34,11 @@ class AssignmentService {
     record Assignment(long id, String title, String description, Instant deadline, int penaltyLimit,
                       List<String> groups, int total, int accepted, int waiting) {}
     record PendingWork(long assignmentId, String assignmentTitle, long studentId, String studentName,
-                       String groupName, String link, String fileName) {}
+                       String groupName, String link, String fileName, boolean previewAvailable) {}
     record TeacherDashboard(List<Assignment> assignments, List<PendingWork> pendingWorks) {}
     record RankedStudent(long id, String fullName, int rating) {}
     record Work(long studentId, String studentName, String groupName, String status, String link,
-                String fileName, int deducted) {}
+                String fileName, int deducted, boolean previewAvailable) {}
     record StudentAssignment(long id, String title, String description, Instant deadline, int penaltyLimit,
                              String teacherName, String status, String link, String fileName, int deducted) {}
     record Attachment(String name, byte[] content) {}
@@ -83,14 +83,14 @@ class AssignmentService {
     @Transactional(readOnly = true, isolation = Isolation.REPEATABLE_READ)
     TeacherDashboard dashboard(long teacher) {
         List<PendingWork> pending = db.sql("""
-            SELECT a.id, a.title, u.id, u.full_name, g.name, w.work_link, w.file_name
+            SELECT a.id, a.title, u.id, u.full_name, g.name, w.work_link, w.file_name, w.preview_available
             FROM student_work w JOIN assignment a ON a.id = w.assignment_id
             JOIN campus_user u ON u.id = w.student_id JOIN study_group g ON g.id = u.group_id
             WHERE a.teacher_id = :teacher AND w.status = 'SUBMITTED'
             ORDER BY w.submitted_at DESC, a.id DESC, u.id
             """).param("teacher", teacher).query((row, index) -> new PendingWork(
                 row.getLong(1), row.getString(2), row.getLong(3), row.getString(4), row.getString(5),
-                row.getString(6), row.getString(7))).list();
+                row.getString(6), row.getString(7), previewAvailable(row.getObject(8, Boolean.class), row.getString(7)))).list();
         return new TeacherDashboard(teaching(teacher), pending);
     }
 
@@ -144,14 +144,15 @@ class AssignmentService {
         ownedBy(teacher, assignment);
         Instant now = clock.instant();
         return db.sql("""
-            SELECT w.student_id, w.status, w.work_link, w.file_name, w.deducted, u.full_name, g.name, a.deadline
+            SELECT w.student_id, w.status, w.work_link, w.file_name, w.deducted, w.preview_available, u.full_name, g.name, a.deadline
             FROM student_work w JOIN campus_user u ON u.id = w.student_id
             JOIN study_group g ON g.id = u.group_id JOIN assignment a ON a.id = w.assignment_id
             WHERE w.assignment_id = :id ORDER BY g.name, u.full_name
             """).param("id", assignment).query((row, index) -> new Work(row.getLong("student_id"),
                 row.getString("full_name"), row.getString("name"),
                 visibleStatus(row.getString("status"), row.getObject("deadline", OffsetDateTime.class).toInstant(), now),
-                row.getString("work_link"), row.getString("file_name"), row.getInt("deducted"))).list();
+                row.getString("work_link"), row.getString("file_name"), row.getInt("deducted"),
+                previewAvailable(row.getObject("preview_available", Boolean.class), row.getString("file_name")))).list();
     }
 
     List<StudentAssignment> studying(long student) {
@@ -206,9 +207,11 @@ class AssignmentService {
         ratings.settleBeforeSubmission(assignment, student, now);
         db.sql("""
             UPDATE student_work SET status = 'SUBMITTED', work_link = :link, file_name = :fileName,
-                file_content = :content, submitted_at = :now WHERE assignment_id = :id AND student_id = :student
+                file_content = :content, submitted_at = :now, preview_available = :preview
+            WHERE assignment_id = :id AND student_id = :student
             """).param("link", link, Types.VARCHAR).param("fileName", fileName, Types.VARCHAR)
             .param("content", content, Types.BINARY).param("now", timestamp(now))
+            .param("preview", AttachmentPreview.type(fileName, content).isPresent())
             .param("id", assignment).param("student", student).update();
     }
 
@@ -220,6 +223,10 @@ class AssignmentService {
             """).param("id", assignment).param("student", student).param("role", account.role()).param("user", account.id())
             .query((row, index) -> new Attachment(row.getString(1), row.getBytes(2))).optional()
             .orElseThrow(AssignmentService::notFound);
+    }
+
+    private static boolean previewAvailable(Boolean validated, String fileName) {
+        return validated != null ? validated : AttachmentPreview.supportsName(fileName);
     }
 
     private void ownedBy(long teacher, long assignment) {

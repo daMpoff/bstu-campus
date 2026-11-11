@@ -12,7 +12,7 @@ export type RegistrationCatalog = {
 export type Status = 'OPEN' | 'OVERDUE' | 'SUBMITTED' | 'RETURNED' | 'ACCEPTED';
 export type BaseAssignment = { id: number; title: string; description: string; deadline: string; penaltyLimit: number };
 export type TeacherAssignment = BaseAssignment & { groups: string[]; total: number; accepted: number; waiting: number };
-export type Attachment = { link: string | null; fileName: string | null };
+export type Attachment = { link: string | null; fileName: string | null; previewAvailable?: boolean };
 export type PendingWork = Attachment & {
   assignmentId: number; assignmentTitle: string; studentId: number; studentName: string; groupName: string;
 };

@@ -138,6 +138,13 @@
 - Прошли 33 модульных теста и оба сквозных сценария регистрации и уведомлений. На отдельном стенде после сбоя SMTP пришло только напоминание по несданной работе.
 - Обновили приложение на рабочем демо и повторили оба сценария. Реальная ссылка из Mailpit подтвердила почту в той же вкладке без перезагрузки. После запуска Mailpit очередь сняла напоминание по сданной работе и доставила одно письмо по несданной. Для проверки использовали отдельного тестового студента и два задания.
 
+### Сводка списания АР и просмотр вложений
+
+- Рядом с кнопкой сдачи показываем уже списанные АР, максимально возможное дополнительное списание при текущем рейтинге и пояснение об остановке списаний после сдачи. Остаток ограничен и лимитом задания, и текущим балансом студента.
+- В задании и очереди проверки преподаватель открывает PDF, PNG, JPEG, GIF, WebP и TXT в новой вкладке. Поддерживаемые типы сверяем по содержимому файла. Проверили в Edge встроенный просмотрщик PDF, отображение четырёх форматов изображений, текст с кириллицей и скачивание исходных байтов. Другой преподаватель получил 404, студент 403, гость 401. Поддельный JPEG, HTML и SVG не открылись для просмотра.
+- Собрали Docker-образ. Прошли 38 серверных тестов и 17 сквозных тестов Playwright на отдельном стенде. После миграции V12 → V13 сохранилось ранее загруженное вложение и заработал его предпросмотр.
+- Обновили локальное демо на 8080. Отдельный тестовый студент увидел 20 списанных АР и до 25 АР возможного списания. Проверили сводку в светлой и тёмной теме на ширине 320 px и на 1440 px в тёмной. После сдачи TXT сводка скрылась, а следующий интервал не создал нового списания. Преподаватель открыл TXT из очереди, увидел ссылку просмотра в задании и скачал файл с исходным именем.
+
 ### Промпт для вечернего фото страницы входа
 
 > Use case: lighting-weather. Asset: portrait photograph for the dark theme of the university login page. Edit Image 1, the daylight portrait of the BGTU alley. Use Image 2, the existing night hero, for lighting and color only. Convert Image 1 to photorealistic late evening with a deep navy sky, naturally dark foliage, warm amber light in a few existing windows, and subtle warm spill onto the brick facade and pavement. Keep the alley and the facade readable in the narrow center-right crop used on the site. Preserve Image 1’s portrait aspect ratio (957:1277), camera position, framing, perspective, building geometry, path, stairs, trees and railings. Change only time of day and lighting. No added objects, graphics, text, or watermark.

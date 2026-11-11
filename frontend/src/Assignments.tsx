@@ -29,6 +29,8 @@ export function StatusBadge({ status }: { status: Status }) {
 export function Attachments({ work, assignmentId, studentId }: { work: Attachment; assignmentId: number; studentId: number }) {
   return <div className={s.attachments}>
     {work.link && <a href={work.link} target="_blank" rel="noopener noreferrer">Открыть ссылку ↗</a>}
+    {work.fileName && work.previewAvailable && <a href={`/api/teacher/assignments/${assignmentId}/works/${studentId}/preview`}
+      target="_blank" rel="noopener noreferrer" title={`${work.fileName} · новая вкладка`}>Открыть в браузере <span aria-hidden="true">↗</span></a>}
     {work.fileName && <a href={`/api/works/${assignmentId}/files/${studentId}`}>Скачать {work.fileName} ↓</a>}
   </div>;
 }
@@ -266,6 +268,9 @@ function StudentDetail({ user, id }: { user: Account; id: number }) {
     }
   }
 
+  const canSubmit = item?.status === 'OPEN' || item?.status === 'RETURNED' || item?.status === 'OVERDUE';
+  const remaining = item ? Math.max(0, Math.min(rating, item.penaltyLimit - item.deducted)) : 0;
+
   return <>
     <Heading trail={<><Link to="/assignments">Задания</Link><span>/</span> Просмотр</>} title={item?.title ?? 'Задание'}
       description={item && `${item.teacherName} · дедлайн ${dateTime(item.deadline)} МСК`} />
@@ -276,15 +281,28 @@ function StudentDetail({ user, id }: { user: Account; id: number }) {
         <p className={s.description}>{item.description}</p>
         <Attachments work={item} assignmentId={id} studentId={user.id} />
         {notice && <p role="status">{notice}</p>}
-        {(item.status === 'OPEN' || item.status === 'RETURNED' || item.status === 'OVERDUE') && <form className={s.submission} onSubmit={submit}>
+        {canSubmit && <form className={s.submission} onSubmit={submit}>
           <h2>{item.status === 'RETURNED' ? 'Отправить исправленную работу' : 'Сдать работу'}</h2>
           <label>Ссылка на работу<input name="link" type="url" placeholder="https://" maxLength={2048} /></label>
           <label>Или файл до 10 МБ<input name="file" type="file" /></label>
           {submitError && <p className="error" role="alert">{submitError}</p>}
-          <button type="submit" className="button primary" disabled={busy}>{busy ? 'Отправляем…' : 'Сдать работу'} <span aria-hidden="true">→</span></button>
+          <section className={s.submissionImpact} aria-label="Списание по заданию">
+            <dl>
+              <div><dt>Списано за задание</dt><dd>{item.deducted} АР</dd></div>
+              <div><dt>Ещё может списаться</dt><dd>{remaining > 0 ? `до ${remaining} АР` : '0 АР'}</dd></div>
+            </dl>
+            <p id="submission-rating-note">После сдачи списание по этому заданию остановится.</p>
+          </section>
+          <button type="submit" className="button primary" disabled={busy} aria-describedby="submission-rating-note">
+            {busy ? 'Отправляем…' : 'Сдать работу'} <span aria-hidden="true">→</span>
+          </button>
         </form>}
       </section>
-      <aside className={s.reminder}><h2>Академический рейтинг</h2><ul><li>Текущий рейтинг: <strong>{rating} АР</strong></li><li>Списано за задание: <strong>{item.deducted} АР</strong></li><li>Лимит задания: <strong>{item.penaltyLimit} АР</strong></li></ul></aside>
+      <aside className={s.reminder}><h2>Академический рейтинг</h2><ul>
+        <li>Текущий рейтинг: <strong>{rating} АР</strong></li>
+        {!canSubmit && <li>Списано за задание: <strong>{item.deducted} АР</strong></li>}
+        <li>Лимит задания: <strong>{item.penaltyLimit} АР</strong></li>
+      </ul></aside>
     </div>}
   </>;
 }
