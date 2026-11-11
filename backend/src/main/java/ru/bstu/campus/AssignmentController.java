@@ -40,6 +40,16 @@ class AssignmentController {
         return service.teaching(me(principal).id());
     }
 
+    @GetMapping("/teacher/dashboard")
+    AssignmentService.TeacherDashboard dashboard(Principal principal) {
+        return service.dashboard(me(principal).id());
+    }
+
+    @GetMapping("/teacher/groups/{id}/ranking")
+    List<AssignmentService.RankedStudent> ranking(@PathVariable long id) {
+        return service.ranking(id);
+    }
+
     record NewAssignment(String title, String description, List<Long> groupIds, Instant deadline, Integer penaltyLimit) {}
     record Created(long id) {}
     record Review(List<Long> studentIds, String action) {}

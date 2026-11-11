@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { api, post, type RegistrationCatalog, type Role } from './api';
 import { GroupPicker, type RegistrationGroup } from './GroupPicker';
 import s from './layout.module.css';
 
 export function Registration() {
   const navigate = useNavigate();
+  const { state } = useLocation();
   const [role, setRole] = useState<Role>('STUDENT');
   const [catalog, setCatalog] = useState<RegistrationCatalog>();
   const [selectedFaculty, setSelectedFaculty] = useState('');
@@ -43,7 +44,7 @@ export function Registration() {
         groupId: role === 'STUDENT' ? selectedGroup?.id : null,
         departmentId: role === 'TEACHER' ? Number(data.get('departmentId')) : null,
       });
-      navigate('/login', { replace: true, state: { registeredEmail: email } });
+      navigate('/login', { replace: true, state: { registeredEmail: email, returnTo: state?.returnTo } });
     } catch (failure) {
       setError(failure instanceof Error ? failure.message : 'Не удалось создать аккаунт.');
     } finally {
@@ -98,6 +99,6 @@ export function Registration() {
         {busy ? 'Создаём аккаунт…' : 'Зарегистрироваться'}
       </button>
     </form>
-    <p className={s.registerPrompt}>Уже есть аккаунт? <Link to="/login">Войти</Link></p>
+    <p className={s.registerPrompt}>Уже есть аккаунт? <Link to="/login" state={{ returnTo: state?.returnTo }}>Войти</Link></p>
   </>;
 }

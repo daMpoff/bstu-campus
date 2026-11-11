@@ -1,0 +1,40 @@
+.page {
+  --column-gap: clamp(10px, 1.48vw, 25px);
+  --three-columns: repeat(3, minmax(0, 1fr));
+  min-width: 0; padding: var(--cabinet-top) clamp(16px, 2vw, 34px) 40px;
+}
+.identity { display: flex; align-items: center; gap: clamp(12px, 1.2vw, 20px); margin-bottom: var(--cabinet-gap); }
+.identityCopy { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.identityTitle { font-size: clamp(1.5rem, 3vw, 2rem); line-height: 1.1; letter-spacing: -.032em; font-weight: 800; }
+.subtitle { margin-top: 6px; color: var(--muted); font-size: .875rem; line-height: 1.5; }
+.avatar {
+  display: grid; place-items: center; flex: none; width: var(--cabinet-avatar); aspect-ratio: 1;
+  border-radius: 50%; color: var(--accent); background: var(--tint); font-size: 1.125rem; font-weight: 800;
+}
+.identity button { flex: none; }
+.metrics {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--column-gap);
+  margin: 0 0 clamp(20px, 2vw, 34px);
+}
+.metric:global(.panel) {
+  display: flex; flex-direction: column; gap: 8px; min-height: 100px; padding: clamp(12px, 1.5vw, 24px);
+}
+.metric:first-child { grid-column: 1 / -1; }
+.metric dt { color: var(--muted); font-size: .875rem; font-weight: 700; }
+.metric dd {
+  display: flex; align-items: baseline; gap: 8px; margin: auto 0 0;
+  font-size: clamp(1.625rem, 3vw, 2rem); line-height: 1.15; font-weight: 800; font-variant-numeric: tabular-nums;
+}
+.metric dd small { color: var(--muted); font-size: .875rem; font-weight: 700; }
+.sections { display: grid; gap: var(--column-gap); }
+.section:global(.panel) { padding: clamp(16px, 1.55vw, 26px); }
+.section h2 { font-size: 1.375rem; line-height: 1.2; letter-spacing: -.026em; }
+@media (min-width: 640px) {
+  .metrics { grid-template-columns: var(--three-columns); }
+  .metric:first-child { grid-column: auto; }
+}
+@media (min-width: 1150px) {
+  .sections { grid-template-columns: var(--three-columns); }
+  .widePanel { grid-column: span 2; }
+  .metric:global(.panel) { min-height: clamp(106px, 8vw, 134px); }
+}

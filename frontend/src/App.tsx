@@ -1,27 +1,47 @@
 import { useEffect, useLayoutEffect, useRef, useState, type FormEvent, type ReactNode } from 'react';
-import { Link, Navigate, NavLink, Outlet, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
-import { api, ApiError, type Account } from './api';
+import { Link, Navigate, NavLink, Outlet, Route, Routes, useLocation } from 'react-router-dom';
+import { api, ApiError, type Account, type Role } from './api';
 import { AssignmentDetail, AssignmentList, NewAssignment } from './Assignments';
 import { Registration } from './Registration';
+import { StudentProfile } from './StudentProfile';
+import { CabinetPage } from './Cabinet';
+import { TeacherDashboard, TeacherRating } from './TeacherCabinet';
 import s from './layout.module.css';
 
-function Glyph({ name }: { name: 'sun' | 'moon' | 'tasks' | 'review' | 'logout' | 'arrow' }) {
+function Glyph({ name }: { name: 'sun' | 'moon' | 'tasks' | 'review' | 'rating' | 'logout' | 'arrow' | 'profile' }) {
   const paths = {
     sun: 'M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.4 1.4m11.2 11.2L19 19M5 19l1.4-1.4M17.6 6.4 19 5M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0z',
     moon: 'M21 13a9 9 0 1 1-10-10 7 7 0 0 0 10 10z',
     tasks: 'M5 4h14v16H5zM8 12l2 2 5-5M9 4V2m6 2V2',
     review: 'M6 3h8l4 4v14H6zM14 3v5h4m-9 4h6m-6 4h6',
+    rating: 'M4 20h16M7 16v-4m5 4V8m5 8V4',
     logout: 'M10 4H4v16h6m4-12 4 4-4 4m-6-4h10',
     arrow: 'M4 12h15m-6-6 6 6-6 6',
+    profile: 'M16 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0ZM5 21v-2a7 7 0 0 1 14 0v2',
   };
   return <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={paths[name]} /></svg>;
+}
+
+function cabinetPath(role: Role) {
+  return role === 'STUDENT' ? '/profile' : '/assignments';
+}
+
+const cabinetRoute = /^\/(?:profile|profiles\/[^/]+|assignments(?:\/[^/]+)?|review|rating)\/?$/i;
+
+function afterLogin(role: Role, returnTo: unknown) {
+  if (typeof returnTo === 'string' && cabinetRoute.test(returnTo)) {
+    return returnTo;
+  }
+  return cabinetPath(role);
 }
 
 export function App() {
   const [account, setAccount] = useState<Account | null>();
   const [theme, setTheme] = useState(() => localStorage.getItem('campus-theme') ??
     (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
-  const navigate = useNavigate();
+  const { pathname, state } = useLocation();
+  const inCabinet = Boolean(account) && cabinetRoute.test(pathname);
+  const cabinet = account ? cabinetPath(account.role) : '/login';
 
   useEffect(() => {
     const root = document.documentElement;
@@ -40,55 +60,81 @@ export function App() {
 
   async function logout() {
     await api('/logout', { method: 'POST' });
-    setAccount(null);
-    navigate('/');
+    window.location.replace('/');
   }
 
-  const requireAccount = (content: (user: Account) => ReactNode) => account === undefined
-    ? <p className={s.loading}>Загружаем кабинет…</p>
-    : account ? <Workspace user={account} onLogout={logout}>{content(account)}</Workspace>
-      : <Navigate to="/login" replace />;
+  const loadingCabinet = <p className={s.loading} role="status">Загружаем кабинет…</p>;
+  const authPage = account === undefined ? loadingCabinet
+    : account ? <Navigate to={afterLogin(account.role, state?.returnTo)} replace />
+      : <AuthLayout dark={theme === 'dark'} />;
+
+  const themeToggle = <button className={s.theme} type="button"
+    aria-label={theme === 'dark' ? 'Светлая тема' : 'Тёмная тема'}
+    onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
+    <Glyph name={theme === 'dark' ? 'sun' : 'moon'} />
+  </button>;
+
+  function requireAccount(content: (user: Account) => ReactNode, profile = false) {
+    if (account === undefined) return loadingCabinet;
+    if (!account) return <Navigate to="/login" replace state={{ returnTo: pathname }} />;
+    const teacherOverview = account.role === 'TEACHER' && /^\/(assignments|review|rating)\/?$/i.test(pathname);
+    const subtitle = account.role === 'TEACHER'
+      ? account.departmentName ? `Кафедра · ${account.departmentName}` : 'Преподаватель БГТУ'
+      : [account.facultyName, account.groupName].filter(Boolean).join(' · ');
+    return <Workspace user={account} onLogout={logout}>
+      {profile ? content(account) : <CabinetPage name={account.fullName} subtitle={subtitle} themeToggle={themeToggle}
+        nameHeading={teacherOverview}>{content(account)}</CabinetPage>}
+    </Workspace>;
+  }
 
   return <>
-    <header className={s.header}>
+    {!inCabinet && <header className={s.header}>
       <div className={s.headerInner}>
-        <Link className={s.brand} to="/" aria-label="БГТУ, главная">
-          <img className={s.brandLogo} src="/images/bgtu-logo.svg" alt="" width={48} height={48} />
-          <span><strong>БГТУ</strong><small>УНИВЕРСИТЕТСКАЯ СРЕДА</small></span>
-        </Link>
+        <Brand />
         <div className={s.headerActions}>
-          <button className={s.theme} type="button" aria-label={theme === 'dark' ? 'Светлая тема' : 'Тёмная тема'} onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
-            <Glyph name={theme === 'dark' ? 'sun' : 'moon'} />
-          </button>
-          <Link className="button outline" to={account ? '/assignments' : '/login'}>{account ? 'Кабинет' : 'Войти'} <span aria-hidden="true">→</span></Link>
+          {themeToggle}
+          <Link className="button outline" to={cabinet} state={account ? undefined : state}>
+            {account ? 'Кабинет' : 'Войти'} <span aria-hidden="true">→</span>
+          </Link>
         </div>
       </div>
-    </header>
+    </header>}
     <Routes>
-      <Route path="/" element={<Home account={account} />} />
-      <Route element={account ? <Navigate to="/assignments" replace /> : <AuthLayout dark={theme === 'dark'} />}>
+      <Route path="/" element={<Home cabinet={cabinet} signedIn={Boolean(account)} />} />
+      <Route element={authPage}>
         <Route path="/login" element={<Login onLogin={setAccount} />} />
         <Route path="/register" element={<Registration />} />
       </Route>
-      <Route path="/assignments" element={requireAccount(user => <AssignmentList user={user} />)} />
-      <Route path="/assignments/new" element={requireAccount(user => user.role === 'TEACHER' ? <NewAssignment /> : <Navigate to="/assignments" replace />)} />
+      <Route path="/assignments" element={requireAccount(user => user.role === 'TEACHER' ? <TeacherDashboard /> : <AssignmentList user={user} />)} />
+      <Route path="/assignments/new" element={requireAccount(user => user.role === 'TEACHER' ? <NewAssignment /> : <Navigate to={cabinet} replace />)} />
       <Route path="/assignments/:id" element={requireAccount(user => <AssignmentDetail user={user} />)} />
-      <Route path="/review" element={requireAccount(user => user.role === 'TEACHER' ? <AssignmentList user={user} reviewOnly /> : <Navigate to="/assignments" replace />)} />
+      <Route path="/review" element={requireAccount(user => user.role === 'TEACHER' ? <TeacherDashboard reviewOnly /> : <Navigate to={cabinet} replace />)} />
+      <Route path="/rating" element={requireAccount(user => user.role === 'TEACHER' ? <TeacherRating /> : <Navigate to={cabinet} replace />)} />
+      <Route path="/profile" element={requireAccount(user => user.role === 'STUDENT'
+        ? <StudentProfile user={user} themeToggle={themeToggle} />
+        : <Navigate to={cabinet} replace />, true)} />
+      <Route path="/profiles/:id" element={requireAccount(user => <StudentProfile user={user} themeToggle={themeToggle} />, true)} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   </>;
 }
 
-function Home({ account }: { account?: Account | null }) {
-  const destination = account ? '/assignments' : '/login';
+function Brand({ cabinet = false }: { cabinet?: boolean }) {
+  return <Link className={s.brand} to="/" aria-label="БГТУ, главная">
+    <img className={s.brandLogo} src="/images/bgtu-logo.svg" alt="" width={48} height={48} />
+    <span><strong>БГТУ</strong><small>{cabinet ? 'Университетская среда' : 'УНИВЕРСИТЕТСКАЯ СРЕДА'}</small></span>
+  </Link>;
+}
+
+function Home({ cabinet, signedIn }: { cabinet: string; signedIn: boolean }) {
   return <main className={s.home}>
     <section className={s.hero} aria-labelledby="hero-title">
       <div className={s.heroContent}>
         <h1 id="hero-title">БГТУ</h1>
         <p>Университетская среда</p>
         <div className={s.heroDescription}>Задания и академический рейтинг в одном месте.</div>
-        <Link to={destination} className={`button ${s.heroAction}`}>
-          {account ? 'Открыть кабинет' : 'Войти'}
+        <Link to={cabinet} className={`button ${s.heroAction}`}>
+          {signedIn ? 'Открыть кабинет' : 'Войти'}
           <Glyph name="arrow" />
         </Link>
       </div>
@@ -177,7 +223,7 @@ function Login({ onLogin }: { onLogin: (user: Account) => void }) {
       {error && <p className="error" role="alert">{error}</p>}
       <button type="submit" className="button primary" disabled={busy}>{busy ? 'Входим…' : 'Войти'} <span aria-hidden="true">→</span></button>
     </form>
-    <p className={s.registerPrompt}>Первый раз в системе? <Link to="/register">Зарегистрироваться</Link></p>
+    <p className={s.registerPrompt}>Первый раз в системе? <Link to="/register" state={{ returnTo: state?.returnTo }}>Зарегистрироваться</Link></p>
     <div className={s.demo}><small>ДЕМО-АККАУНТЫ</small><div>
       <button className="button outline" onClick={() => fillDemo('teacher')}>Преподаватель</button>
       <button className="button outline" onClick={() => fillDemo('student')}>Студент</button>
@@ -185,19 +231,27 @@ function Login({ onLogin }: { onLogin: (user: Account) => void }) {
   </>;
 }
 
-function Workspace({ user, children, onLogout }: { user: Account; children: ReactNode; onLogout: () => Promise<void> }) {
+function Workspace({ user, children, onLogout }: {
+  user: Account; children: ReactNode; onLogout: () => Promise<void>;
+}) {
   const [error, setError] = useState('');
-  const initials = user.fullName.split(' ').map(word => word[0]).slice(0, 2).join('');
-  return <main className={s.workspace}>
-    <aside className={s.sidebar}>
-      <div className={s.person}><span>{initials}</span><div><strong>{user.fullName}</strong><small>{user.role === 'TEACHER' ? 'Преподаватель БГТУ' : 'Студент · ' + user.groupName}</small></div></div>
+  return <div className={s.cabinet}>
+    <aside className={s.cabinetSidebar} data-cabinet-sidebar>
+      <Brand cabinet />
       <nav aria-label="Кабинет">
+        {user.role === 'STUDENT' && <NavLink to="/profile"><Glyph name="profile" /> Профиль</NavLink>}
         <NavLink to="/assignments"><Glyph name="tasks" /> Задания</NavLink>
-        {user.role === 'TEACHER' && <NavLink to="/review"><Glyph name="review" /> Проверка работ</NavLink>}
+        {user.role === 'TEACHER' && <>
+          <NavLink to="/review"><Glyph name="review" /> Проверка работ</NavLink>
+          <NavLink to="/rating"><Glyph name="rating" /> Рейтинг студентов</NavLink>
+        </>}
       </nav>
-      <button type="button" className={s.logout} onClick={() => onLogout().catch(() => setError('Не удалось выйти. Попробуйте ещё раз.'))}><Glyph name="logout" /> Выйти</button>
+      <button type="button" className={s.logout} aria-label="Выйти"
+        onClick={() => onLogout().catch(() => setError('Не удалось выйти. Попробуйте ещё раз.'))}>
+        <Glyph name="logout" /> <span>Выйти</span>
+      </button>
       {error && <p role="alert">{error}</p>}
     </aside>
-    <div className={s.workspaceContent}>{children}</div>
-  </main>;
+    {children}
+  </div>;
 }

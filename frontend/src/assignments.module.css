@@ -47,7 +47,9 @@
 .works { list-style: none; padding: 0; margin: 1rem 0 0; }
 .works li { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) minmax(0, 1fr); gap: .5rem; align-items: center; border-top: 1px solid var(--border); padding: .7rem 0; }
 .workPerson { display: flex; align-items: center; gap: .45rem; overflow-wrap: anywhere; }
-.workPerson strong, .workPerson small { display: block; }
+.studentLink, .workPerson small { display: block; }
+.studentLink { font-weight: 700; text-decoration: none; }
+.studentLink:hover { text-decoration: underline; }
 .workPerson small { color: var(--muted); }
 .submission { display: grid; gap: .65rem; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border); }
 .submission input { margin-top: .2rem; }

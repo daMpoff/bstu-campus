@@ -11,10 +11,23 @@ export type RegistrationCatalog = {
 };
 export type Status = 'OPEN' | 'OVERDUE' | 'SUBMITTED' | 'RETURNED' | 'ACCEPTED';
 export type BaseAssignment = { id: number; title: string; description: string; deadline: string; penaltyLimit: number };
-export type TeacherAssignment = BaseAssignment & { groups: string; waiting: number };
+export type TeacherAssignment = BaseAssignment & { groups: string[]; total: number; accepted: number; waiting: number };
 export type Attachment = { link: string | null; fileName: string | null };
+export type PendingWork = Attachment & {
+  assignmentId: number; assignmentTitle: string; studentId: number; studentName: string; groupName: string;
+};
+export type TeacherDashboardData = { assignments: TeacherAssignment[]; pendingWorks: PendingWork[] };
+export type RankedStudent = { id: number; fullName: string; rating: number };
 export type StudentAssignment = BaseAssignment & Attachment & { teacherName: string; status: Status; deducted: number };
 export type Work = Attachment & { studentId: number; studentName: string; groupName: string; status: Status; deducted: number };
+export type ProfileAssignment = Pick<StudentAssignment, 'id' | 'title' | 'deadline' | 'status'>;
+export type StudentProfileData = {
+  student: { id: number; fullName: string; facultyName: string | null; groupName: string; rating: number };
+  personal: {
+    assignments: ProfileAssignment[];
+    ratingHistory: { id: number; assignmentTitle: string; amount: number; recordedAt: string }[];
+  } | null;
+};
 
 export class ApiError extends Error {
   constructor(public status: number, message: string) {

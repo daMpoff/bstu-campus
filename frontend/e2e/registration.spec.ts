@@ -8,12 +8,13 @@ async function fillCredentials(page: Page, fullName: string, email: string) {
   await page.getByLabel('Пароль').fill(password);
 }
 
-async function registerAndLogin(page: Page, email: string) {
+async function registerAndLogin(page: Page, email: string, destination: RegExp) {
   await page.getByRole('button', { name: 'Зарегистрироваться' }).click();
   await expect(page.getByRole('status')).toHaveText('Аккаунт создан. Введите пароль, чтобы войти.');
   await expect(page.getByLabel('Email')).toHaveValue(email);
   await page.getByLabel('Пароль').fill(password);
   await page.getByRole('button', { name: 'Войти', exact: true }).click();
+  await expect(page).toHaveURL(destination);
   await expect(page.getByRole('heading', { name: 'Задания', exact: true })).toBeVisible();
 }
 
@@ -36,7 +37,7 @@ test('обе роли регистрируются со справочникам
     await teacher.getByRole('radio', { name: 'Преподаватель', exact: true }).check();
     await fillCredentials(teacher, 'Тестовый Преподаватель', teacherEmail);
     await teacher.getByLabel('Кафедра').selectOption({ label: departmentName });
-    await registerAndLogin(teacher, teacherEmail);
+    await registerAndLogin(teacher, teacherEmail, /\/assignments$/);
     expect(await (await teacher.request.get('/api/me')).json()).toMatchObject({
       role: 'TEACHER', departmentName,
     });
@@ -101,7 +102,7 @@ test('обе роли регистрируются со справочникам
     await groupField.fill(groupName.toLowerCase());
     await results.getByRole('option', { name: groupName, exact: true }).tap();
     expect(await student.evaluate(() => document.documentElement.scrollWidth)).toBe(320);
-    await registerAndLogin(student, studentEmail);
+    await registerAndLogin(student, studentEmail, /\/profile$/);
     await expect(student.getByRole('link', { name: new RegExp(title) })).toBeVisible();
     await expect(student.getByText(expiredTitle)).toHaveCount(0);
     expect(await (await student.request.get('/api/me')).json()).toMatchObject({

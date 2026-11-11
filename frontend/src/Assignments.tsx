@@ -10,48 +10,40 @@ const statusLabels: Record<Status, string> = {
 const formatter = new Intl.DateTimeFormat('ru-RU', {
   dateStyle: 'medium', timeStyle: 'short', timeZone: 'Europe/Moscow',
 });
-const dateTime = (value: string) => formatter.format(new Date(value));
+export const dateTime = (value: string) => formatter.format(new Date(value));
 const failureText = (error: unknown) => error instanceof Error ? error.message : 'Не удалось выполнить запрос.';
 
-function Heading({ trail, title, description, action }: { trail?: ReactNode; title: string; description?: string; action?: ReactNode }) {
+function Heading({ trail, title, description }: { trail?: ReactNode; title: string; description?: string }) {
   return <>
     <div className={s.trail}>{trail ?? <>Кабинет <span>/</span> {title}</>}</div>
-    <div className={s.heading}><div><h1>{title}</h1>{description && <p>{description}</p>}</div>{action}</div>
+    <div className={s.heading}><div><h1>{title}</h1>{description && <p>{description}</p>}</div></div>
   </>;
 }
 
-function StatusBadge({ status }: { status: Status }) {
+export function StatusBadge({ status }: { status: Status }) {
   return <span className={s.status} data-status={status}>{statusLabels[status]}</span>;
 }
 
-function Attachments({ work, assignmentId, studentId }: { work: Attachment; assignmentId: number; studentId: number }) {
+export function Attachments({ work, assignmentId, studentId }: { work: Attachment; assignmentId: number; studentId: number }) {
   return <div className={s.attachments}>
     {work.link && <a href={work.link} target="_blank" rel="noopener noreferrer">Открыть ссылку ↗</a>}
     {work.fileName && <a href={`/api/works/${assignmentId}/files/${studentId}`}>Скачать {work.fileName} ↓</a>}
   </div>;
 }
 
-export function AssignmentList({ user, reviewOnly = false }: { user: Account; reviewOnly?: boolean }) {
-  const [teacherItems, setTeacherItems] = useState<TeacherAssignment[]>();
-  const [studentItems, setStudentItems] = useState<StudentAssignment[]>();
+export function AssignmentList({ user }: { user: Account }) {
+  const [items, setItems] = useState<StudentAssignment[]>();
   const [rating, setRating] = useState(user.rating);
   const [error, setError] = useState('');
-  const teacher = user.role === 'TEACHER';
   useEffect(() => {
     let active = true;
     async function refresh() {
       try {
-        if (teacher) {
-          const items = await api<TeacherAssignment[]>('/teacher/assignments');
-          if (active) setTeacherItems(items);
-        } else {
-          const [items, account] = await Promise.all([api<StudentAssignment[]>('/student/assignments'), api<Account>('/me')]);
-          if (active) {
-            setStudentItems(items);
-            setRating(account.rating);
-          }
-        }
-        if (active) setError('');
+        const [items, account] = await Promise.all([api<StudentAssignment[]>('/student/assignments'), api<Account>('/me')]);
+        if (!active) return;
+        setItems(items);
+        setRating(account.rating);
+        setError('');
       } catch (failure) {
         if (active) setError(failureText(failure));
       }
@@ -59,19 +51,17 @@ export function AssignmentList({ user, reviewOnly = false }: { user: Account; re
     void refresh();
     const timer = setInterval(() => void refresh(), 6000);
     return () => { active = false; clearInterval(timer); };
-  }, [teacher, user.id]);
+  }, [user.id]);
 
-  const items = teacher ? teacherItems?.filter(item => !reviewOnly || item.waiting > 0) : studentItems;
   return <>
-    <Heading title={reviewOnly ? 'Проверка работ' : 'Задания'} description={reviewOnly ? 'Задания, по которым студенты отправили работы.' : teacher ? 'Назначайте задания учебным группам и проверяйте работы.' : 'Следите за сроками и статусами ваших работ.'}
-      action={teacher && !reviewOnly && <Link to="/assignments/new" className="button primary">Новое задание <span aria-hidden="true">＋</span></Link>} />
-    {!teacher && <div className={s.rating}><span>Академический рейтинг</span><strong>{rating} <small>из 1000</small></strong></div>}
+    <Heading title="Задания" description="Следите за сроками и статусами ваших работ." />
+    <div className={s.rating}><span>Академический рейтинг</span><strong>{rating} <small>из 1000</small></strong></div>
     {error && <p className="error" role="alert">{error}</p>}
     {!items && !error && <p className="muted">Загрузка заданий…</p>}
-    {items?.length === 0 && <div className={`panel ${s.empty}`}><h2>{reviewOnly ? 'Нет работ на проверке' : 'Заданий пока нет'}</h2><p>{reviewOnly ? 'Сданные работы появятся здесь.' : teacher ? 'Назначьте первое задание вашей группе.' : 'Здесь появятся задания вашей группы.'}</p></div>}
+    {items?.length === 0 && <div className={`panel ${s.empty}`}><h2>Заданий пока нет</h2><p>Здесь появятся задания вашей группы.</p></div>}
     <div className={s.cards}>{items?.map(item => <Link key={item.id} to={`/assignments/${item.id}`} className={`panel ${s.card}`}>
-      <div><h2>{item.title}</h2><p>{'groups' in item ? item.groups : item.teacherName} · {dateTime(item.deadline)} МСК</p></div>
-      {'status' in item ? <StatusBadge status={item.status} /> : <span className={s.status}>{item.waiting} на проверке</span>}<span className={s.arrow} aria-hidden="true">→</span>
+      <div><h2>{item.title}</h2><p>{item.teacherName} · {dateTime(item.deadline)} МСК</p></div>
+      <StatusBadge status={item.status} /><span className={s.arrow} aria-hidden="true">→</span>
     </Link>)}</div>
   </>;
 }
@@ -200,7 +190,7 @@ function TeacherDetail({ id }: { id: number }) {
 
   return <>
     <Heading trail={<><Link to="/assignments">Задания</Link><span>/</span> Проверка работ</>} title={item?.title ?? 'Задание'}
-      description={item && `${item.groups} · дедлайн ${dateTime(item.deadline)} МСК`} />
+      description={item && `${item.groups.join(', ')} · дедлайн ${dateTime(item.deadline)} МСК`} />
     {error && <p className="error" role="alert">{error}</p>}
     {item && <div className="panel">
       <p className={s.description}>{item.description}</p>
@@ -212,9 +202,10 @@ function TeacherDetail({ id }: { id: number }) {
       {notice && <p role="status">{notice}</p>}
       {!works.length && <p className="muted">В выбранных группах пока нет студентов.</p>}
       <ul className={s.works}>{works.map(work => <li key={work.studentId}>
-        <label className={s.workPerson}><input type="checkbox" aria-label={work.studentName} disabled={work.status !== 'SUBMITTED' || busy}
+        <div className={s.workPerson}><input type="checkbox" aria-label={work.studentName} disabled={work.status !== 'SUBMITTED' || busy}
           checked={selected.includes(work.studentId)} onChange={event => setSelected(ids => event.target.checked ? [...ids, work.studentId] : ids.filter(student => student !== work.studentId))} />
-          <span><strong>{work.studentName}</strong><small>{work.groupName} · списано {work.deducted} АР</small></span></label>
+          <div><Link to={`/profiles/${work.studentId}`} className={s.studentLink}>{work.studentName}</Link><small>{work.groupName} · списано {work.deducted} АР</small></div>
+        </div>
         <StatusBadge status={work.status} /><Attachments work={work} studentId={work.studentId} assignmentId={id} />
       </li>)}</ul>
     </div>}

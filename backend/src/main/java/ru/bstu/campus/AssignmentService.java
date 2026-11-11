@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -31,7 +32,11 @@ class AssignmentService {
                    String facultyName, String departmentName) {}
     record Group(long id, String name) {}
     record Assignment(long id, String title, String description, Instant deadline, int penaltyLimit,
-                      String groups, int waiting) {}
+                      List<String> groups, int total, int accepted, int waiting) {}
+    record PendingWork(long assignmentId, String assignmentTitle, long studentId, String studentName,
+                       String groupName, String link, String fileName) {}
+    record TeacherDashboard(List<Assignment> assignments, List<PendingWork> pendingWorks) {}
+    record RankedStudent(long id, String fullName, int rating) {}
     record Work(long studentId, String studentName, String groupName, String status, String link,
                 String fileName, int deducted) {}
     record StudentAssignment(long id, String title, String description, Instant deadline, int penaltyLimit,
@@ -58,13 +63,47 @@ class AssignmentService {
 
     List<Assignment> teaching(long teacher) {
         return db.sql("""
-            SELECT a.*, (SELECT string_agg(g.name, ', ' ORDER BY g.name) FROM assignment_group ag
-                JOIN study_group g ON g.id = ag.group_id WHERE ag.assignment_id = a.id) AS groups,
-                (SELECT count(*) FROM student_work w WHERE w.assignment_id = a.id AND w.status = 'SUBMITTED') AS waiting
-            FROM assignment a WHERE a.teacher_id = :teacher ORDER BY a.id DESC
+            SELECT a.*, ARRAY(
+                SELECT g.name FROM assignment_group ag JOIN study_group g ON g.id = ag.group_id
+                WHERE ag.assignment_id = a.id ORDER BY g.name
+            ) AS groups, progress.*
+            FROM assignment a
+            CROSS JOIN LATERAL (
+                SELECT count(*) AS total, count(*) FILTER (WHERE status = 'ACCEPTED') AS accepted,
+                       count(*) FILTER (WHERE status = 'SUBMITTED') AS waiting
+                FROM student_work WHERE assignment_id = a.id
+            ) progress
+            WHERE a.teacher_id = :teacher ORDER BY a.id DESC
             """).param("teacher", teacher).query((row, index) -> new Assignment(row.getLong("id"),
                 row.getString("title"), row.getString("description"), row.getObject("deadline", OffsetDateTime.class).toInstant(),
-                row.getInt("penalty_limit"), row.getString("groups"), row.getInt("waiting"))).list();
+                row.getInt("penalty_limit"), List.of((String[]) row.getArray("groups").getArray()),
+                row.getInt("total"), row.getInt("accepted"), row.getInt("waiting"))).list();
+    }
+
+    @Transactional(readOnly = true, isolation = Isolation.REPEATABLE_READ)
+    TeacherDashboard dashboard(long teacher) {
+        List<PendingWork> pending = db.sql("""
+            SELECT a.id, a.title, u.id, u.full_name, g.name, w.work_link, w.file_name
+            FROM student_work w JOIN assignment a ON a.id = w.assignment_id
+            JOIN campus_user u ON u.id = w.student_id JOIN study_group g ON g.id = u.group_id
+            WHERE a.teacher_id = :teacher AND w.status = 'SUBMITTED'
+            ORDER BY w.submitted_at DESC, a.id DESC, u.id
+            """).param("teacher", teacher).query((row, index) -> new PendingWork(
+                row.getLong(1), row.getString(2), row.getLong(3), row.getString(4), row.getString(5),
+                row.getString(6), row.getString(7))).list();
+        return new TeacherDashboard(teaching(teacher), pending);
+    }
+
+    List<RankedStudent> ranking(long group) {
+        if (db.sql("SELECT id FROM study_group WHERE id = :group")
+                .param("group", group).query(Long.class).optional().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Учебная группа не найдена.");
+        }
+        return db.sql("""
+            SELECT id, full_name, rating FROM campus_user
+            WHERE group_id = :group AND role = 'STUDENT'
+            ORDER BY rating DESC, full_name, id
+            """).param("group", group).query(RankedStudent.class).list();
     }
 
     @Transactional
