@@ -9,7 +9,7 @@ async function fillCredentials(page: Page, fullName: string, email: string) {
   await page.getByLabel('Пароль').fill(password);
 }
 
-async function registerAndLogin(page: Page, email: string, destination: RegExp) {
+async function registerAndLogin(page: Page, email: string, destination: RegExp, flow: 'direct' | 'resend' = 'direct') {
   await page.getByRole('button', { name: 'Зарегистрироваться' }).click();
   await expect(page.getByRole('status')).toHaveText('Аккаунт создан. Подтвердите email по ссылке из письма.');
   await expect(page.getByLabel('Email')).toHaveValue(email);
@@ -17,7 +17,20 @@ async function registerAndLogin(page: Page, email: string, destination: RegExp) 
   await page.getByRole('button', { name: 'Войти', exact: true }).click();
   await expect(page.getByRole('alert')).toHaveText('Проверьте email и пароль.');
   const token = await verificationToken(email);
-  await page.goto(`/confirm-email#${token}`);
+  if (flow === 'resend') {
+    await page.goto('/confirm-email');
+    const resend = page.getByRole('button', { name: 'Отправить письмо', exact: true });
+    await expect(resend).toBeVisible();
+    await page.evaluate(() => { window.location.hash = 'invalid-token'; });
+    await page.getByRole('button', { name: 'Подтвердить email', exact: true }).click();
+    await expect(page.getByRole('alert')).toHaveText('Ссылка недействительна. Запросите новое письмо.');
+    await page.getByRole('button', { name: 'Запросить новое письмо', exact: true }).click();
+    await expect(resend).toBeVisible();
+    await page.evaluate(value => { window.location.hash = value; }, token);
+    await expect(resend).toHaveCount(0);
+  } else {
+    await page.goto(`/confirm-email#${token}`);
+  }
   await page.getByRole('button', { name: 'Подтвердить email' }).click();
   await expect(page.getByRole('status')).toHaveText('Email подтверждён. Войдите в кабинет.');
   const reused = await page.request.post('/api/registration/confirm-email', {
@@ -116,7 +129,7 @@ test('обе роли регистрируются со справочникам
     await groupField.fill(groupName.toLowerCase());
     await results.getByRole('option', { name: groupName, exact: true }).tap();
     expect(await student.evaluate(() => document.documentElement.scrollWidth)).toBe(320);
-    await registerAndLogin(student, studentEmail, /\/profile$/);
+    await registerAndLogin(student, studentEmail, /\/profile$/, 'resend');
     await expect(student.getByText(/Группа ожидает подтверждения/)).toBeVisible();
     expect(await (await student.request.get('/api/student/assignments')).json()).toEqual([]);
     expect(await (await student.request.get('/api/student/activities')).json()).toEqual([]);

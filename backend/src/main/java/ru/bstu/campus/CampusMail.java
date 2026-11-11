@@ -83,18 +83,33 @@ class CampusMail {
             .param("now", AssignmentService.timestamp(clock.instant())).update();
     }
 
-    private record Pending(long id, String recipient, String subject, String body, int attempts) {}
+    private record Pending(long id, String recipient, String subject, String body, int attempts, boolean obsolete) {}
 
     private boolean deliverOne() {
         Instant now = clock.instant();
         var pending = db.sql("""
-            SELECT id, recipient, subject, body, attempts FROM campus_mail
-            WHERE body IS NOT NULL AND available_at <= :now AND (expires_at IS NULL OR expires_at > :now)
-            ORDER BY available_at, id LIMIT 1 FOR UPDATE SKIP LOCKED
+            SELECT m.id, m.recipient, m.subject, m.body, m.attempts,
+                   EXISTS (
+                       SELECT 1 FROM personal_feed_event e
+                       WHERE e.id = m.event_id AND e.event_type = 'ASSIGNMENT_DUE'
+                         AND NOT EXISTS (
+                             SELECT 1 FROM student_work w
+                             WHERE w.assignment_id = e.entity_id AND w.student_id = e.recipient_id
+                               AND w.status IN ('OPEN', 'RETURNED')
+                         )
+                   ) AS obsolete
+            FROM campus_mail m
+            WHERE m.body IS NOT NULL AND m.available_at <= :now AND (m.expires_at IS NULL OR m.expires_at > :now)
+            ORDER BY m.available_at, m.id LIMIT 1 FOR UPDATE OF m SKIP LOCKED
             """).param("now", AssignmentService.timestamp(now)).query(Pending.class).optional();
         if (pending.isEmpty()) return false;
 
         Pending row = pending.get();
+        if (row.obsolete()) {
+            db.sql("UPDATE campus_mail SET body = NULL WHERE id = :id").param("id", row.id()).update();
+            return true;
+        }
+
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(from);
         message.setTo(row.recipient());

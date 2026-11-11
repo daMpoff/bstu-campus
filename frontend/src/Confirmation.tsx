@@ -7,8 +7,13 @@ import form from './assignments.module.css';
 import layout from './layout.module.css';
 
 export function ConfirmEmail() {
-  const { hash, state } = useLocation();
+  const { hash } = useLocation();
   const token = hash.slice(1);
+  return <EmailConfirmationForm key={token} token={token} />;
+}
+
+function EmailConfirmationForm({ token }: { token: string }) {
+  const { state } = useLocation();
   const navigate = useNavigate();
   const [resend, setResend] = useState(!token);
   const [error, setError] = useState('');
