@@ -48,6 +48,7 @@ docker compose --env-file .env.production -f compose.production.yaml up -d
 - Сборка интерфейса: из `frontend/` выполните `npm ci` и `npm run build`.
 - E2E: на отдельном стенде Compose из `frontend/` выполните `npx playwright install chromium` и `npm run test:e2e`. Тесты используют `CAMPUS_URL` (по умолчанию `http://localhost:8080`) и `CAMPUS_MAILBOX_URL` (по умолчанию `http://127.0.0.1:8025`).
 - Команда агента для сценария заданий: `npm run verify:assignments` из `frontend/`. Порядок ручной проверки описан в [инструкции](docs/agent-workflows/verify-assignments.md).
+- Скилл `verify-campus` для Codex объединяет модульные и сквозные проверки с записью результатов в журнал команды. [Инструкция скилла](.agents/skills/verify-campus/SKILL.md)
 
 Настройки списания в `backend/src/main/resources/application.yaml`: `campus.penalty.amount` (20 АР) и `campus.penalty.interval` (60 секунд).
 
