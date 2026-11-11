@@ -18,11 +18,13 @@ class DemoData implements ApplicationRunner {
     private final JdbcClient db;
     private final PasswordEncoder passwords;
     private final CampusSettings settings;
+    private final DemoAccess demoAccess;
 
-    DemoData(JdbcClient db, PasswordEncoder passwords, CampusSettings settings) {
+    DemoData(JdbcClient db, PasswordEncoder passwords, CampusSettings settings, DemoAccess demoAccess) {
         this.db = db;
         this.passwords = passwords;
         this.settings = settings;
+        this.demoAccess = demoAccess;
     }
 
     @Override
@@ -34,16 +36,23 @@ class DemoData implements ApplicationRunner {
             UPDATE study_group SET faculty_id = (SELECT id FROM faculty WHERE code = 'fit')
             WHERE name IN ('ИВТ-24', 'ИВТ-25') AND study_form IS NULL AND faculty_id IS NULL
             """).update();
+        String password = passwords.encode("demo2026");
         db.sql("""
             INSERT INTO campus_user(email, password_hash, full_name, role, group_id, email_verified, group_verified)
             VALUES
                 ('teacher@bgtu.test', :password, 'Елена Крылова', 'TEACHER', NULL, true, true),
                 ('student@bgtu.test', :password, 'Алексей Смирнов', 'STUDENT', (SELECT id FROM study_group WHERE name = 'ИВТ-24'), true, true),
                 ('student2@bgtu.test', :password, 'Мария Волкова', 'STUDENT', (SELECT id FROM study_group WHERE name = 'ИВТ-24'), true, true),
-                ('student3@bgtu.test', :password, 'Даниил Петров', 'STUDENT', (SELECT id FROM study_group WHERE name = 'ИВТ-25'), true, true),
-                ('admin@bgtu.test', :password, 'Администратор БГТУ', 'ADMIN', NULL, true, true)
+                ('student3@bgtu.test', :password, 'Даниил Петров', 'STUDENT', (SELECT id FROM study_group WHERE name = 'ИВТ-25'), true, true)
             ON CONFLICT (email) DO NOTHING
-            """).param("password", passwords.encode("demo2026")).update();
+            """).param("password", password).update();
+        if (demoAccess.adminEnabled()) {
+            db.sql("""
+                INSERT INTO campus_user(email, password_hash, full_name, role, email_verified, group_verified)
+                VALUES (:email, :password, 'Администратор БГТУ', 'ADMIN', true, true)
+                ON CONFLICT (email) DO NOTHING
+                """).param("email", DemoAccess.ADMIN_EMAIL).param("password", password).update();
+        }
         db.sql("""
             UPDATE campus_user SET department_id = (SELECT id FROM department WHERE code = 'iipo')
             WHERE email = 'teacher@bgtu.test' AND role = 'TEACHER' AND department_id IS NULL

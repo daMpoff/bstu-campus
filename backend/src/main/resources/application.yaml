@@ -35,6 +35,7 @@ server:
         same-site: lax
 campus:
   demo: false
+  demo-admin: false
   public-url: ${CAMPUS_PUBLIC_URL:http://localhost:8080}
   mail:
     from: ${CAMPUS_MAIL_FROM:campus@bgtu.test}

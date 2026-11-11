@@ -220,6 +220,20 @@
 - На отдельном Compose-стенде `bstu-verify-commits` с новой базой и Mailpit команда `npm --prefix frontend run test:e2e -- --workers=1` прошла 28 из 28 тестов в Edge. Рабочие ключи ИИ и Telegram на стенд не передавались. Тесты интерфейсов внешних интеграций использовали имитацию ответов.
 - `npm --prefix frontend run build` и `docker compose --env-file .env.production.example -f compose.production.yaml config --quiet` прошли. Для проверки конфигурации передали временное значение `CAMPUS_DB_PASSWORD`.
 
+### Обновление кампуса из origin/main
+
+- Собрали образ из коммита `3c4f9e3`. Прошли сборка фронтенда и 45 модульных тестов. Сверили SHA-256 переданного архива и метку коммита загруженного образа. На VPS обновили тег в настройках и пересоздали только приложение кампуса. Предыдущий образ и резервную копию настроек сохранили для отката.
+- После обновления сохранились сеть `bstu-campus-edge` и имя `campus-app`. PostgreSQL остался в состоянии healthy. Главная кампуса, новый файл JavaScript, `/api/csrf` и главная расписания ответили HTTP 200 с проверкой TLS. Идентификаторы и время запуска PostgreSQL, Caddy и приложения расписания совпали с состоянием до обновления.
+
+### Проверка запуска перед сдачей
+
+- Из свежего клона `origin/main` на `3c4f9e3` запустили `docker compose up -d` без `.env`. Первый запуск упёрся в занятый локальный порт Mailpit 8025. Повторили на новой базе с временным `compose.override.yaml`, где изменили только локальные порты приложения и почты. Автоматически загрузились 7 факультетов и институтов, 22 кафедры и 387 групп. Вход под студентом, преподавателем и администратором прошёл.
+- Проверили публичный доступ к репозиторию без авторизации, ответ главной кампуса по HTTPS и загрузку справочников на проде. Демо-вход на проде отключён.
+
+### Публичные демо-аккаунты
+
+- Разделили демо-вход студента и преподавателя и локальный демо-вход администратора. На отдельном Compose прошли 5 тестов входа и навигации. После отключения демо-администратора его ранее созданный аккаунт получил HTTP 401 на входе.
+
 ### Промпт для вечернего фото страницы входа
 
 > Use case: lighting-weather. Asset: portrait photograph for the dark theme of the university login page. Edit Image 1, the daylight portrait of the BGTU alley. Use Image 2, the existing night hero, for lighting and color only. Convert Image 1 to photorealistic late evening with a deep navy sky, naturally dark foliage, warm amber light in a few existing windows, and subtle warm spill onto the brick facade and pavement. Keep the alley and the facade readable in the narrow center-right crop used on the site. Preserve Image 1’s portrait aspect ratio (957:1277), camera position, framing, perspective, building geometry, path, stairs, trees and railings. Change only time of day and lighting. No added objects, graphics, text, or watermark.

@@ -1,6 +1,5 @@
 package ru.bstu.campus;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -26,7 +25,7 @@ class SecurityConfig {
         return http
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/csrf", "/api/login").permitAll()
-                .requestMatchers(HttpMethod.GET, "/api/registration/catalog", "/api/demo").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/registration/catalog", "/api/demo", "/api/demo/accounts").permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/registration", "/api/registration/confirm-email",
                     "/api/registration/resend-email").permitAll()
                 .requestMatchers("/api/admin/**").hasRole("ADMIN")
@@ -51,12 +50,12 @@ class SecurityConfig {
     }
 
     @Bean
-    UserDetailsService users(JdbcClient db) {
+    UserDetailsService users(JdbcClient db, DemoAccess demoAccess) {
         return email -> db.sql("SELECT email, password_hash, role, email_verified FROM campus_user WHERE email = :email")
             .param("email", email.trim().toLowerCase(java.util.Locale.ROOT))
             .query((row, index) -> User.withUsername(row.getString("email"))
                 .password(row.getString("password_hash")).roles(row.getString("role"))
-                .disabled(!row.getBoolean("email_verified")).build())
+                .disabled(!row.getBoolean("email_verified") || !demoAccess.allowsLogin(row.getString("email"))).build())
             .optional().orElseThrow(() -> new UsernameNotFoundException("Пользователь не найден"));
     }
 
@@ -64,10 +63,10 @@ class SecurityConfig {
 
 @Controller
 class PageController {
-    private final boolean demo;
+    private final DemoAccess demoAccess;
 
-    PageController(@Value("${campus.demo}") boolean demo) {
-        this.demo = demo;
+    PageController(DemoAccess demoAccess) {
+        this.demoAccess = demoAccess;
     }
 
     @GetMapping({"/login", "/register", "/confirm-email", "/assignments", "/assignments/new", "/assignments/{id:[0-9]+}",
@@ -87,6 +86,14 @@ class PageController {
     @ResponseBody
     @GetMapping("/api/demo")
     boolean demo() {
-        return demo;
+        return demoAccess.enabled();
+    }
+
+    record DemoAccounts(boolean enabled, boolean admin) {}
+
+    @ResponseBody
+    @GetMapping("/api/demo/accounts")
+    DemoAccounts demoAccounts() {
+        return new DemoAccounts(demoAccess.enabled(), demoAccess.adminEnabled());
     }
 }

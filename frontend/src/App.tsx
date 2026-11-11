@@ -249,11 +249,11 @@ function Login({ onLogin }: { onLogin: (user: Account) => void }) {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
-  const [demo, setDemo] = useState(false);
+  const [demo, setDemo] = useState({ enabled: false, admin: false });
   useEffect(() => {
     const controller = new AbortController();
-    void api<boolean>('/demo', { signal: controller.signal }).then(enabled => {
-      if (!controller.signal.aborted) setDemo(enabled);
+    void api<typeof demo>('/demo/accounts', { signal: controller.signal }).then(accounts => {
+      if (!controller.signal.aborted) setDemo(accounts);
     }).catch(() => {});
     return () => controller.abort();
   }, []);
@@ -290,10 +290,10 @@ function Login({ onLogin }: { onLogin: (user: Account) => void }) {
     </form>
     <p className={s.registerPrompt}>Первый раз в системе? <Link to="/register" state={{ returnTo: state?.returnTo }}>Зарегистрироваться</Link></p>
     {(registeredEmail || error) && <p className={s.registerPrompt}><Link to="/confirm-email" state={{ registeredEmail: email, returnTo: state?.returnTo }}>Запросить письмо подтверждения</Link></p>}
-    {demo && <div className={s.demo}><small>ДЕМО-АККАУНТЫ</small><div>
+    {demo.enabled && <div className={s.demo}><small>ДЕМО-АККАУНТЫ</small><div>
       <button className="button outline" onClick={() => fillDemo('teacher')}>Преподаватель</button>
       <button className="button outline" onClick={() => fillDemo('student')}>Студент</button>
-      <button className="button outline" onClick={() => fillDemo('admin')}>Администратор</button>
+      {demo.admin && <button className="button outline" onClick={() => fillDemo('admin')}>Администратор</button>}
     </div></div>}
   </>;
 }
