@@ -1,6 +1,6 @@
 import { apiResponse, type Status } from './api';
 
-type Period = 'active' | 'this_week' | 'next_week' | 'next_7_days';
+export type StudentAssistantPeriod = 'active' | 'this_week' | 'next_week' | 'next_7_days';
 
 export type AssistantDeadline = {
   id: number;
@@ -25,30 +25,6 @@ export type StudentAssistantResult = {
   overdueTotal: number;
 };
 
-export function studentAssistantPeriod(question: string): Period | null {
-  const words = question.toLowerCase().replaceAll('ё', 'е').match(/[\p{L}\p{N}]+/gu)?.join(' ') ?? '';
-  const personal = /(?:^| )(?:у меня|мне|меня|мой|моя|мое|мои|моих|моим)(?= |$)/u.test(words);
-  const tasks = /(?:^| )(?:задани\p{L}*|задач\p{L}*)(?= |$)/u.test(words);
-  const work = tasks || /дедлайн|срок сдачи|просроч/u.test(words);
-  const list = /^(?:покажи|напомни|скажи|перечисли|какие|какой|каков|когда|есть ли|у меня есть|сколько)(?= |$)/u.test(words);
-  const nextWeek = /(?:следующ|будущ)\p{L}* недел/u.test(words);
-  const nextSevenDays = /(?:ближайш\p{L}*|следующ\p{L}*|через) (?:7|семь) дн/u.test(words);
-  const week = nextWeek || nextSevenDays || /эт\p{L}* недел|на недел/u.test(words);
-  const toSubmit = /^что (?:(?:мне|надо|нужно|осталось|еще) )*сда(?:ть|вать)(?= |$)/u.test(words);
-  const upcoming = /ближайш\p{L}* (?:учебн\p{L}* )?(?:задани|задач|дедлайн)/u.test(words);
-  const myWork = /^(?:мои|мой|моя|мое) (?:задани|задач|дедлайн)/u.test(words);
-  const taskList = /^(?:(?:покажи|перечисли) )?(?:активные )?(?:задачи|задания)$/u.test(words)
-    || (tasks && (myWork || (personal && list)));
-  const myRating = /^(?:мой|мои) (?:академическ\p{L}* )?(?:рейтинг|ар(?= |$))/u.test(words)
-    || (personal && list && /(?:^| )(?:рейтинг\p{L}*|ар)(?= |$)/u.test(words));
-  const deductions = /^сколько /u.test(words) && /(?:^| )(?:списали|списано|сняли)(?= |$)/u.test(words);
-  if (!taskList && !toSubmit && !upcoming && !myWork && !myRating && !deductions && !(work && list && (personal || week))) return null;
-  if (nextWeek) return 'next_week';
-  if (nextSevenDays || (upcoming && !week)) return 'next_7_days';
-  if (!week && (taskList || toSubmit)) return 'active';
-  return 'this_week';
-}
-
 const protocolVersion = '2025-11-25';
 const failure = 'Не удалось получить ваши задания и рейтинг. Попробуйте ещё раз.';
 
@@ -70,7 +46,7 @@ async function rpcResult<T>(response: Response, id: number): Promise<T> {
   return reply.result;
 }
 
-export async function getStudentAssistantSummary(period: Period, signal: AbortSignal): Promise<StudentAssistantResult> {
+export async function getStudentAssistantSummary(period: StudentAssistantPeriod, signal: AbortSignal): Promise<StudentAssistantResult> {
   const initialization = await rpcResult<{ protocolVersion: string }>(await rpc('initialize', {
     protocolVersion, capabilities: {}, clientInfo: { name: 'bstu-campus', version: '0.1.0' },
   }, signal, 1), 1);

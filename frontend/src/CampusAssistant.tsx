@@ -2,12 +2,12 @@ import { useEffect, useId, useRef, useState, type DragEvent, type FormEvent } fr
 import { Link } from 'react-router-dom';
 import { api, type Account } from './api';
 import { AssignmentDraft, type AssignmentDraftText } from './AssignmentDraft';
-import { getStudentAssistantSummary, studentAssistantPeriod, type StudentAssistantResult } from './studentAssistant';
+import { getStudentAssistantSummary, type StudentAssistantPeriod, type StudentAssistantResult } from './studentAssistant';
 import { StudentAssistantSummary } from './StudentAssistantSummary';
 import s from './assistant.module.css';
 
 type HelpSource = { title: string; path: string };
-type HelpAnswer = { answer: string; sources: HelpSource[]; mode: 'MODEL' | 'GUIDE' };
+type HelpAnswer = { answer: string; sources: HelpSource[]; mode: 'MODEL' | 'GUIDE'; studentPeriod: StudentAssistantPeriod | null };
 type Message = { text: string; sender: 'user' | 'assistant'; sources?: HelpSource[]; action?: string }
   | { summary: StudentAssistantResult };
 type Recipient = { id: number; fullName: string; context: string | null };
@@ -18,8 +18,9 @@ type Pending = 'ask' | 'search' | 'assignments' | 'send';
 
 const fileLimit = 10 * 1024 * 1024;
 const dateFormat = new Intl.DateTimeFormat('ru-RU', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Europe/Moscow' });
+const studentSummaryShortcut = 'Мои дедлайны и рейтинг';
 const shortcuts = {
-  STUDENT: ['Мои дедлайны и рейтинг', 'Как сдать работу?', 'Как списывается АР?'],
+  STUDENT: ['Как сдать работу?', 'Как списывается АР?'],
   TEACHER: ['Как проверить работу?', 'Как начислить баллы за активность?'],
   ADMIN: ['Как импортировать студентов?', 'Где изменить настройки АР?'],
 };
@@ -170,6 +171,17 @@ export function CampusAssistant({ user }: { user: Account }) {
     dialog.current?.close();
   }
 
+  function onClose() {
+    if (dialog.current?.open) return;
+    setOpen(false);
+    setDragging(false);
+    if (pending === 'ask') {
+      activity.current?.abort();
+      activity.current = null;
+      setPending(undefined);
+    }
+  }
+
   function resetChoices() {
     setChoices(undefined);
     setAssignment(undefined);
@@ -271,7 +283,7 @@ export function CampusAssistant({ user }: { user: Account }) {
     if (!(event.relatedTarget instanceof Node) || !event.currentTarget.contains(event.relatedTarget)) setDragging(false);
   }
 
-  function ask(value: string) {
+  function ask(value: string, shortcutPeriod?: StudentAssistantPeriod) {
     const question = value.trim();
     if (!question || activity.current) return;
     setMessage('');
@@ -292,22 +304,20 @@ export function CampusAssistant({ user }: { user: Account }) {
       searchPeople(intent.query);
       return;
     }
-    const period = user.role === 'STUDENT' ? studentAssistantPeriod(question) : null;
-    if (period) {
-      void request('ask', signal => getStudentAssistantSummary(period, signal), summary => {
-        setMessages(current => [...current, { summary }]);
-      });
-      return;
-    }
     if (transfer && !recipient && /^[\p{L}][\p{L}\p{M}.'’\s-]+$/u.test(question) && question.split(/\s+/).length <= 4) {
       searchPeople(question);
       return;
     }
-    void request('ask', signal => api<HelpAnswer>('/assistant/ask', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ question }), signal,
-    }), response => setMessages(current => [...current, {
-      text: response.answer, sender: 'assistant', sources: response.sources,
-    }]));
+    void request<Message>('ask', async signal => {
+      if (shortcutPeriod) return { summary: await getStudentAssistantSummary(shortcutPeriod, signal) };
+      const response = await api<HelpAnswer>('/assistant/ask', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ question }), signal,
+      });
+      if (user.role === 'STUDENT' && response.studentPeriod) {
+        return { summary: await getStudentAssistantSummary(response.studentPeriod, signal) };
+      }
+      return { text: response.answer, sender: 'assistant', sources: response.sources };
+    }, reply => setMessages(current => [...current, reply]));
   }
 
   function send() {
@@ -344,7 +354,7 @@ export function CampusAssistant({ user }: { user: Account }) {
       <Icon name="chat" /><span>Помощник</span>
     </button>
     <dialog ref={dialog} className={`${s.dialog}${dragging ? ` ${s.dragging}` : ''}`}
-      aria-labelledby={titleId} onClose={() => { if (!dialog.current?.open) { setOpen(false); setDragging(false); } }}
+      aria-labelledby={titleId} onClose={onClose}
       onDragOver={dragOver} onDragLeave={leaveDrag} onDrop={drop}>
       <header className={s.header}>
         <div><h2 id={titleId}>Помощник</h2><p>Университетская среда</p></div>
@@ -354,8 +364,10 @@ export function CampusAssistant({ user }: { user: Account }) {
         <div className={s.messages} role="log" aria-label="Диалог с помощником">
           {!messages.length && !transfer && <div className={s.answer}>
             <p>{canTransfer ? 'Спросите о системе или перетащите сюда файл для задания.' : 'Спросите, как пользоваться университетской средой.'}</p>
-            <div className={s.shortcuts}>{shortcuts[user.role].map(question =>
-              <button type="button" key={question} onClick={() => ask(question)} disabled={Boolean(pending)}>{question}</button>)}</div>
+            <div className={s.shortcuts}>
+              {shortcuts[user.role].map(question =>
+                <button type="button" key={question} onClick={() => ask(question)} disabled={Boolean(pending)}>{question}</button>)}
+            </div>
           </div>}
           {messages.map((entry, index) => 'summary' in entry ? <div key={index} className={`${s.answer} ${s.summaryAnswer}`}
             ref={index === messages.length - 1 ? latestSummary : undefined}>
@@ -462,6 +474,10 @@ export function CampusAssistant({ user }: { user: Account }) {
             <Icon name="send" /> Отправить
           </button>
         </div>
+        {user.role === 'STUDENT' && !transfer && <div className={s.shortcuts}>
+          <button type="button" onClick={() => ask(studentSummaryShortcut, 'this_week')}
+            disabled={Boolean(pending)}>{studentSummaryShortcut}</button>
+        </div>}
       </form>
     </dialog>
   </>;

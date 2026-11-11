@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 
 import tools.jackson.core.JacksonException;
+import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
 
 @Component
@@ -68,6 +69,24 @@ class OpenAiChatClient {
     }
 
     String complete(String instructions, String question, boolean jsonOutput, int maxTokens, Duration timeout) {
+        var options = jsonOutput && jsonMode ? Map.<String, Object>of("response_format", Map.of("type", "json_object"))
+            : Map.<String, Object>of();
+        String answer = completeMessage(instructions, question, maxTokens, timeout, options)
+            .path("content").stringValue("").strip();
+        if (answer.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "Модель вернула пустой ответ. Попробуйте ещё раз.");
+        }
+        return answer;
+    }
+
+    JsonNode completeWithTool(String instructions, String question, Map<String, Object> function,
+                              int maxTokens, Duration timeout) {
+        return completeMessage(instructions, question, maxTokens, timeout,
+            Map.of("tools", List.of(Map.of("type", "function", "function", function)), "tool_choice", "auto"));
+    }
+
+    private JsonNode completeMessage(String instructions, String question, int maxTokens, Duration timeout,
+                                     Map<String, Object> options) {
         if (!available) {
             throw new ResponseStatusException(HttpStatus.SERVICE_UNAVAILABLE, "Языковая модель не подключена.");
         }
@@ -76,7 +95,7 @@ class OpenAiChatClient {
             tokenField, maxTokens,
             "messages", List.of(Map.of("role", officialOpenAi ? "developer" : "system", "content", instructions),
                                 Map.of("role", "user", "content", question))));
-        if (jsonOutput && jsonMode) payload.put("response_format", Map.of("type", "json_object"));
+        payload.putAll(options);
         if (!reasoningEffort.isEmpty()) payload.put("reasoning_effort", reasoningEffort);
         if (officialOpenAi) payload.put("store", false);
 
@@ -91,12 +110,7 @@ class OpenAiChatClient {
             if (response.statusCode() / 100 != 2) {
                 throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "Модель не приняла запрос. Попробуйте позже.");
             }
-            String answer = json.readTree(response.body()).path("choices").path(0).path("message")
-                .path("content").stringValue("").strip();
-            if (answer.isEmpty()) {
-                throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "Модель вернула пустой ответ. Попробуйте ещё раз.");
-            }
-            return answer;
+            return json.readTree(response.body()).path("choices").path(0).path("message");
         } catch (HttpTimeoutException failure) {
             throw new ResponseStatusException(HttpStatus.GATEWAY_TIMEOUT, "Модель не ответила вовремя. Попробуйте позже.");
         } catch (IOException | IllegalArgumentException | JacksonException failure) {

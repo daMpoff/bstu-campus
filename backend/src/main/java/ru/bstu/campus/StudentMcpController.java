@@ -1,7 +1,10 @@
 package ru.bstu.campus;
 
+import static ru.bstu.campus.StudentDeadlineService.DEFAULT_PERIOD;
+import static ru.bstu.campus.StudentDeadlineService.PERIODS;
+import static ru.bstu.campus.StudentDeadlineService.SUMMARY_TOOL;
+
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 
 import io.modelcontextprotocol.common.McpTransportContext;
@@ -29,13 +32,6 @@ class StudentMcpController {
     private static final String ENDPOINT = "/api/student/mcp";
     private static final String STUDENT_EMAIL = "studentEmail";
     private static final String PROTOCOL_VERSION = "MCP-Protocol-Version";
-    private static final String DEFAULT_PERIOD = "this_week";
-    private static final Map<String, StudentDeadlineService.Period> PERIODS = Map.of(
-        DEFAULT_PERIOD, StudentDeadlineService.Period.THIS_WEEK,
-        "active", StudentDeadlineService.Period.ACTIVE,
-        "next_week", StudentDeadlineService.Period.NEXT_WEEK,
-        "next_7_days", StudentDeadlineService.Period.NEXT_7_DAYS
-    );
 
     private final HttpServletStatelessServerTransport transport;
     private final StudentDeadlineService deadlines;
@@ -51,11 +47,11 @@ class StudentMcpController {
             .build();
         var inputSchema = Map.<String, Object>of(
             "type", "object",
-            "properties", Map.of("period", Map.of("type", "string", "enum", List.of(DEFAULT_PERIOD, "next_week", "next_7_days", "active"),
+            "properties", Map.of("period", Map.of("type", "string", "enum", PERIODS.keySet().stream().sorted().toList(),
                 "default", DEFAULT_PERIOD, "description", "Период по московскому времени или active для всех активных заданий.")),
             "additionalProperties", false
         );
-        var tool = McpSchema.Tool.builder("get_my_deadlines_and_rating", inputSchema)
+        var tool = McpSchema.Tool.builder(SUMMARY_TOOL, inputSchema)
             .title("Мои дедлайны и рейтинг")
             .description("Задания, сроки, статусы сдачи, списания и история АР вошедшего студента.")
             .annotations(McpSchema.ToolAnnotations.builder().readOnlyHint(true).openWorldHint(false).build())

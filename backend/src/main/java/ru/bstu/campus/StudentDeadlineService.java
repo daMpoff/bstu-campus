@@ -8,6 +8,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.temporal.TemporalAdjusters;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.simple.JdbcClient;
@@ -18,6 +19,12 @@ import org.springframework.web.server.ResponseStatusException;
 
 @Service
 class StudentDeadlineService {
+    static final String SUMMARY_TOOL = "get_my_deadlines_and_rating";
+    static final String DEFAULT_PERIOD = "this_week";
+    static final Map<String, Period> PERIODS = Map.of(
+        "active", Period.ACTIVE, DEFAULT_PERIOD, Period.THIS_WEEK,
+        "next_week", Period.NEXT_WEEK, "next_7_days", Period.NEXT_7_DAYS);
+
     private static final ZoneId MOSCOW = ZoneId.of("Europe/Moscow");
     private static final int DEADLINE_LIMIT = 12;
     private static final int HISTORY_LIMIT = 5;

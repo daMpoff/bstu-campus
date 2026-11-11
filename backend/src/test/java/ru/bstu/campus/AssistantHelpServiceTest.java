@@ -9,10 +9,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 
 import com.sun.net.httpserver.HttpServer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -54,10 +57,11 @@ class AssistantHelpServiceTest {
         String answer = "Откройте «Задания», затем выберите работу.";
         var service = service(200, completion(answer));
 
-        var result = service.ask("Как сдать задание с файлом?", Set.of("ROLE_STUDENT"));
+        var result = service.ask("Где скачать файл, который сдал студент?", Set.of("ROLE_TEACHER"));
         assertEquals(AssistantHelpService.Mode.MODEL, result.mode());
         assertEquals(answer, result.answer());
-        assertEquals(List.of(new AssistantHelpService.Source("Сдача работы", "/assignments")), result.sources());
+        assertEquals(List.of(new AssistantHelpService.Source("Проверка работ и вложения", "/review")), result.sources());
+        assertNull(result.studentPeriod());
         assertEquals("Bearer fixture-key", authorization.get());
         var payload = request.get();
         assertEquals("fixture-model", payload.path("model").stringValue());
@@ -67,15 +71,58 @@ class AssistantHelpServiceTest {
         assertFalse(payload.has("tools"));
         var messages = payload.path("messages");
         assertEquals("system", messages.path(0).path("role").stringValue());
-        assertTrue(messages.path(0).path("content").stringValue().contains("Сдать работу"));
+        assertTrue(messages.path(0).path("content").stringValue().contains("Поддерживаемые вложения"));
         assertFalse(messages.path(0).path("content").stringValue().contains("Импорт CSV"));
-        assertEquals("Как сдать задание с файлом?", messages.path(1).path("content").stringValue());
+        assertEquals("Где скачать файл, который сдал студент?", messages.path(1).path("content").stringValue());
+    }
+
+    @Test
+    void offersStudentSummaryToModelEvenWithoutHelpKeywords() throws IOException {
+        String question = "Что у меня ещё висит?";
+        var service = service(200, toolCompletion("{\"period\":\"active\"}"));
+        var result = service.ask(question, Set.of("ROLE_STUDENT"));
+
+        assertEquals("active", result.studentPeriod());
+        assertEquals(AssistantHelpService.Mode.MODEL, result.mode());
+        assertTrue(result.answer().isEmpty());
+        var payload = request.get();
+        assertEquals(question, payload.at("/messages/1/content").stringValue());
+        assertTrue(payload.at("/messages/0/content").stringValue().contains("Сдача работы"));
+        assertFalse(payload.at("/messages/0/content").stringValue().contains("Импорт CSV"));
+        assertEquals("auto", payload.path("tool_choice").stringValue());
+        assertEquals("get_my_deadlines_and_rating", payload.at("/tools/0/function/name").stringValue());
+        assertFalse(payload.at("/tools/0/function/parameters/additionalProperties").booleanValue(true));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"{\"period\":\"all_students\"}", "{\"period\":\"active\",\"email\":\"other@example.test\"}", "malformed"})
+    void ignoresInvalidStudentSummaryArguments(String arguments) throws IOException {
+        var service = service(200, toolCompletion(arguments));
+        var result = service.ask("Что у меня ещё висит?", Set.of("ROLE_STUDENT"));
+
+        assertNull(result.studentPeriod());
+        assertEquals(AssistantHelpService.Mode.GUIDE, result.mode());
+        assertTrue(result.answer().contains("Мои дедлайны и рейтинг"));
+    }
+
+    @Test
+    void retriesWithoutToolsWhenProviderPrintsFunctionSyntax() throws IOException {
+        String answer = "Откройте «Задания» и приложите решение.";
+        var service = service(200, payload -> completion(payload.has("tools")
+            ? "```json\n{\"name\":\"get_my_deadline_rating\"}\n```"
+            : answer));
+        var result = service.ask("Куда нажать, чтобы приложить решение?", Set.of("ROLE_STUDENT"));
+
+        assertEquals(answer, result.answer());
+        assertEquals(AssistantHelpService.Mode.MODEL, result.mode());
+        assertNull(result.studentPeriod());
+        assertFalse(request.get().has("tools"));
     }
 
     @Test
     void keepsHelpAvailableOnProviderErrorAndDoesNotSendUnrelatedQuestions() throws IOException {
         var service = service(429, "{ \"detail\": \"provider-account-data\" }");
-        var unrelated = service.ask("Какая погода в Брянске?", Set.of("ROLE_STUDENT"));
+        var unrelated = service.ask("Какая погода в Брянске?", Set.of("ROLE_TEACHER"));
         assertEquals(AssistantHelpService.Mode.GUIDE, unrelated.mode());
         assertTrue(unrelated.sources().isEmpty());
         assertNull(request.get());
@@ -101,13 +148,23 @@ class AssistantHelpServiceTest {
         return json.writeValueAsString(Map.of("choices", List.of(Map.of("message", Map.of("content", text)))));
     }
 
+    private String toolCompletion(String arguments) {
+        var call = Map.of("type", "function", "function", Map.of("name", "get_my_deadlines_and_rating", "arguments", arguments));
+        return json.writeValueAsString(Map.of("choices", List.of(Map.of("message", Map.of("tool_calls", List.of(call))))));
+    }
+
     private AssistantHelpService service(int status, String response) throws IOException {
+        return service(status, payload -> response);
+    }
+
+    private AssistantHelpService service(int status, Function<JsonNode, String> response) throws IOException {
         provider = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
         provider.createContext("/proxy/v1/chat/completions", exchange -> {
             try (exchange) {
                 authorization.set(exchange.getRequestHeaders().getFirst("Authorization"));
-                request.set(json.readTree(exchange.getRequestBody()));
-                byte[] body = response.getBytes(StandardCharsets.UTF_8);
+                var payload = json.readTree(exchange.getRequestBody());
+                request.set(payload);
+                byte[] body = response.apply(payload).getBytes(StandardCharsets.UTF_8);
                 exchange.getResponseHeaders().set("Content-Type", "application/json; charset=utf-8");
                 exchange.sendResponseHeaders(status, body.length);
                 exchange.getResponseBody().write(body);

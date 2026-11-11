@@ -120,22 +120,29 @@ test('MCP показывает задания и АР вошедшего сту�
     const { result: otherActive } = await (await summary(other.request, otherVersion, { period: 'active' })).json();
     expect(JSON.stringify(otherActive.structuredContent)).not.toContain(futureTitle);
 
+    const questions: string[] = [];
+    await student.route('**/api/assistant/ask', async route => {
+      questions.push(route.request().postDataJSON().question);
+      await route.fulfill({ json: { answer: '', sources: [], mode: 'MODEL', studentPeriod: 'active' } });
+    });
     await student.setViewportSize({ width: 320, height: 800 });
     await student.goto('/profile');
     await student.getByRole('button', { name: 'Помощник', exact: true }).click();
     const panel = student.getByRole('dialog', { name: 'Помощник' });
-    await panel.getByLabel('Сообщение помощнику').fill('Что мне сдавать на этой неделе?');
     const mcpResult = student.waitForResponse(response => response.url().endsWith(endpoint)
-      && response.request().postDataJSON()?.method === 'tools/call');
-    await panel.getByRole('button', { name: 'Отправить', exact: true }).click();
+      && response.request().postDataJSON()?.params?.arguments?.period === 'this_week');
+    await panel.getByRole('button', { name: 'Мои дедлайны и рейтинг', exact: true }).click();
     expect((await mcpResult).status()).toBe(200);
     const assignmentLink = panel.getByRole('link', { name: title });
     await expect(assignmentLink).toHaveAttribute('href', path);
     await expect(assignmentLink).toContainText('Просрочено');
     await expect(assignmentLink).toContainText(/Списано 1\s*АР/);
+    await expect(panel.getByRole('button', { name: 'Мои дедлайны и рейтинг', exact: true })).toBeEnabled();
+    expect(questions).toEqual([]);
     const summaries = panel.getByRole('region', { name: 'Мои дедлайны и рейтинг' });
+    const typedQuestions = ['Какие у меня есть задачи?', 'Какие у меня задачи есть', 'задачи'];
     let expectedSummaries = 1;
-    for (const question of ['Какие у меня есть задачи?', 'Какие у меня задачи есть', 'задачи']) {
+    for (const question of typedQuestions) {
       await panel.getByLabel('Сообщение помощнику').fill(question);
       const response = student.waitForResponse(reply => reply.url().endsWith(endpoint)
         && reply.request().postDataJSON()?.params?.arguments?.period === 'active');
@@ -146,6 +153,7 @@ test('MCP показывает задания и АР вошедшего сту�
       await expect(latest.getByRole('heading', { name: 'Активные задания' })).toBeVisible();
       await expect(latest.getByRole('link', { name: futureTitle })).toBeVisible();
     }
+    expect(questions).toEqual(typedQuestions);
     expect(await student.evaluate(() => document.documentElement.scrollWidth)).toBe(320);
     await panel.getByRole('link', { name: title }).last().click();
     await expect(student).toHaveURL(new URL(path, student.url()).href);
