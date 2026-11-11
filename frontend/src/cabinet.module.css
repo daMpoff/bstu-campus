@@ -3,15 +3,19 @@
   --three-columns: repeat(3, minmax(0, 1fr));
   min-width: 0; padding: var(--cabinet-top) clamp(16px, 2vw, 34px) 40px;
 }
-.identity { display: flex; align-items: center; gap: clamp(12px, 1.2vw, 20px); margin-bottom: var(--cabinet-gap); }
+.identity {
+  --identity-gap: clamp(12px, 1.2vw, 20px);
+  display: flex; align-items: center; gap: var(--identity-gap); margin-bottom: var(--cabinet-gap);
+}
 .identityCopy { flex: 1; min-width: 0; overflow-wrap: anywhere; }
-.identityTitle { font-size: clamp(1.5rem, 3vw, 2rem); line-height: 1.1; letter-spacing: -.032em; font-weight: 800; }
+.identityHeading { display: flex; align-items: center; justify-content: space-between; gap: var(--identity-gap); }
+.identityHeading button { flex: none; }
+.identityTitle { min-width: 0; font-size: clamp(1.5rem, 3vw, 2rem); line-height: 1.1; letter-spacing: -.032em; font-weight: 800; }
 .subtitle { margin-top: 6px; color: var(--muted); font-size: .875rem; line-height: 1.5; }
 .avatar {
   display: grid; place-items: center; flex: none; width: var(--cabinet-avatar); aspect-ratio: 1;
   border-radius: 50%; color: var(--accent); background: var(--tint); font-size: 1.125rem; font-weight: 800;
 }
-.identity button { flex: none; }
 .metrics {
   display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--column-gap);
   margin: 0 0 clamp(20px, 2vw, 34px);

@@ -131,7 +131,7 @@ function ProfileScreen({ studentId, ownProfile, pendingGroup, themeToggle }: {
   }
 
   return <CabinetPage name={student?.fullName} subtitle={subtitle} themeToggle={themeToggle}>
-    {pendingGroup && <p className={`panel ${cabinet.section}`} role="status">
+    {pendingGroup && <p className={`panel ${cabinet.section} ${s.pendingGroup}`} role="status">
       Группа ожидает подтверждения преподавателем. После подтверждения здесь появятся задания группы.
     </p>}
     {error && <div className={s.feedback}>

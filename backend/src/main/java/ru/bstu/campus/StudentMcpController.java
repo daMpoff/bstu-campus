@@ -32,6 +32,7 @@ class StudentMcpController {
     private static final String DEFAULT_PERIOD = "this_week";
     private static final Map<String, StudentDeadlineService.Period> PERIODS = Map.of(
         DEFAULT_PERIOD, StudentDeadlineService.Period.THIS_WEEK,
+        "active", StudentDeadlineService.Period.ACTIVE,
         "next_week", StudentDeadlineService.Period.NEXT_WEEK,
         "next_7_days", StudentDeadlineService.Period.NEXT_7_DAYS
     );
@@ -50,8 +51,8 @@ class StudentMcpController {
             .build();
         var inputSchema = Map.<String, Object>of(
             "type", "object",
-            "properties", Map.of("period", Map.of("type", "string", "enum", List.of(DEFAULT_PERIOD, "next_week", "next_7_days"),
-                "default", DEFAULT_PERIOD, "description", "Период по московскому времени.")),
+            "properties", Map.of("period", Map.of("type", "string", "enum", List.of(DEFAULT_PERIOD, "next_week", "next_7_days", "active"),
+                "default", DEFAULT_PERIOD, "description", "Период по московскому времени или active для всех активных заданий.")),
             "additionalProperties", false
         );
         var tool = McpSchema.Tool.builder("get_my_deadlines_and_rating", inputSchema)

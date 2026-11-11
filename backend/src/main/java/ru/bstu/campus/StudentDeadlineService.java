@@ -32,7 +32,7 @@ class StudentDeadlineService {
         this.clock = clock;
     }
 
-    enum Period { THIS_WEEK, NEXT_WEEK, NEXT_7_DAYS }
+    enum Period { ACTIVE, THIS_WEEK, NEXT_WEEK, NEXT_7_DAYS }
 
     record DateRange(LocalDate startDate, LocalDate endDate) {}
     record Deadline(long id, String title, Instant deadline, String status, int deducted) {}
@@ -55,25 +55,31 @@ class StudentDeadlineService {
         LocalDate start = switch (period) {
             case THIS_WEEK -> monday;
             case NEXT_WEEK -> monday.plusWeeks(1);
-            case NEXT_7_DAYS -> today;
+            case ACTIVE, NEXT_7_DAYS -> today;
         };
         LocalDate end = start.plusDays(7);
+        boolean active = period == Period.ACTIVE;
         var rows = deadlines(account.id(), now, start.atStartOfDay(MOSCOW).toInstant(),
-            end.atStartOfDay(MOSCOW).toInstant());
+            end.atStartOfDay(MOSCOW).toInstant(), active);
         var inPeriod = rows.stream().filter(row -> !row.earlierOverdue()).toList();
         var overdue = rows.stream().filter(DeadlineRow::earlierOverdue).toList();
-        return new Summary(new DateRange(start, end.minusDays(1)), account.rating(),
+        return new Summary(active ? null : new DateRange(start, end.minusDays(1)), account.rating(),
             inPeriod.stream().map(DeadlineRow::deadline).toList(), overdue.stream().map(DeadlineRow::deadline).toList(),
             history(account.id()), total(inPeriod), total(overdue));
     }
 
-    private List<DeadlineRow> deadlines(long student, Instant now, Instant start, Instant end) {
+    private List<DeadlineRow> deadlines(long student, Instant now, Instant start, Instant end, boolean active) {
         return db.sql("""
             WITH matching AS (
-                SELECT a.id, a.title, a.deadline, w.status, w.deducted, a.deadline < :start AS earlier_overdue
+                SELECT a.id, a.title, a.deadline, w.status, w.deducted,
+                       CASE WHEN :active THEN a.deadline <= :now AND w.status IN ('OPEN', 'RETURNED')
+                            ELSE a.deadline < :start END AS earlier_overdue
                 FROM student_work w JOIN assignment a ON a.id = w.assignment_id
-                WHERE w.student_id = :student AND a.deadline < :end AND
-                      (a.deadline >= :start OR (a.deadline <= :now AND w.status IN ('OPEN', 'RETURNED')))
+                WHERE w.student_id = :student AND (
+                    (:active AND w.status <> 'ACCEPTED')
+                    OR (NOT :active AND a.deadline < :end AND
+                        (a.deadline >= :start OR (a.deadline <= :now AND w.status IN ('OPEN', 'RETURNED'))))
+                )
             ), ranked AS (
                 SELECT matching.*, count(*) OVER (PARTITION BY earlier_overdue) AS total,
                        row_number() OVER (PARTITION BY earlier_overdue ORDER BY deadline, id) AS position
@@ -82,7 +88,7 @@ class StudentDeadlineService {
             SELECT id, title, deadline, status, deducted, earlier_overdue, total FROM ranked
             WHERE position <= :limit
             ORDER BY earlier_overdue, position
-            """).param("student", student).param("now", AssignmentService.timestamp(now))
+            """).param("student", student).param("now", AssignmentService.timestamp(now)).param("active", active)
             .param("start", AssignmentService.timestamp(start)).param("end", AssignmentService.timestamp(end))
             .param("limit", DEADLINE_LIMIT).query((row, index) -> {
                 var deadline = row.getObject("deadline", OffsetDateTime.class).toInstant();

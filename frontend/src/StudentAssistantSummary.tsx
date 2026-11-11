@@ -24,18 +24,23 @@ function DeadlineList({ items, total, onNavigate }: { items: AssistantDeadline[]
   </>;
 }
 
-export function StudentAssistantSummary({ data, onNavigate }: { data: StudentAssistantResult; onNavigate: () => void }) {
+export function StudentAssistantSummary({ data, pendingGroup, onNavigate }: {
+  data: StudentAssistantResult; pendingGroup: boolean; onNavigate: () => void;
+}) {
   const { period, rating, assignments, overdue, ratingHistory, assignmentsTotal, overdueTotal } = data;
   return <section className={s.summary} aria-label="Мои дедлайны и рейтинг">
     <h3>Мои дедлайны и рейтинг</h3>
     <p className={s.summaryRating}>Академический рейтинг <strong>{rating} из 1000 АР</strong></p>
     <div className={s.summaryGroup}>
-      <h4>Задания с {date.format(new Date(period.startDate))} по {date.format(new Date(period.endDate))}</h4>
+      <h4>{period ? <>Задания с {date.format(new Date(period.startDate))} по {date.format(new Date(period.endDate))}</>
+        : 'Активные задания'}</h4>
       {assignments.length ? <DeadlineList items={assignments} total={assignmentsTotal} onNavigate={onNavigate} />
-        : <p className={s.summaryHint}>На эти даты заданий нет.</p>}
+        : <p className={s.summaryHint}>{pendingGroup && !overdue.length
+          ? 'Группа ожидает подтверждения преподавателем. После подтверждения здесь появятся задания группы.'
+          : period ? 'На эти даты заданий нет.' : 'Активных заданий пока нет.'}</p>}
     </div>
     {overdue.length > 0 && <div className={s.summaryGroup}>
-      <h4>Просроченные задания до этого периода</h4>
+      <h4>{period ? 'Просроченные задания до этого периода' : 'Просроченные задания'}</h4>
       <DeadlineList items={overdue} total={overdueTotal} onNavigate={onNavigate} />
     </div>}
     {ratingHistory.length > 0 && <div className={s.summaryGroup}>

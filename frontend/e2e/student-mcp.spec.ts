@@ -57,6 +57,16 @@ test('MCP показывает задания и АР вошедшего сту�
     });
     expect(assignment.status()).toBe(201);
     const { assignmentId, path } = await assignment.json();
+    const futureTitle = 'Задание через две недели ' + randomUUID();
+    const future = await teacher.request.post('/api/assistant/assignments', {
+      headers: await csrf(teacher.request),
+      multipart: {
+        requestId: randomUUID(), recipientId: String(account.id), title: futureTitle,
+        description: 'Дедлайн за пределами ближайшей недели.',
+        deadline: new Date(Date.now() + 14 * 86_400_000).toISOString(), penaltyLimit: '1',
+      },
+    });
+    expect(future.status()).toBe(201);
 
     expect((await rpc(request, 'tools/list')).status()).toBe(401);
     expect((await rpc(teacher.request, 'tools/list')).status()).toBe(403);
@@ -101,6 +111,15 @@ test('MCP показывает задания и АР вошедшего сту�
       .toBe(7 * 86_400_000);
     expect(nextWeek.result.structuredContent.overdue).toEqual(expect.arrayContaining([row]));
 
+    const { result: activeResult } = await (await summary(student.request, studentVersion, { period: 'active' })).json();
+    const active = activeResult.structuredContent;
+    expect(active.period).toBeNull();
+    expect(active.assignments).toEqual(expect.arrayContaining([expect.objectContaining({ title: futureTitle })]));
+    expect(active.overdue).toEqual(expect.arrayContaining([row]));
+    expect(active.assignments.some((item: { status: string }) => item.status === 'ACCEPTED')).toBe(false);
+    const { result: otherActive } = await (await summary(other.request, otherVersion, { period: 'active' })).json();
+    expect(JSON.stringify(otherActive.structuredContent)).not.toContain(futureTitle);
+
     await student.setViewportSize({ width: 320, height: 800 });
     await student.goto('/profile');
     await student.getByRole('button', { name: 'Помощник', exact: true }).click();
@@ -114,8 +133,21 @@ test('MCP показывает задания и АР вошедшего сту�
     await expect(assignmentLink).toHaveAttribute('href', path);
     await expect(assignmentLink).toContainText('Просрочено');
     await expect(assignmentLink).toContainText(/Списано 1\s*АР/);
+    const summaries = panel.getByRole('region', { name: 'Мои дедлайны и рейтинг' });
+    let expectedSummaries = 1;
+    for (const question of ['Какие у меня есть задачи?', 'Какие у меня задачи есть', 'задачи']) {
+      await panel.getByLabel('Сообщение помощнику').fill(question);
+      const response = student.waitForResponse(reply => reply.url().endsWith(endpoint)
+        && reply.request().postDataJSON()?.params?.arguments?.period === 'active');
+      await panel.getByRole('button', { name: 'Отправить', exact: true }).click();
+      expect((await response).ok()).toBeTruthy();
+      await expect(summaries).toHaveCount(++expectedSummaries);
+      const latest = summaries.last();
+      await expect(latest.getByRole('heading', { name: 'Активные задания' })).toBeVisible();
+      await expect(latest.getByRole('link', { name: futureTitle })).toBeVisible();
+    }
     expect(await student.evaluate(() => document.documentElement.scrollWidth)).toBe(320);
-    await assignmentLink.click();
+    await panel.getByRole('link', { name: title }).last().click();
     await expect(student).toHaveURL(new URL(path, student.url()).href);
   } finally {
     await Promise.all([teacher.close(), student.close(), other.close()]);

@@ -1,6 +1,6 @@
 import { apiResponse, type Status } from './api';
 
-type Period = 'this_week' | 'next_week' | 'next_7_days';
+type Period = 'active' | 'this_week' | 'next_week' | 'next_7_days';
 
 export type AssistantDeadline = {
   id: number;
@@ -11,7 +11,7 @@ export type AssistantDeadline = {
 };
 
 export type StudentAssistantResult = {
-  period: { startDate: string; endDate: string };
+  period: { startDate: string; endDate: string } | null;
   rating: number;
   assignments: AssistantDeadline[];
   overdue: AssistantDeadline[];
@@ -28,20 +28,24 @@ export type StudentAssistantResult = {
 export function studentAssistantPeriod(question: string): Period | null {
   const words = question.toLowerCase().replaceAll('ё', 'е').match(/[\p{L}\p{N}]+/gu)?.join(' ') ?? '';
   const personal = /(?:^| )(?:у меня|мне|меня|мой|моя|мое|мои|моих|моим)(?= |$)/u.test(words);
-  const work = /задани|дедлайн|срок сдачи|просроч/u.test(words);
-  const list = /^(?:покажи|напомни|скажи|перечисли|какие|какой|каков|когда|есть ли|сколько)(?= |$)/u.test(words);
+  const tasks = /(?:^| )(?:задани\p{L}*|задач\p{L}*)(?= |$)/u.test(words);
+  const work = tasks || /дедлайн|срок сдачи|просроч/u.test(words);
+  const list = /^(?:покажи|напомни|скажи|перечисли|какие|какой|каков|когда|есть ли|у меня есть|сколько)(?= |$)/u.test(words);
   const nextWeek = /(?:следующ|будущ)\p{L}* недел/u.test(words);
   const nextSevenDays = /(?:ближайш\p{L}*|следующ\p{L}*|через) (?:7|семь) дн/u.test(words);
   const week = nextWeek || nextSevenDays || /эт\p{L}* недел|на недел/u.test(words);
   const toSubmit = /^что (?:(?:мне|надо|нужно|осталось|еще) )*сда(?:ть|вать)(?= |$)/u.test(words);
-  const upcoming = /ближайш\p{L}* (?:учебн\p{L}* )?(?:задани|дедлайн)/u.test(words);
-  const myWork = /^(?:мои|мой) (?:задани|дедлайн)/u.test(words);
+  const upcoming = /ближайш\p{L}* (?:учебн\p{L}* )?(?:задани|задач|дедлайн)/u.test(words);
+  const myWork = /^(?:мои|мой|моя|мое) (?:задани|задач|дедлайн)/u.test(words);
+  const taskList = /^(?:(?:покажи|перечисли) )?(?:активные )?(?:задачи|задания)$/u.test(words)
+    || (tasks && (myWork || (personal && list)));
   const myRating = /^(?:мой|мои) (?:академическ\p{L}* )?(?:рейтинг|ар(?= |$))/u.test(words)
     || (personal && list && /(?:^| )(?:рейтинг\p{L}*|ар)(?= |$)/u.test(words));
   const deductions = /^сколько /u.test(words) && /(?:^| )(?:списали|списано|сняли)(?= |$)/u.test(words);
-  if (!toSubmit && !upcoming && !myWork && !myRating && !deductions && !(work && list && (personal || week))) return null;
+  if (!taskList && !toSubmit && !upcoming && !myWork && !myRating && !deductions && !(work && list && (personal || week))) return null;
   if (nextWeek) return 'next_week';
   if (nextSevenDays || (upcoming && !week)) return 'next_7_days';
+  if (!week && (taskList || toSubmit)) return 'active';
   return 'this_week';
 }
 
@@ -78,8 +82,10 @@ export async function getStudentAssistantSummary(period: Period, signal: AbortSi
     name: 'get_my_deadlines_and_rating', arguments: { period },
   }, signal, 2, version), 2);
   const summary = result.structuredContent;
-  if (result.isError || !summary || !summary.period || !Number.isFinite(summary.rating)
-    || !Number.isFinite(Date.parse(summary.period.startDate)) || !Number.isFinite(Date.parse(summary.period.endDate))
+  const range = summary?.period;
+  const validPeriod = period === 'active' ? range === null
+    : range && Number.isFinite(Date.parse(range.startDate)) && Number.isFinite(Date.parse(range.endDate));
+  if (result.isError || !summary || !validPeriod || !Number.isFinite(summary.rating)
     || !Array.isArray(summary.assignments) || !Array.isArray(summary.overdue) || !Array.isArray(summary.ratingHistory)) {
     throw new Error(failure);
   }

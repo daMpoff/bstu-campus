@@ -1,4 +1,5 @@
 .feedback { display: flex; flex-wrap: wrap; gap: .75rem; align-items: center; margin-bottom: 1rem; }
+.pendingGroup { margin-block-end: var(--column-gap); }
 dd.ratingValue { align-items: center; gap: clamp(.6rem, 1vw, 1rem); white-space: nowrap; }
 .ratingValue strong { color: var(--accent); }
 dd.ratingValue small { font-size: 1rem; }

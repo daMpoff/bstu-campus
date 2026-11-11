@@ -10,10 +10,12 @@ export function CabinetPage({ name, subtitle, themeToggle, nameHeading = true, c
     <header className={s.identity} data-cabinet-header>
       {initials && <span className={s.avatar} aria-hidden="true">{initials}</span>}
       <div className={s.identityCopy}>
-        <Title className={s.identityTitle}>{name ?? 'Профиль студента'}</Title>
+        <div className={s.identityHeading}>
+          <Title className={s.identityTitle}>{name ?? 'Профиль студента'}</Title>
+          {themeToggle}
+        </div>
         {subtitle && <p className={s.subtitle}>{subtitle}</p>}
       </div>
-      {themeToggle}
     </header>
     {children}
   </main>;

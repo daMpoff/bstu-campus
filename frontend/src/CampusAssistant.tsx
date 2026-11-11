@@ -292,15 +292,15 @@ export function CampusAssistant({ user }: { user: Account }) {
       searchPeople(intent.query);
       return;
     }
-    if (transfer && !recipient && /^[\p{L}][\p{L}\p{M}.'’\s-]+$/u.test(question) && question.split(/\s+/).length <= 4) {
-      searchPeople(question);
-      return;
-    }
     const period = user.role === 'STUDENT' ? studentAssistantPeriod(question) : null;
     if (period) {
       void request('ask', signal => getStudentAssistantSummary(period, signal), summary => {
         setMessages(current => [...current, { summary }]);
       });
+      return;
+    }
+    if (transfer && !recipient && /^[\p{L}][\p{L}\p{M}.'’\s-]+$/u.test(question) && question.split(/\s+/).length <= 4) {
+      searchPeople(question);
       return;
     }
     void request('ask', signal => api<HelpAnswer>('/assistant/ask', {
@@ -359,7 +359,7 @@ export function CampusAssistant({ user }: { user: Account }) {
           </div>}
           {messages.map((entry, index) => 'summary' in entry ? <div key={index} className={`${s.answer} ${s.summaryAnswer}`}
             ref={index === messages.length - 1 ? latestSummary : undefined}>
-            <StudentAssistantSummary data={entry.summary} onNavigate={close} />
+            <StudentAssistantSummary data={entry.summary} pendingGroup={!user.groupVerified} onNavigate={close} />
           </div> : <div key={index} className={entry.sender === 'user' ? s.user : s.answer}>
             <p>{entry.text}</p>
             {Boolean(entry.sources?.length) && <ul className={s.sources}>{entry.sources?.map(source =>
