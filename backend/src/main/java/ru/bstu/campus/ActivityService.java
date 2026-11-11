@@ -3,6 +3,7 @@ package ru.bstu.campus;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -23,7 +24,7 @@ class ActivityService {
     private static final ZoneId MOSCOW = ZoneId.of("Europe/Moscow");
     private static final Set<Integer> LEVELS = Set.of(25, 50, 75, 100);
     private static final String ACTIVITY_FIELDS = """
-        a.id, a.title, a.description, a.occurs_at, a.max_points, a.kind, t.full_name AS teacher_name,
+        a.id, a.title, a.description, a.occurs_at, a.max_points, a.kind, a.attendance_format, t.full_name AS teacher_name,
         ARRAY(SELECT g.name FROM activity_group ag JOIN study_group g ON g.id = ag.group_id
               WHERE ag.activity_id = a.id ORDER BY g.name) AS groups
         """;
@@ -40,9 +41,11 @@ class ActivityService {
     }
 
     enum Kind { ACADEMIC, PUBLIC }
-    record NewActivity(String title, String description, List<Long> groupIds, Instant occursAt, Integer maxPoints, Kind kind) {}
+    enum Format { IN_PERSON, REMOTE }
+    record NewActivity(String title, String description, List<Long> groupIds, Instant occursAt, Integer maxPoints,
+                       Kind kind, Format format) {}
     record Activity(long id, String title, String description, Instant occursAt, int maxPoints,
-                    Kind kind, String teacherName, List<String> groups) {}
+                    Kind kind, Format format, String teacherName, List<String> groups) {}
     record StudentActivity(Activity activity, boolean enrolled, boolean canEnroll, Integer participation, BigDecimal points) {}
     record Participant(long studentId, String studentName, String groupName, Integer participation, BigDecimal points) {}
     record Budget(long groupId, String groupName, BigDecimal spent, BigDecimal remaining, int limit, int awards) {}
@@ -96,11 +99,12 @@ class ActivityService {
         }
         Kind kind = input.kind() == null ? Kind.ACADEMIC : input.kind();
         long id = db.sql("""
-            INSERT INTO activity (teacher_id, title, description, occurs_at, max_points, kind)
-            VALUES (:teacher, :title, :description, :date, :points, :kind) RETURNING id
+            INSERT INTO activity (teacher_id, title, description, occurs_at, max_points, kind, attendance_format)
+            VALUES (:teacher, :title, :description, :date, :points, :kind, :format) RETURNING id
             """).param("teacher", teacher).param("title", title).param("description", description)
             .param("date", AssignmentService.timestamp(input.occursAt())).param("points", input.maxPoints())
             .param("kind", kind.name())
+            .param("format", input.format() == null ? null : input.format().name(), Types.VARCHAR)
             .query(Long.class).single();
         db.sql("""
             INSERT INTO activity_group (activity_id, group_id)
@@ -243,9 +247,11 @@ class ActivityService {
     }
 
     private static Activity activity(ResultSet row) throws SQLException {
+        String format = row.getString("attendance_format");
         return new Activity(row.getLong("id"), row.getString("title"), row.getString("description"),
             row.getObject("occurs_at", OffsetDateTime.class).toInstant(), row.getInt("max_points"),
-            Kind.valueOf(row.getString("kind")), row.getString("teacher_name"), List.of((String[]) row.getArray("groups").getArray()));
+            Kind.valueOf(row.getString("kind")), format == null ? null : Format.valueOf(format), row.getString("teacher_name"),
+            List.of((String[]) row.getArray("groups").getArray()));
     }
 
     static LocalDate budgetMonth(Instant now) {

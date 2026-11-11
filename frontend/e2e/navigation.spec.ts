@@ -77,5 +77,6 @@ test('преподаватель и администратор доходят д
   await navigate(page, '/admin', [button('Импорт CSV')], button('Импортировать'));
   await navigate(page, '/admin', [button('Настройки')], button('Сохранить настройки'));
   await navigate(page, '/admin?tab=settings', [], button('Сохранить настройки'));
+  await navigate(page, '/admin', [menu('Подтверждение группы')], heading('Подтверждение группы'));
   await navigate(page, '/admin', [menu('Лента наград')], heading('Лента наград'));
 });

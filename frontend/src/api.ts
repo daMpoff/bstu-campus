@@ -1,7 +1,7 @@
 export type Role = 'TEACHER' | 'STUDENT' | 'ADMIN';
 export type Account = {
   id: number; fullName: string; role: Role; groupName: string | null; rating: number;
-  facultyName: string | null; departmentName: string | null; groupVerified: boolean;
+  facultyName: string | null; departmentName: string | null; groupVerified: boolean; groupLeader: boolean;
 };
 export type Group = { id: number; name: string };
 export type RegistrationCatalog = {
@@ -19,9 +19,10 @@ export type PendingWork = Attachment & {
 export type TeacherDashboardData = { assignments: TeacherAssignment[]; pendingWorks: PendingWork[] };
 export type RankedStudent = { id: number; fullName: string; rating: number };
 export type ActivityKind = 'ACADEMIC' | 'PUBLIC';
+export type ActivityFormat = 'IN_PERSON' | 'REMOTE';
 export type Activity = {
   id: number; title: string; description: string; occursAt: string; maxPoints: number;
-  kind: ActivityKind; teacherName: string; groups: string[];
+  kind: ActivityKind; format: ActivityFormat | null; teacherName: string; groups: string[];
 };
 export type ParticipationLevel = 25 | 50 | 75 | 100;
 export type ActivityParticipation = { participation: ParticipationLevel | null; points: number | null };
@@ -43,7 +44,7 @@ export type ProfileAssignment = Pick<StudentAssignment, 'id' | 'title' | 'deadli
 export type StudentProfileData = {
   student: {
     id: number; fullName: string; facultyName: string | null; groupName: string; rating: number;
-    academicActivityPoints: number; publicActivityPoints: number;
+    academicActivityPoints: number; publicActivityPoints: number; arPlace: number | null;
   };
   personal: {
     assignments: ProfileAssignment[];

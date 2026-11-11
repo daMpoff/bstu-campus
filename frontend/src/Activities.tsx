@@ -1,6 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
-import { post, type Activity, type ActivityDetail, type ActivityKind, type ActivityParticipant, type Group, type ParticipationLevel, type StudentActivity } from './api';
+import { post, type Activity, type ActivityDetail, type ActivityFormat, type ActivityKind, type ActivityParticipant, type Group, type ParticipationLevel, type StudentActivity } from './api';
 import { dateTime } from './Assignments';
 import { activityPointLabel, formatPoints } from './points';
 import { TargetGroups } from './TargetGroups';
@@ -11,6 +11,7 @@ import s from './activities.module.css';
 
 const levels: ParticipationLevel[] = [25, 50, 75, 100];
 const activityLabels = { ACADEMIC: 'Учебная', PUBLIC: 'Общественная' };
+export const activityFormatLabels: Record<ActivityFormat, string> = { IN_PERSON: 'Очно', REMOTE: 'Заочно' };
 const panel = `panel ${cabinet.section}`;
 const monthFormatter = new Intl.DateTimeFormat('ru-RU', { month: 'long', year: 'numeric', timeZone: 'UTC' });
 const failureText = (failure: unknown) => failure instanceof Error ? failure.message : 'Не удалось выполнить запрос.';
@@ -29,8 +30,11 @@ function ActivityGroups({ groups }: { groups: string[] }) {
   return <div className={s.groups}>{groups.map(group => <span key={group}>{group}</span>)}</div>;
 }
 
-function ActivityKindLabel({ kind }: { kind: ActivityKind }) {
-  return <span className={s.kind} data-public={kind === 'PUBLIC'}>{activityLabels[kind]}</span>;
+function ActivityLabels({ kind, format }: Pick<Activity, 'kind' | 'format'>) {
+  return <div className={s.labels}>
+    <span className={s.kind} data-public={kind === 'PUBLIC'}>{activityLabels[kind]}</span>
+    {format && <span className={s.format}>{activityFormatLabels[format]}</span>}
+  </div>;
 }
 
 export function TeacherActivities() {
@@ -42,7 +46,7 @@ export function TeacherActivities() {
     {data?.length === 0 && <p className={panel}>Активностей пока нет.</p>}
     <div className={s.cards}>{data?.map(activity => <article className={panel} key={activity.id}>
       <div className={s.cardHeading}><h2><Link to={`/activities/${activity.id}`}>{activity.title}</Link></h2>
-        <ActivityKindLabel kind={activity.kind} /></div>
+        <ActivityLabels kind={activity.kind} format={activity.format} /></div>
       <ActivityInfo activity={activity} />
       <ActivityGroups groups={activity.groups} />
     </article>)}</div>
@@ -87,7 +91,8 @@ export function StudentActivities() {
     {data?.length === 0 && <p className={panel}>Для вашей группы пока нет активностей.</p>}
     <div className={s.cards}>{data?.map(({ activity, participation, points, enrolled, canEnroll }) => <article
       className={`${panel} ${s.activityAnchor}`} key={activity.id} id={`activity-${activity.id}`} aria-labelledby={`activity-title-${activity.id}`} tabIndex={-1}>
-      <div className={s.cardHeading}><h2 id={`activity-title-${activity.id}`}>{activity.title}</h2><ActivityKindLabel kind={activity.kind} /></div>
+      <div className={s.cardHeading}><h2 id={`activity-title-${activity.id}`}>{activity.title}</h2>
+        <ActivityLabels kind={activity.kind} format={activity.format} /></div>
       <ActivityInfo activity={activity} />
       <p className={s.meta}>Преподаватель · {activity.teacherName}</p>
       {points !== null ? <p className={s.earned}>Участие {participation}% · +{formatPoints(points)} {activityPointLabel(activity.kind)}</p>
@@ -122,7 +127,7 @@ export function NewActivity() {
     setError('');
     try {
       const result = await post<{ id: number }>('/teacher/activities', {
-        title: fields.get('title'), description: fields.get('description'), groupIds: selected, kind,
+        title: fields.get('title'), description: fields.get('description'), groupIds: selected, kind, format: fields.get('format'),
         occursAt: new Date(`${fields.get('date')}T${fields.get('time')}:00+03:00`).toISOString(),
         maxPoints: Number(fields.get('points')),
       });
@@ -142,6 +147,11 @@ export function NewActivity() {
         <select aria-label="Тип активности" value={kind} onChange={event => setKind(event.target.value === 'PUBLIC' ? 'PUBLIC' : 'ACADEMIC')}>
           <option value="ACADEMIC">Учебная · БУА</option>
           <option value="PUBLIC">Общественная · БОА</option>
+        </select>
+      </label>
+      <label className={form.field}><span>Формат проведения</span>
+        <select name="format" defaultValue="IN_PERSON" required>
+          {Object.entries(activityFormatLabels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
         </select>
       </label>
       <label className={form.field}><span>Название</span><input name="title" maxLength={160} required /></label>
@@ -222,7 +232,8 @@ function ActivityScreen({ id }: { id: string }) {
     {error && <p className="error" role="alert">{error}</p>}
     {!data && !error && <p className="muted" role="status">Загружаем активность…</p>}
     {data && <>
-      <div className={s.heading}><div><div className={s.cardHeading}><h1>{data.activity.title}</h1><ActivityKindLabel kind={data.activity.kind} /></div><ActivityInfo activity={data.activity} />
+      <div className={s.heading}><div><div className={s.cardHeading}><h1>{data.activity.title}</h1>
+        <ActivityLabels kind={data.activity.kind} format={data.activity.format} /></div><ActivityInfo activity={data.activity} />
         <ActivityGroups groups={data.activity.groups} /></div></div>
       <div className={cabinet.sections}>
         <section className={`${panel} ${cabinet.widePanel}`} aria-labelledby="participants-title">

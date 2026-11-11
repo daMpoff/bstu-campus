@@ -9,25 +9,26 @@
 .brand { color: var(--accent); display: flex; gap: .65rem; align-items: center; text-decoration: none; line-height: 1; flex: none; }
 .brandLogo { display: block; width: 48px; height: 48px; padding: 4px; border-radius: 50%; background: var(--accent-strong); }
 .brand strong { font-size: 1.62rem; letter-spacing: .035em; }
-.brand small { display: block; margin-top: .28rem; font-size: .58rem; font-weight: 800; color: var(--muted); letter-spacing: .1em; }
+.brand small { display: block; margin-top: .28rem; font-size: .8125rem; font-weight: var(--weight-control); color: var(--muted); line-height: 1.18; }
 .headerActions { display: flex; align-items: center; gap: clamp(.55rem, 2vw, 1.6rem); }
 .theme {
   display: grid; place-items: center; width: 44px; height: 44px; background: var(--panel);
   border: 1px solid var(--control-border); color: var(--accent); border-radius: 50%;
-  transition: background-color var(--interaction-duration);
+  transition: background-color var(--interaction-duration) var(--interaction-ease);
 }
 .theme:hover { background: var(--tint); }
 .home { max-width: 1320px; margin: auto; padding: clamp(1rem, 2.4vw, 2rem) clamp(1rem, 4vw, 3.25rem) 0; }
 .hero {
   --focus-ring: var(--on-accent-muted);
-  position: relative; display: flex; align-items: center; overflow: hidden; min-height: clamp(24rem, 37vw, 30rem);
+  position: relative; isolation: isolate; display: flex; align-items: center; overflow: hidden; min-height: clamp(24rem, 37vw, 30rem);
   border-radius: var(--radius-panel); color: var(--on-navy); background-color: var(--navy);
-  background-image: var(--hero-scrim), var(--hero-image);
-  background-size: cover; background-position: center, center 57%;
 }
-.heroContent { position: relative; padding: 2.5rem clamp(1.25rem, 5vw, 4rem) 3rem; max-width: 44rem; }
+.heroPhoto, .hero::before { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.heroPhoto { object-fit: cover; object-position: center 57%; filter: blur(.6px); }
+.hero::before { content: ''; z-index: 1; background: var(--hero-scrim); }
+.heroContent { position: relative; z-index: 2; padding: 2.5rem clamp(1.25rem, 5vw, 4rem) 3rem; max-width: 44rem; }
 .hero h1 { font-size: clamp(4.2rem, 10vw, 8.1rem); letter-spacing: .03em; line-height: 1; margin-top: .4rem; }
-.hero p { font-size: clamp(1.3rem, 2.7vw, 2rem); font-weight: 750; margin: .4rem 0 .25rem; }
+.hero p { font-size: clamp(1.3rem, 2.7vw, 2rem); font-weight: var(--weight-heading); margin: .4rem 0 .25rem; }
 .heroDescription { color: var(--on-navy); max-width: 28rem; margin-bottom: 1.5rem; }
 .hero .heroAction {
   min-inline-size: min(100%, 12.5rem);
@@ -45,8 +46,8 @@
 .heroAction svg { flex: none; }
 .hero .heroAction:hover { background: color-mix(in srgb, var(--on-accent-muted) 72%, var(--nav-focus)); }
 .hero .heroAction:active { background: color-mix(in srgb, var(--on-accent-muted) 55%, var(--nav-focus)); }
-.address { position: absolute; right: 1.2rem; bottom: .9rem; color: var(--on-navy); font-size: .7rem; letter-spacing: .09em; font-weight: 800; text-shadow: 0 1px 4px #000; }
-.photoCredit { margin-top: .5rem; color: var(--muted); font-size: .75rem; }
+.address { position: absolute; z-index: 2; right: 1.2rem; bottom: .9rem; color: var(--on-navy); font-size: .75rem; letter-spacing: .05em; font-weight: var(--weight-control); text-shadow: 0 1px 2px #000; }
+.photoCredit { margin-top: .5rem; color: var(--muted); font-size: var(--text-small); }
 .photoCredit a { text-underline-offset: .15em; }
 .process {
   --process-divider: color-mix(in srgb, var(--on-navy) 24%, transparent);
@@ -74,7 +75,7 @@
 .processStep p { max-width: 38ch; color: var(--on-navy-muted); }
 .footer {
   margin-top: clamp(1rem, 2.5vw, 2rem); padding: .75rem 0 1.3rem;
-  border-top: 1px solid var(--border); color: var(--muted); font-size: .78rem;
+  border-top: 1px solid var(--border); color: var(--muted); font-size: var(--text-small);
 }
 .authContent h1 { margin-bottom: .45rem; }
 :global(#root):has(> .authPage) {
@@ -110,22 +111,23 @@
   box-shadow: 0 8px 20px #11162a26;
 }
 .groupForm, .groupResults[role='status'] { padding: .55rem .6rem; color: var(--muted); }
-.groupForm { font-size: .82rem; font-weight: 650; }
+.groupForm { font-size: var(--text-small); font-weight: var(--weight-control); }
 .groupOption {
-  display: flex; align-items: center; min-height: 44px; padding: .4rem .6rem;
+  display: flex; align-items: center; justify-content: space-between; gap: .5rem; min-height: 44px; padding: .4rem .6rem;
   border-radius: calc(var(--radius-control) - 3px); cursor: pointer; overflow-wrap: anywhere;
 }
+.groupOptionDetail { flex: none; color: var(--muted); font-size: var(--text-small); }
 .groupOption:hover, .groupOption[aria-selected='true'] { background: var(--tint); }
 .groupOption[aria-selected='true'] { color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent); }
 .registerPrompt { margin-top: 1rem; color: var(--muted); }
 .registerRoles { padding: 0; margin: 0; border: 0; min-width: 0; }
-.registerRoles legend { padding: 0; margin-bottom: .25rem; font-weight: 650; }
+.registerRoles legend { padding: 0; margin-bottom: .25rem; font-weight: var(--weight-control); }
 .registerRoles div { display: flex; gap: .5rem 1rem; flex-wrap: wrap; }
 .registerRoles label { display: flex; align-items: center; gap: .4rem; min-height: 40px; cursor: pointer; }
 .registerRoles input { margin: 0; }
 .passwordHint { margin-top: -.5rem; }
 .demo { border-top: 1px solid var(--border); padding-top: .9rem; }
-.demo small { color: var(--muted); font-weight: 800; letter-spacing: .07em; }
+.demo small { color: var(--muted); font-weight: var(--weight-heading); letter-spacing: .07em; }
 .demo div { display: flex; gap: .55rem; flex-wrap: wrap; }
 .loading { text-align: center; padding: 3rem 1rem; }
 .cabinet {
@@ -153,11 +155,13 @@
 .cabinetSidebar .brand { gap: 12px; min-width: 0; flex: initial; }
 .cabinetSidebar .brandLogo { width: var(--cabinet-avatar); height: var(--cabinet-avatar); background: #5a31fb; }
 .cabinetSidebar .brand strong { font-size: 1.5rem; letter-spacing: 0; }
-.cabinetSidebar .brand small { font-size: .8125rem; font-weight: 500; letter-spacing: 0; line-height: 1.25; }
+.cabinetSidebar .brand small { font-size: .8125rem; font-weight: var(--weight-control); line-height: 1.25; }
 .cabinetSidebar nav { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 5px; }
 .cabinetSidebar nav a, .logout {
   display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 8px 10px;
-  border-radius: var(--radius-control); color: var(--text); font-size: .9375rem; font-weight: 700; text-decoration: none;
+  border-radius: var(--radius-control); color: var(--text); font-size: .9375rem; font-weight: var(--weight-control); text-decoration: none;
+  transition: background-color var(--interaction-duration) var(--interaction-ease),
+    color var(--interaction-duration) var(--interaction-ease);
 }
 .cabinetSidebar nav a:hover, .cabinetSidebar nav a[aria-current='page'], .logout:hover {
   background: var(--tint); color: var(--accent);
@@ -180,7 +184,7 @@
   }
   .cabinetSidebar .brand { margin-inline-start: clamp(0px, .36vw, 6px); gap: clamp(9px, .85vw, 14px); }
   .cabinetSidebar .brandLogo { padding: 4px; }
-  .cabinetSidebar .brand small { font-size: clamp(.62rem, .84vw, .8125rem); }
+  .cabinetSidebar .brand small { font-size: clamp(.75rem, .9vw, .8125rem); }
   .cabinetSidebar nav { flex-direction: column; gap: 8px; }
   .cabinetSidebar nav a, .logout { padding-inline: 13px; font-size: 1rem; }
   .logout { align-self: start; margin-top: auto; }
@@ -205,13 +209,14 @@
   .headerActions :global(.button) { padding-inline: .65rem; }
   .headerActions :global(.button) span { display: none; }
   .brandLogo { width: 38px; height: 38px; padding: 3px; }
-  .brand small { font-size: .51rem; letter-spacing: .075em; }
-  .hero { min-height: 24rem; background-position: center, 59% center; }
+  .brand small { font-size: .75rem; }
+  .hero { min-height: 24rem; }
+  .heroPhoto { object-position: 59% center; }
   .heroDescription { max-width: 17rem; }
 }
 @media (max-width: 360px) {
   .brandLogo { width: 32px; height: 32px; }
   .brand strong { font-size: 1.35rem; }
-  .brand small { font-size: .46rem; letter-spacing: .05em; }
-  .headerActions :global(.button) { padding-inline: .5rem; font-size: .86rem; }
+  .brand small { max-inline-size: 9rem; }
+  .headerActions :global(.button) { padding-inline: .5rem; font-size: var(--text-small); }
 }

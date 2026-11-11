@@ -57,6 +57,18 @@ class DemoData implements ApplicationRunner {
             UPDATE campus_user SET department_id = (SELECT id FROM department WHERE code = 'iipo')
             WHERE email = 'teacher@bgtu.test' AND role = 'TEACHER' AND department_id IS NULL
             """).update();
+        db.sql("""
+            WITH seed AS (
+                INSERT INTO campus_demo_seed(scenario) VALUES ('group-responsibilities')
+                ON CONFLICT DO NOTHING RETURNING scenario
+            )
+            INSERT INTO group_responsible_teacher(group_id, teacher_id)
+            SELECT g.id, t.id
+            FROM seed CROSS JOIN study_group g CROSS JOIN campus_user t
+            WHERE g.name IN ('ИВТ-24', 'ИВТ-25') AND g.study_form IS NULL
+              AND t.email = 'teacher@bgtu.test' AND t.role = 'TEACHER'
+            ON CONFLICT DO NOTHING
+            """).update();
         // The SQL block reads the active rules so its deadlines and awards agree with the rest of the demo.
         var rules = settings.current();
         db.sql("SELECT set_config('campus.demo_budget', :budget, true), set_config('campus.demo_interval', :interval, true)")

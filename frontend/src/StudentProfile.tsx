@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useState, type CSSProperties, type ReactNode } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { ApiError, api, type ProfileAssignment, type StudentActivity, type StudentProfileData } from './api';
 import { canSubmitWork, DeadlineIndicator, useDeadlineClock } from './AssignmentDeadline';
 import { dateTime, StatusBadge } from './Assignments';
+import { activityFormatLabels } from './Activities';
 import { CabinetMetric, CabinetPage } from './Cabinet';
 import { activityPointLabel, formatPoints, pointLabels } from './points';
 import { useCabinetResource } from './useCabinetResource';
@@ -10,12 +11,32 @@ import cabinet from './cabinet.module.css';
 import s from './profile.module.css';
 
 const maxRating = 1000;
+const ratingTicks = [0, maxRating / 2, maxRating];
 const day = 24 * 60 * 60 * 1000;
 const byDeadline = (left: ProfileAssignment, right: ProfileAssignment) => Date.parse(left.deadline) - Date.parse(right.deadline);
 
 function assignmentPenalty(item: ProfileAssignment, rating: number | undefined) {
   if (typeof item.penaltyLimit !== 'number' || typeof item.deducted !== 'number' || rating === undefined) return undefined;
   return { limit: item.penaltyLimit, deducted: item.deducted, rating };
+}
+
+function AcademicRating({ rating, place, ownProfile }: { rating: number; place: number | null; ownProfile: boolean }) {
+  const position = { '--rating-position': `${rating / maxRating * 100}%` } as CSSProperties;
+  return <CabinetMetric label="Академический рейтинг" valueClassName={s.ratingValue}>
+    <div className={s.ratingNumber}><strong>{rating}</strong> <small>/ {maxRating}</small></div>
+    <div className={s.ratingScale} style={position} aria-hidden="true" data-rating-scale>
+      <div className={s.ratingTrack}>
+        {ratingTicks.map(tick => <span key={tick} className={s.ratingTick} />)}
+        <span className={s.ratingMarker} />
+      </div>
+      <div className={s.ratingAxis}>
+        {ratingTicks.map(tick => <span key={tick} data-current={rating === tick}>{tick}</span>)}
+      </div>
+    </div>
+    {ownProfile && <Link to="/rating" className={s.ratingPlace}>
+      {place == null ? 'Открыть рейтинг' : `Вы на ${formatPoints(place)}-м месте в рейтинге`}
+    </Link>}
+  </CabinetMetric>;
 }
 
 function SubmissionOverview({ assignments }: { assignments: ProfileAssignment[] }) {
@@ -61,6 +82,7 @@ function UpcomingEvents() {
       <p className={s.itemLabel}>{activity.kind === 'ACADEMIC' ? 'Учебная активность' : 'Общественная активность'}</p>
       <Link to={`/activities#activity-${activity.id}`} className={s.eventLink}>{activity.title}</Link>
       <p className={s.date}><time dateTime={activity.occursAt}>{dateTime(activity.occursAt)} МСК</time>
+        {activity.format && ` · ${activityFormatLabels[activity.format]}`}
         {' · до '}{formatPoints(activity.maxPoints)} {activityPointLabel(activity.kind)}</p>
     </div>}
     {poll && <div className={s.upcomingItem}>
@@ -74,7 +96,9 @@ function UpcomingEvents() {
   </section>;
 }
 
-export function StudentProfile({ user, themeToggle }: { user: { id: number; groupVerified: boolean }; themeToggle: ReactNode }) {
+export function StudentProfile({ user, themeToggle }: {
+  user: { id: number; groupVerified: boolean; groupLeader: boolean }; themeToggle: ReactNode;
+}) {
   const { id } = useParams();
   const studentId = id ?? String(user.id);
   if (!/^\d+$/.test(studentId) || !Number.isSafeInteger(Number(studentId)) || Number(studentId) < 1) {
@@ -82,11 +106,12 @@ export function StudentProfile({ user, themeToggle }: { user: { id: number; grou
   }
   return <ProfileScreen key={studentId} studentId={Number(studentId)} ownProfile={Number(studentId) === user.id}
     pendingGroup={Number(studentId) === user.id && !user.groupVerified}
+    groupLeader={Number(studentId) === user.id && user.groupLeader}
     themeToggle={themeToggle} />;
 }
 
-function ProfileScreen({ studentId, ownProfile, pendingGroup, themeToggle }: {
-  studentId: number; ownProfile: boolean; pendingGroup: boolean; themeToggle: ReactNode;
+function ProfileScreen({ studentId, ownProfile, pendingGroup, groupLeader, themeToggle }: {
+  studentId: number; ownProfile: boolean; pendingGroup: boolean; groupLeader: boolean; themeToggle: ReactNode;
 }) {
   const [profile, setProfile] = useState<StudentProfileData>();
   const [error, setError] = useState('');
@@ -123,7 +148,7 @@ function ProfileScreen({ studentId, ownProfile, pendingGroup, themeToggle }: {
   }, [studentId, ownProfile, retry]);
 
   const { student, personal } = profile ?? {};
-  const subtitle = student && [student.facultyName, student.groupName].filter(Boolean).join(' · ');
+  const subtitle = student && [student.facultyName, student.groupName, groupLeader && 'Староста'].filter(Boolean).join(' · ');
   const visibleAssignments = personal?.assignments.filter(item => (item.status === 'ACCEPTED') === completed);
   if (ownProfile && !completed) {
     visibleAssignments?.sort((left, right) =>
@@ -132,7 +157,7 @@ function ProfileScreen({ studentId, ownProfile, pendingGroup, themeToggle }: {
 
   return <CabinetPage name={student?.fullName} subtitle={subtitle} themeToggle={themeToggle}>
     {pendingGroup && <p className={`panel ${cabinet.section} ${s.pendingGroup}`} role="status">
-      Группа ожидает подтверждения преподавателем. После подтверждения здесь появятся задания группы.
+      Группа ожидает подтверждения. После одобрения здесь появятся задания группы.
     </p>}
     {error && <div className={s.feedback}>
       <p className="error" role="alert">{error}</p>
@@ -141,16 +166,8 @@ function ProfileScreen({ studentId, ownProfile, pendingGroup, themeToggle }: {
       </button>
     </div>}
     {!student && !error && <p className="muted" role="status">Загружаем профиль…</p>}
-    {student && <dl className={cabinet.metrics} data-cabinet-metrics>
-      <CabinetMetric label="Академический рейтинг" valueClassName={s.ratingValue}>
-          <div><strong>{student.rating}</strong> <small>/ {maxRating}</small></div>
-          <svg className={s.ring} viewBox="0 0 42 42" aria-hidden="true">
-            <circle className={s.ringTrack} cx="21" cy="21" r="18" />
-            <circle className={s.ringProgress} cx="21" cy="21" r="18" pathLength="100"
-              strokeDasharray={`${100 * student.rating / maxRating} ${100 * (maxRating - student.rating) / maxRating}`}
-              transform="rotate(-90 21 21)" />
-          </svg>
-      </CabinetMetric>
+    {student && <dl className={`${cabinet.metrics} ${s.metrics}`} data-cabinet-metrics>
+      <AcademicRating rating={student.rating} place={student.arPlace} ownProfile={ownProfile} />
       <CabinetMetric label="Учебная активность">{formatPoints(student.academicActivityPoints)} <small>БУА</small></CabinetMetric>
       <CabinetMetric label="Общественная активность">{formatPoints(student.publicActivityPoints)} <small>БОА</small></CabinetMetric>
     </dl>}

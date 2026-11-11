@@ -6,7 +6,21 @@ test('студент видит пьедестал, фильтрует рейт�
   await page.getByRole('button', { name: 'Студент', exact: true }).click();
   await page.getByRole('button', { name: 'Войти', exact: true }).click();
   await expect(page).toHaveURL('/profile');
-  await page.getByRole('navigation', { name: 'Кабинет' }).getByRole('link', { name: /^Рейтинг/ }).click();
+  const ratingResponse = await page.request.get('/api/student/ranking?metric=AR');
+  await expect(ratingResponse).toBeOK();
+  const { viewer } = await ratingResponse.json();
+  expect(viewer.place).toBeGreaterThan(0);
+  const scale = page.locator('[data-rating-scale]');
+  await expect(scale).toHaveAttribute('aria-hidden', 'true');
+  for (const label of ['0', '500', '1000']) {
+    await expect(scale.getByText(label, { exact: true })).toBeVisible();
+  }
+  await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(375);
+  const placeLink = page.getByRole('link', { name: `Вы на ${viewer.place}-м месте в рейтинге`, exact: true });
+  await expect(placeLink).toHaveAttribute('href', '/rating');
+  await placeLink.click();
+  await expect(page).toHaveURL('/rating');
+  await expect(page.getByLabel('Показатель')).toHaveValue('AR');
   const podium = page.getByRole('list', { name: 'Первые три места' });
   await expect(podium.getByRole('listitem')).toHaveCount(3);
   for (const place of [1, 2, 3]) await expect(podium.getByText(`${place}-е место`)).toBeVisible();
@@ -28,6 +42,7 @@ test('студент видит пьедестал, фильтрует рейт�
 
   await table.getByRole('link', { name: 'Мария Волкова' }).click();
   await expect(page.getByRole('heading', { name: 'Мария Волкова' })).toBeVisible();
+  await expect(page.getByRole('link', { name: /Вы на \d+-м месте в рейтинге/ })).toHaveCount(0);
   await page.goBack();
   await expect(page.getByLabel('Показатель')).toHaveValue('BOA');
   await expect(table.getByRole('link', { name: 'Даниил Петров' })).toHaveCount(0);
@@ -47,12 +62,24 @@ test('API рейтинга требует студенческую сессию 
     }
     expect((await teacher.request.get('/api/student/ranking')).status()).toBe(403);
     const account = await (await student.request.get('/api/me')).json();
-    const profile = await (await student.request.get(`/api/profiles/${account.id}`)).json();
+    const profilePath = `/api/profiles/${account.id}`;
+    const profile = await (await student.request.get(profilePath)).json();
+    const teacherProfileResponse = await teacher.request.get(profilePath);
+    await expect(teacherProfileResponse).toBeOK();
+    expect((await teacherProfileResponse.json()).student.arPlace).toBeNull();
     for (const [metric, profileField] of [['AR', 'rating'], ['BUA', 'academicActivityPoints'], ['BOA', 'publicActivityPoints']]) {
       const response = await student.request.get(`/api/student/ranking?metric=${metric}`);
       expect(response.status()).toBe(200);
       const ranking = await response.json();
       expect(ranking.viewer).toMatchObject({ studentId: account.id, points: profile.student[profileField] });
+      if (metric === 'AR') {
+        expect(ranking.viewer.place).toBeGreaterThan(0);
+        expect(profile.student.arPlace).toBe(ranking.viewer.place);
+        const otherStudent = ranking.entries.find((entry: { studentId: number }) => entry.studentId !== account.id);
+        const otherProfileResponse = await student.request.get(`/api/profiles/${otherStudent.studentId}`);
+        await expect(otherProfileResponse).toBeOK();
+        expect((await otherProfileResponse.json()).student.arPlace).toBeNull();
+      }
       const points: number[] = ranking.entries.map((entry: { points: number }) => entry.points);
       expect(points).toEqual([...points].sort((a, b) => b - a));
       const equalPlaceEntries = ranking.entries.filter((entry: { points: number }) => entry.points === points[0]);

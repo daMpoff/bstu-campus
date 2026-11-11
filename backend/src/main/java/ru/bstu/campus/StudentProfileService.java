@@ -24,7 +24,7 @@ class StudentProfileService {
         this.clock = clock;
     }
 
-    record Student(long id, String fullName, String facultyName, String groupName, int rating,
+    record Student(long id, String fullName, String facultyName, String groupName, int rating, Long arPlace,
                    BigDecimal academicActivityPoints, BigDecimal publicActivityPoints) {}
     record Assignment(long id, String title, Instant deadline, String status, Integer penaltyLimit, Integer deducted) {}
     record RatingEntry(long id, String currency, String assignmentTitle, LocalDate semesterStart,
@@ -35,7 +35,13 @@ class StudentProfileService {
     @Transactional(readOnly = true, isolation = Isolation.REPEATABLE_READ)
     Profile profile(long studentId, String viewer) {
         Student student = db.sql("""
-            SELECT u.id, u.full_name, f.name AS faculty_name, g.name AS group_name, u.rating, points.*
+            SELECT u.id, u.full_name, f.name AS faculty_name, g.name AS group_name, u.rating, points.*,
+                   CASE WHEN u.email = :viewer AND u.group_verified AND u.email_verified THEN (
+                       SELECT 1 + count(DISTINCT participant.rating)
+                       FROM campus_user participant JOIN study_group participant_group ON participant_group.id = participant.group_id
+                       WHERE participant.role = 'STUDENT' AND participant.group_verified AND participant.email_verified
+                         AND participant.rating > u.rating
+                   ) END AS ar_place
             FROM campus_user u
             JOIN study_group g ON g.id = u.group_id
             LEFT JOIN faculty f ON f.id = COALESCE(g.faculty_id, u.faculty_id)
@@ -46,7 +52,7 @@ class StudentProfileService {
                 WHERE award.student_id = u.id
             ) points
             WHERE u.id = :id AND u.role = 'STUDENT'
-            """).param("id", studentId).query(Student.class).optional()
+            """).param("id", studentId).param("viewer", viewer).query(Student.class).optional()
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Профиль студента не найден."));
 
         var now = clock.instant();

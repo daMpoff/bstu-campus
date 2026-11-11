@@ -50,6 +50,9 @@ test('учебная активность начисляет долю БУА о�
 
     await teacher.getByRole('link', { name: 'Активности', exact: true }).click();
     await teacher.getByRole('link', { name: 'Новая активность' }).click();
+    const format = teacher.getByRole('combobox', { name: 'Формат проведения' });
+    await expect(format).toHaveValue('IN_PERSON');
+    await format.selectOption({ label: 'Заочно' });
     await teacher.getByLabel('Название').fill(upcoming);
     await teacher.getByLabel('Описание').fill('Разбор решений в группах.');
     await teacher.getByRole('checkbox', { name: 'ИВТ-24', exact: true }).check();
@@ -57,6 +60,7 @@ test('учебная активность начисляет долю БУА о�
     await teacher.getByLabel('Дата проведения').fill(new Date(Date.now() + 27 * 60 * 60_000).toISOString().slice(0, 10));
     await teacher.getByRole('button', { name: 'Создать активность' }).click();
     await expect(teacher.getByRole('heading', { name: upcoming })).toBeVisible();
+    await expect(teacher.getByText('Заочно', { exact: true })).toBeVisible();
     await expect(teacher.getByText('Участие можно подтвердить после наступления даты проведения.')).toBeVisible();
 
     const groups = await (await teacher.request.get('/api/teacher/groups')).json() as { id: number; name: string }[];
@@ -80,10 +84,14 @@ test('учебная активность начисляет долю БУА о�
     );
     expect((await confirm(activityId, me.id, 75)).status()).toBe(409);
     expect((await otherTeacher.request.get(`/api/teacher/activities/${activityId}`)).status()).toBe(404);
+    const legacyFormat = await (await teacher.request.get(`/api/teacher/activities/${activityId}`)).json();
+    expect(legacyFormat.activity.format).toBeNull();
 
     await Promise.all([student, outsider].map(page => page.getByRole('link', { name: 'Активности', exact: true }).click()));
     await expect(student.getByRole('article').filter({ hasText: title })).toContainText('80 БУА');
     await expect(outsider.getByRole('heading', { name: upcoming })).toBeVisible();
+    await expect(student.getByRole('article', { name: upcoming }).getByText('Заочно', { exact: true })).toBeVisible();
+    await expect(student.getByRole('article', { name: title, exact: true }).getByText('Очно', { exact: true })).toHaveCount(0);
     await expect(outsider.getByRole('heading', { name: title })).toHaveCount(0);
     expect((await outsider.request.get(`/api/teacher/activities/${activityId}`)).status()).toBe(403);
 
@@ -159,6 +167,7 @@ test('общественная активность принимает запи�
     await expect(teacher.getByLabel('Максимум, БОА')).toHaveValue('80');
     await teacher.getByRole('button', { name: 'Создать активность' }).click();
     await expect(teacher.getByRole('heading', { name: upcoming })).toBeVisible();
+    await expect(teacher.getByText('Очно', { exact: true })).toBeVisible();
     await expect(teacher.getByText('Пока никто не записался.')).toBeVisible();
 
     const groups = await (await teacher.request.get('/api/teacher/groups')).json() as { id: number; name: string }[];
@@ -183,6 +192,7 @@ test('общественная активность принимает запи�
     expect((await enroll(observer, publicId)).status()).toBe(404);
     expect((await enroll(student, academicId)).status()).toBe(400);
     await student.getByRole('link', { name: 'Активности', exact: true }).click();
+    await expect(student.getByRole('article', { name: upcoming, exact: true }).getByText('Очно', { exact: true })).toBeVisible();
     const event = student.getByRole('article').filter({ hasText: publicTitle });
     await expect(event).toContainText('80 БОА');
     await event.getByRole('button', { name: 'Записаться' }).click();

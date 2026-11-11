@@ -31,7 +31,7 @@ class AssignmentService {
     }
 
     record Account(long id, String fullName, String role, String groupName, int rating,
-                   String facultyName, String departmentName, boolean groupVerified) {}
+                   String facultyName, String departmentName, boolean groupVerified, boolean groupLeader) {}
     record Group(long id, String name) {}
     record Assignment(long id, String title, String description, Instant deadline, int penaltyLimit,
                       List<String> groups, int total, int accepted, int waiting, boolean individual) {}
@@ -48,14 +48,16 @@ class AssignmentService {
 
     Account account(String email) {
         return db.sql("""
-            SELECT u.id, u.full_name, u.role, g.name, u.rating, f.name, d.name, u.group_verified
+            SELECT u.id, u.full_name, u.role, g.name, u.rating, f.name, d.name, u.group_verified,
+                   COALESCE(g.leader_student_id = u.id AND u.role = 'STUDENT' AND u.email_verified AND u.group_verified, false)
             FROM campus_user u
             LEFT JOIN study_group g ON g.id = u.group_id
             LEFT JOIN department d ON d.id = u.department_id
             LEFT JOIN faculty f ON f.id = COALESCE(g.faculty_id, u.faculty_id, d.faculty_id)
             WHERE u.email = :email
             """).param("email", email).query((row, index) -> new Account(row.getLong(1), row.getString(2),
-                row.getString(3), row.getString(4), row.getInt(5), row.getString(6), row.getString(7), row.getBoolean(8))).optional()
+                row.getString(3), row.getString(4), row.getInt(5), row.getString(6), row.getString(7),
+                row.getBoolean(8), row.getBoolean(9))).optional()
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
     }
 

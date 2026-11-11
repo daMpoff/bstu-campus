@@ -9,7 +9,6 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.Base64;
 import java.util.HexFormat;
-import java.util.List;
 import java.util.Locale;
 
 import org.springframework.http.HttpStatus;
@@ -24,13 +23,16 @@ class RegistrationConfirmation {
     private final CampusMail mail;
     private final CampusSettings settings;
     private final Clock clock;
+    private final GroupLeadership leadership;
     private final SecureRandom random = new SecureRandom();
 
-    RegistrationConfirmation(JdbcClient db, CampusMail mail, CampusSettings settings, Clock clock) {
+    RegistrationConfirmation(JdbcClient db, CampusMail mail, CampusSettings settings, Clock clock,
+                             GroupLeadership leadership) {
         this.db = db;
         this.mail = mail;
         this.settings = settings;
         this.clock = clock;
+        this.leadership = leadership;
     }
 
     void issue(long userId, String email) {
@@ -74,7 +76,7 @@ class RegistrationConfirmation {
             """).param("hash", tokenHash).param("now", AssignmentService.timestamp(clock.instant())).query(ConfirmationTarget.class)
             .optional().orElseThrow(RegistrationConfirmation::invalidLink);
         long userId = target.id();
-        if (target.groupId() != null) lockGroup(target.groupId());
+        if (target.groupId() != null) leadership.lockGroup(target.groupId());
         db.sql("SELECT id FROM campus_user WHERE id = :user FOR UPDATE").param("user", userId).query(Long.class).single();
         int used = db.sql("DELETE FROM email_confirmation WHERE user_id = :user AND token_hash = :hash AND expires_at > :now")
             .param("user", userId).param("hash", tokenHash).param("now", AssignmentService.timestamp(clock.instant())).update();
@@ -84,31 +86,18 @@ class RegistrationConfirmation {
     }
 
     private record ConfirmationTarget(long id, Long groupId, boolean groupVerified) {}
-    record PendingStudent(long id, String fullName) {}
-
-    List<PendingStudent> pending(long groupId) {
-        return db.sql("""
-            SELECT id, full_name FROM campus_user WHERE role = 'STUDENT' AND group_id = :group
-              AND email_verified AND NOT group_verified
-            ORDER BY full_name, id
-            """).param("group", groupId).query(PendingStudent.class).list();
-    }
 
     @Transactional
-    void approveGroup(long teacherId, long groupId, long studentId) {
-        lockGroup(groupId);
+    void approveGroup(AssignmentService.Account approver, long groupId, long studentId) {
+        leadership.lockGroup(groupId);
+        leadership.requireApproval(approver, groupId);
         var now = AssignmentService.timestamp(clock.instant());
         int approved = db.sql("""
-            UPDATE campus_user SET group_verified = true, group_verified_by = :teacher, group_verified_at = :now
+            UPDATE campus_user SET group_verified = true, group_verified_by = :approver, group_verified_at = :now
             WHERE id = :student AND role = 'STUDENT' AND group_id = :group AND email_verified AND NOT group_verified
-            """).param("student", studentId).param("group", groupId).param("teacher", teacherId).param("now", now).update();
+            """).param("student", studentId).param("group", groupId).param("approver", approver.id()).param("now", now).update();
         if (approved == 0) throw missingStudent();
         assignOpenWork(studentId, groupId);
-    }
-
-    private void lockGroup(long groupId) {
-        if (db.sql("SELECT id FROM study_group WHERE id = :group FOR UPDATE").param("group", groupId)
-            .query(Long.class).optional().isEmpty()) throw missingStudent();
     }
 
     private void assignOpenWork(long studentId, long groupId) {

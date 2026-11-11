@@ -3,6 +3,8 @@ import { csrf as csrfHeaders, verificationToken } from './helpers/confirmation';
 
 const password = 'register-demo-2026';
 
+type ApprovalGroup = { id: number; name: string; facultyId: number | null; studyForm: string | null; pendingCount: number };
+
 async function fillCredentials(page: Page, fullName: string, email: string) {
   await page.getByLabel('ФИО').fill(fullName);
   await page.getByLabel('Email').fill(email);
@@ -44,13 +46,15 @@ async function registerAndLogin(page: Page, email: string, destination: RegExp, 
   await expect(page.getByRole('heading', { name: 'Задания', exact: true })).toBeVisible();
 }
 
-test('обе роли регистрируются со справочниками, студент получает открытое задание своей группы', async ({ browser }) => {
+test('обе роли регистрируются со справочниками, администратор подтверждает группу студента', async ({ browser }) => {
   test.setTimeout(75_000);
   const teacher = await browser.newPage();
   const student = await browser.newPage({ viewport: { width: 320, height: 800 }, hasTouch: true });
+  const admin = await browser.newPage();
   const suffix = Date.now();
   const teacherEmail = 'teacher-' + suffix + '@bgtu.test';
   const studentEmail = 'student-' + suffix + '@bgtu.test';
+  const studentName = 'Тестовый Студент ' + suffix;
   const departmentName = 'Информатика и программное обеспечение (ИиПО)';
   const facultyName = 'Факультет информационных технологий (ФИТ)';
   const instituteName = 'Учебно-научный институт транспорта (УНИТ)';
@@ -65,7 +69,8 @@ test('обе роли регистрируются со справочникам
     await fillCredentials(teacher, 'Тестовый Преподаватель', teacherEmail);
     await teacher.getByLabel('Кафедра').selectOption({ label: departmentName });
     await registerAndLogin(teacher, teacherEmail, /\/assignments$/);
-    expect(await (await teacher.request.get('/api/me')).json()).toMatchObject({
+    const teacherAccount = await (await teacher.request.get('/api/me')).json();
+    expect(teacherAccount).toMatchObject({
       role: 'TEACHER', departmentName,
     });
 
@@ -92,7 +97,7 @@ test('обе роли регистрируются со справочникам
     expect(expired.ok()).toBeTruthy();
 
     await student.goto('/register');
-    await fillCredentials(student, 'Тестовый Студент', studentEmail);
+    await fillCredentials(student, studentName, studentEmail);
     const facultySelect = student.getByLabel('Факультет или подразделение');
     const groupField = student.getByRole('combobox', { name: 'Учебная группа' });
     const results = student.getByRole('listbox', { name: 'Учебная группа' });
@@ -135,12 +140,83 @@ test('обе роли регистрируются со справочникам
     expect(await (await student.request.get('/api/student/activities')).json()).toEqual([]);
     const pending = await (await student.request.get('/api/me')).json();
     expect(pending.groupVerified).toBe(false);
-    const approvalPath = `/api/teacher/groups/${groupId}/pending-students/${pending.id}`;
-    expect((await student.request.post(approvalPath, { headers: await csrfHeaders(student.request) })).status()).toBe(403);
-    await teacher.getByRole('link', { name: 'Подтверждение группы', exact: true }).click();
-    await teacher.getByLabel('Учебная группа').selectOption(String(groupId));
-    await teacher.getByRole('button', { name: 'Подтвердить группу · Тестовый Студент' }).click();
-    await expect(teacher.getByRole('status')).toContainText('Группа подтверждена');
+    const pendingProfile = await student.request.get(`/api/profiles/${pending.id}`);
+    await expect(pendingProfile).toBeOK();
+    expect((await pendingProfile.json()).student.arPlace).toBeNull();
+    await expect(student.getByRole('link', { name: 'Открыть рейтинг', exact: true })).toHaveAttribute('href', '/rating');
+    const teacherPendingPath = `/api/teacher/groups/${groupId}/pending-students`;
+    const adminApprovalPath = `/api/admin/groups/${groupId}/pending-students/${pending.id}`;
+    const approvalCatalogPath = '/api/admin/group-approval/groups';
+    const studentHeaders = await csrfHeaders(student.request);
+    expect((await student.request.post(`${teacherPendingPath}/${pending.id}`, { headers: studentHeaders })).status()).toBe(403);
+    expect((await student.request.post(adminApprovalPath, { headers: studentHeaders })).status()).toBe(403);
+    expect((await student.request.get(approvalCatalogPath)).status()).toBe(403);
+    expect((await teacher.request.get(approvalCatalogPath)).status()).toBe(403);
+    expect((await teacher.request.post(adminApprovalPath, { headers: await csrfHeaders(teacher.request) })).status()).toBe(403);
+    expect((await teacher.request.get(teacherPendingPath)).status()).toBe(403);
+    expect(await (await teacher.request.get('/api/teacher/group-approval/groups')).json()).toEqual([]);
+
+    const adminLogin = await admin.request.post('/api/login', {
+      headers: await csrfHeaders(admin.request), form: { email: 'admin@bgtu.test', password: 'demo2026' },
+    });
+    expect(adminLogin.status()).toBe(204);
+    const { teacherIds } = await (await admin.request.get(`/api/admin/groups/${groupId}/leadership`)).json();
+    const responsibility = await admin.request.put(`/api/admin/groups/${groupId}/responsible-teachers`, {
+      headers: await csrfHeaders(admin.request), data: { teacherIds: [...teacherIds, teacherAccount.id] },
+    });
+    expect(responsibility.status()).toBe(204);
+    const teacherPending = await teacher.request.get(teacherPendingPath);
+    expect(teacherPending.ok()).toBeTruthy();
+    expect(await teacherPending.json()).toContainEqual({ id: pending.id, fullName: studentName });
+    expect(await (await teacher.request.get('/api/teacher/group-approval/groups')).json()).toEqual([
+      expect.objectContaining({ id: groupId }),
+    ]);
+    const response = await admin.request.get(approvalCatalogPath);
+    expect(response.ok()).toBeTruthy();
+    const approvalCatalog: ApprovalGroup[] = await response.json();
+    const pendingGroup = approvalCatalog.find(group => group.id === groupId)!;
+    expect(pendingGroup).toMatchObject({ facultyId, studyForm: 'очная' });
+    expect(pendingGroup.pendingCount).toBeGreaterThan(0);
+    const legacyGroup = approvalCatalog.find(group => group.studyForm === null && group.pendingCount === 0)!;
+    expect(legacyGroup).toBeDefined();
+
+    await admin.goto('/admin');
+    await admin.getByRole('link', { name: 'Подтверждение группы', exact: true }).click();
+    const approvalGroup = admin.getByRole('combobox', { name: 'Учебная группа' });
+    const approvalResults = admin.getByRole('listbox', { name: 'Учебная группа' });
+    const approvalFaculty = admin.getByLabel('Факультет или институт');
+    const studyForm = admin.getByLabel('Форма обучения');
+    const pendingOnly = admin.getByRole('checkbox', { name: 'Только с заявками' });
+    await studyForm.selectOption({ label: 'Не указана' });
+    await approvalGroup.fill(legacyGroup.name.toLowerCase());
+    await expect(approvalResults.getByRole('option', { name: legacyGroup.name })).toBeVisible();
+    await admin.getByRole('button', { name: 'Сбросить фильтры' }).click();
+    await expect(studyForm.getByRole('option', { name: 'Все формы', selected: true })).toBeAttached();
+    await pendingOnly.check();
+    await approvalGroup.fill(legacyGroup.name);
+    await expect(approvalResults.getByRole('option', { name: legacyGroup.name })).toHaveCount(0);
+    await approvalFaculty.selectOption({ label: instituteName });
+    await approvalGroup.fill(groupName);
+    await expect(approvalResults.getByRole('option', { name: groupName })).toHaveCount(0);
+    await approvalFaculty.selectOption({ label: facultyName });
+    await studyForm.selectOption({ label: 'Очная форма' });
+    await approvalGroup.fill(groupName.toLowerCase());
+    await expect(approvalResults.getByRole('option', { name: groupName })).toBeVisible();
+    await approvalGroup.press('ArrowDown');
+    await approvalGroup.press('Enter');
+    await expect(approvalGroup).toHaveValue(groupName);
+
+    await admin.getByRole('button', { name: `Подтвердить группу · ${studentName}` }).click();
+    await expect(admin.getByText(`Группа подтверждена · ${studentName}`, { exact: true })).toBeVisible();
+    await expect.poll(async () => {
+      const groups: ApprovalGroup[] = await (await admin.request.get(approvalCatalogPath)).json();
+      return groups.find(group => group.id === groupId)?.pendingCount;
+    }).toBe(pendingGroup.pendingCount - 1);
+    await expect(admin.getByRole('button', { name: `Подтвердить группу · ${studentName}` })).toHaveCount(0);
+    if (pendingGroup.pendingCount === 1) {
+      await approvalGroup.fill(groupName.toLowerCase());
+      await expect(approvalResults.getByRole('option', { name: groupName })).toHaveCount(0);
+    }
     await expect(student.getByText(/Группа ожидает подтверждения/)).toHaveCount(0, { timeout: 10_000 });
     await expect(student.getByRole('link', { name: new RegExp(title) })).toBeVisible();
     await expect(student.getByText(expiredTitle)).toHaveCount(0);
@@ -149,7 +225,7 @@ test('обе роли регистрируются со справочникам
     });
 
     const payload = { role: 'STUDENT', email: studentEmail.toUpperCase(), password,
-      fullName: 'Тестовый Студент', facultyId, groupId };
+      fullName: studentName, facultyId, groupId };
     expect((await teacher.request.post('/api/registration', { data: payload })).status()).toBe(403);
     const headers = { [csrf.headerName]: csrf.token };
     expect((await teacher.request.post('/api/registration', { headers, data: payload })).status()).toBe(409);
@@ -161,6 +237,6 @@ test('обе роли регистрируются со справочникам
     });
     expect(mismatched.status()).toBe(400);
   } finally {
-    await Promise.all([teacher.close(), student.close()]);
+    await Promise.all([teacher.close(), student.close(), admin.close()]);
   }
 });

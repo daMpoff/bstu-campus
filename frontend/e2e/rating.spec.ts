@@ -16,8 +16,10 @@ async function login(request: APIRequestContext, email: string, password: string
 test('планировщик учитывает пропущенные интервалы и останавливается на нуле', async ({ playwright }, info) => {
   const teacher = await playwright.request.newContext({ baseURL: info.project.use.baseURL });
   const student = await playwright.request.newContext({ baseURL: info.project.use.baseURL });
+  const admin = await playwright.request.newContext({ baseURL: info.project.use.baseURL });
   try {
     await login(teacher, 'teacher@bgtu.test', 'demo2026');
+    await login(admin, 'admin@bgtu.test', 'demo2026');
     const catalog = await (await student.get('/api/registration/catalog')).json();
     const group = catalog.groups.at(-1);
     const suffix = Date.now();
@@ -35,7 +37,7 @@ test('планировщик учитывает пропущенные инте�
     expect(me.rating).toBe(1000);
 
     const teacherHeaders = await csrf(teacher);
-    const approval = await teacher.post(`/api/teacher/groups/${group.id}/pending-students/${me.id}`, { headers: teacherHeaders });
+    const approval = await admin.post(`/api/admin/groups/${group.id}/pending-students/${me.id}`, { headers: await csrf(admin) });
     expect(approval.status()).toBe(204);
     const assign = async (title: string, minutesOverdue: number, penaltyLimit: number) => {
       const response = await teacher.post('/api/teacher/assignments', {
@@ -64,6 +66,6 @@ test('планировщик учитывает пропущенные инте�
       expect.objectContaining({ currency: 'AR', amount: -900, assignmentTitle: secondTitle }),
     ]));
   } finally {
-    await Promise.all([teacher.dispose(), student.dispose()]);
+    await Promise.all([teacher.dispose(), student.dispose(), admin.dispose()]);
   }
 });

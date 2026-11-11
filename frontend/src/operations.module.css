@@ -16,16 +16,7 @@
 .notice { color: var(--accepted-text); background: var(--accepted-bg); border-radius: var(--radius-control); padding: .625rem .75rem; }
 .stat { display: flex; flex-wrap: wrap; align-items: baseline; gap: .5rem 1rem; }
 .stat strong { font-size: clamp(1.5rem, 3.5vw, 2.25rem); line-height: 1.15; font-variant-numeric: tabular-nums; }
-.chart { display: grid; gap: .5rem; margin: 0; padding: 0; list-style: none; }
-.chartRow { display: grid; grid-template-columns: 7rem minmax(0, 1fr) 4rem; align-items: center; gap: .625rem; font-variant-numeric: tabular-nums; }
-.chartRow strong { text-align: end; }
-.track { border-radius: 5px; background: var(--tint); overflow: hidden; height: .625rem; }
-.bar { display: block; height: 100%; background: var(--accent); border-radius: inherit; }
 .numbers { display: flex; flex-wrap: wrap; gap: .375rem 1rem; font-variant-numeric: tabular-nums; }
 .numbers span { white-space: nowrap; }
 .rank { flex: 0 0 1.75rem; color: var(--muted); font-variant-numeric: tabular-nums; }
 .rankedText { display: flex; align-items: baseline; min-width: 0; overflow-wrap: anywhere; }
-@media (min-width: 1024px) {
-  .budgetNumbers { display: grid; grid-template-columns: repeat(4, 7rem); text-align: end; }
-  .budgetNumbers span { white-space: normal; overflow-wrap: anywhere; }
-}

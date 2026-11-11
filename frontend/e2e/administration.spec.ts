@@ -151,7 +151,13 @@ test('аналитика показывает историю АР, обе вал
     await teacher.goto('/analytics');
     await teacher.getByLabel('Учебная группа').selectOption({ label: group });
     await teacher.getByLabel('Период отчёта').selectOption('3');
-    await expect(teacher.getByRole('region', { name: 'Динамика академического рейтинга' })).toContainText('955');
+    const trend = teacher.getByRole('region', { name: 'Динамика академического рейтинга' });
+    const activeRating = trend.getByLabel('Средний АР за выбранный месяц');
+    await expect(activeRating).toContainText('955');
+    await trend.getByLabel('Месяц на графике').press('ArrowUp');
+    await expect(activeRating).toContainText(/1\s000/);
+    await trend.getByText('Помесячные значения', { exact: true }).press('Enter');
+    await expect(trend.getByRole('table')).toBeVisible();
     const ranks = teacher.getByRole('region', { name: 'Рейтинг активности' });
     await ranks.getByRole('button', { name: 'По БОА' }).click();
     await expect(ranks.getByRole('link', { name: 'Аналитика Студент' })).toBeVisible();
@@ -159,6 +165,11 @@ test('аналитика показывает историю АР, обе вал
     await expect(ranks).toContainText('40 БОА');
     await expect(teacher.getByRole('region', { name: 'Ваш бюджет и начисления' })).toContainText('Расход 100');
     expect(await teacher.evaluate(() => document.documentElement.scrollWidth)).toBe(375);
+    await teacher.getByLabel('Период отчёта').selectOption('12');
+    await expect(trend.getByLabel('Месяц на графике').locator('option')).toHaveCount(12);
+    await teacher.getByRole('button', { name: 'Тёмная тема' }).click();
+    await teacher.setViewportSize({ width: 320, height: 812 });
+    expect(await teacher.evaluate(() => document.documentElement.scrollWidth)).toBe(320);
   } finally {
     await Promise.all([admin.close(), teacher.close(), student.close(), observer.close()]);
   }

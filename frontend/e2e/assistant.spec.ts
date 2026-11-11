@@ -178,8 +178,8 @@ test('повтор назначения идемпотентен, новая г�
       await verifyEmail(page.request, email);
       await login(page, email, password);
       const { id } = await (await page.request.get('/api/me')).json();
-      expect((await teacher.request.post(`/api/teacher/groups/${group.id}/pending-students/${id}`, {
-        headers: await csrf(teacher.request),
+      expect((await admin.request.post(`/api/admin/groups/${group.id}/pending-students/${id}`, {
+        headers: await csrf(admin.request),
       })).status()).toBe(204);
       return id;
     };

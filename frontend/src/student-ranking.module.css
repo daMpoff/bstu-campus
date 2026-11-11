@@ -10,7 +10,7 @@
 .sectionHead h3 { font-size: 1.25rem; }
 .viewerPlace {
   border-radius: var(--radius-control); background: var(--tint); color: var(--accent); padding: .35rem .65rem;
-  font-size: .875rem; font-weight: 700;
+  font-size: .875rem; font-weight: var(--weight-control);
 }
 .podium { display: grid; gap: .5rem; margin: 0; padding: 0; list-style: none; }
 .podiumCard {
@@ -29,25 +29,25 @@
 .medal {
   display: grid; place-items: center; inline-size: 2rem; aspect-ratio: 1; border-radius: 50%;
   border: 1px solid color-mix(in srgb, var(--medal-background) 65%, var(--medal-ink));
-  background: var(--medal-background); color: var(--medal-ink); font-weight: 800;
+  background: var(--medal-background); color: var(--medal-ink); font-weight: var(--weight-heading);
 }
 .podiumDetails { display: grid; gap: .15rem; overflow-wrap: anywhere; }
-.place, .tie, .group { font-size: .8125rem; color: var(--muted); }
-.place { color: var(--medal-ink); font-weight: 750; }
+.place, .tie, .group { font-size: var(--text-small); color: var(--muted); }
+.place { color: var(--medal-ink); font-weight: var(--weight-heading); }
 .leaderName { line-height: 1.25; }
 .group { display: block; }
 .podiumScore {
-  color: var(--text); font-size: clamp(1.05rem, 2.3vw, 1.65rem); font-weight: 800;
+  color: var(--text); font-size: clamp(1.05rem, 2.3vw, 1.65rem); font-weight: var(--weight-heading);
   font-variant-numeric: tabular-nums; overflow-wrap: anywhere;
 }
-.podiumScore small { color: var(--muted); font-size: .75rem; }
+.podiumScore small { color: var(--muted); font-size: var(--text-small); }
 .table { width: 100%; table-layout: fixed; border-collapse: collapse; text-align: start; }
-.table th { color: var(--muted); font-size: .8125rem; font-weight: 700; }
+.table th { color: var(--muted); font-size: var(--text-small); font-weight: var(--weight-control); }
 .table :is(th, td) { padding: .55rem .4rem; border-bottom: 1px solid var(--border); overflow-wrap: anywhere; }
 .table :is(th, td):first-child { width: 3.5rem; text-align: center; }
 .table :is(th, td):last-child { width: clamp(4.5rem, 12vw, 7rem); text-align: end; }
 .table :is(th, td):nth-child(2) { text-align: start; }
-.table td:first-child, .table td:last-child { font-weight: 750; font-variant-numeric: tabular-nums; }
+.table td:first-child, .table td:last-child { font-weight: var(--weight-heading); font-variant-numeric: tabular-nums; }
 .table td:last-child { font-size: clamp(.875rem, 3.9vw, 1rem); }
 .table tr[data-viewer='true'] { background: var(--tint); }
 .studentLink { display: inline-block; padding-block: .12rem; text-underline-offset: .16em; }

@@ -36,7 +36,7 @@ export function StudentAssistantSummary({ data, pendingGroup, onNavigate }: {
         : 'Активные задания'}</h4>
       {assignments.length ? <DeadlineList items={assignments} total={assignmentsTotal} onNavigate={onNavigate} />
         : <p className={s.summaryHint}>{pendingGroup && !overdue.length
-          ? 'Группа ожидает подтверждения преподавателем. После подтверждения здесь появятся задания группы.'
+          ? 'Группа ожидает подтверждения. После одобрения здесь появятся задания группы.'
           : period ? 'На эти даты заданий нет.' : 'Активных заданий пока нет.'}</p>}
     </div>
     {overdue.length > 0 && <div className={s.summaryGroup}>

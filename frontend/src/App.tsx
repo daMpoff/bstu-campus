@@ -45,6 +45,7 @@ function cabinetPath(role: Role) {
 
 const cabinetRoute = /^\/(?:profile|profiles\/[^/]+|assignments(?:\/[^/]+)?|activities(?:\/[^/]+)?|polls(?:\/[^/]+)?|review|rating|rewards|feed|admin|analytics|group-approval|settings)\/?$/i;
 const sharedRoute = /^\/(?:profiles\/[^/]+|rewards|settings)\/?$/i;
+const adminRoute = /^\/(?:admin|group-approval)\/?$/i;
 
 function afterLogin(role: Role, returnTo: unknown) {
   if (typeof returnTo === 'string' && cabinetRoute.test(returnTo)) {
@@ -83,16 +84,24 @@ export function App() {
   }, []);
 
   const needsGroupApproval = account?.role === 'STUDENT' && !account.groupVerified;
+  const studentId = account?.role === 'STUDENT' ? account.id : undefined;
   useEffect(() => {
-    if (!needsGroupApproval) return;
+    if (studentId === undefined) return;
     const controller = new AbortController();
-    const timer = window.setInterval(() => {
+    function refreshGroupAccess() {
       void api<Account>('/me', { signal: controller.signal }).then(user => {
-        if (!controller.signal.aborted && user.groupVerified) setAccount(current => current?.id === user.id ? user : current);
+        if (!controller.signal.aborted) setAccount(current => current?.id === user.id
+          && (current.groupVerified !== user.groupVerified || current.groupLeader !== user.groupLeader) ? user : current);
       }).catch(() => {});
-    }, 6000);
-    return () => { controller.abort(); window.clearInterval(timer); };
-  }, [needsGroupApproval]);
+    }
+    window.addEventListener('focus', refreshGroupAccess);
+    const timer = needsGroupApproval ? window.setInterval(refreshGroupAccess, 6000) : undefined;
+    return () => {
+      controller.abort();
+      window.removeEventListener('focus', refreshGroupAccess);
+      window.clearInterval(timer);
+    };
+  }, [studentId, needsGroupApproval]);
 
   async function logout() {
     await api('/logout', { method: 'POST' });
@@ -113,7 +122,7 @@ export function App() {
   function requireAccount(content: (user: Account) => ReactNode, profile = false) {
     if (account === undefined) return loadingCabinet;
     if (!account) return <Navigate to="/login" replace state={{ returnTo: pathname }} />;
-    if (account.role === 'ADMIN' && !sharedRoute.test(pathname) && !/^\/admin\/?$/i.test(pathname)) {
+    if (account.role === 'ADMIN' && !sharedRoute.test(pathname) && !adminRoute.test(pathname)) {
       return <Navigate to="/admin" replace />;
     }
     const teacherOverview = account.role === 'TEACHER' && /^\/(assignments|review|rating)\/?$/i.test(pathname);
@@ -139,7 +148,7 @@ export function App() {
       </div>
     </header>}
     <Routes>
-      <Route path="/" element={<Home cabinet={cabinet} signedIn={Boolean(account)} />} />
+      <Route path="/" element={<Home cabinet={cabinet} signedIn={Boolean(account)} dark={theme === 'dark'} />} />
       <Route element={authPage}>
         <Route path="/login" element={<Login onLogin={setAccount} />} />
         <Route path="/register" element={<Registration />} />
@@ -161,7 +170,8 @@ export function App() {
       <Route path="/polls" element={requireAccount(user => <Polls teacher={user.role === 'TEACHER'} />)} />
       <Route path="/polls/new" element={requireAccount(user => user.role === 'TEACHER' ? <NewPoll /> : <Navigate to="/polls" replace />)} />
       <Route path="/polls/:id" element={requireAccount(user => <PollDetail teacher={user.role === 'TEACHER'} />)} />
-      <Route path="/group-approval" element={requireAccount(user => user.role === 'TEACHER' ? <GroupApproval /> : <Navigate to={cabinet} replace />)} />
+      <Route path="/group-approval" element={requireAccount(user => user.role !== 'STUDENT' || user.groupLeader
+        ? <GroupApproval role={user.role} /> : <Navigate to={cabinet} replace />)} />
       <Route path="/analytics" element={requireAccount(user => user.role === 'TEACHER' ? <Analytics /> : <Navigate to={cabinet} replace />)} />
       <Route path="/admin" element={requireAccount(user => user.role === 'ADMIN' ? <Admin /> : <Navigate to={cabinet} replace />)} />
       <Route path="/profile" element={requireAccount(user => user.role === 'STUDENT'
@@ -174,16 +184,21 @@ export function App() {
   </>;
 }
 
-function Brand({ cabinet = false }: { cabinet?: boolean }) {
+function Brand() {
   return <Link className={s.brand} to="/" aria-label="БГТУ, главная">
     <img className={s.brandLogo} src="/images/bgtu-logo.svg" alt="" width={48} height={48} />
-    <span><strong>БГТУ</strong><small>{cabinet ? 'Университетская среда' : 'УНИВЕРСИТЕТСКАЯ СРЕДА'}</small></span>
+    <span><strong>БГТУ</strong><small>Университетская среда</small></span>
   </Link>;
 }
 
-function Home({ cabinet, signedIn }: { cabinet: string; signedIn: boolean }) {
+function Home({ cabinet, signedIn, dark }: { cabinet: string; signedIn: boolean; dark: boolean }) {
+  const photo = dark ? '/images/bgtu-hero-night' : '/images/bgtu-hero-day';
   return <main className={s.home}>
     <section className={s.hero} aria-labelledby="hero-title">
+      <img className={s.heroPhoto} src={`${photo}-1600.webp`}
+        srcSet={`${photo}-800.webp 800w, ${photo}-1600.webp 1600w`}
+        sizes="(max-width: 680px) 640px, (max-width: 1320px) 92vw, 1216px"
+        alt="" width={1600} height={981} fetchPriority="high" decoding="async" />
       <div className={s.heroContent}>
         <h1 id="hero-title">БГТУ</h1>
         <p>Университетская среда</p>
@@ -223,6 +238,7 @@ function Home({ cabinet, signedIn }: { cabinet: string; signedIn: boolean }) {
 function AuthLayout({ dark }: { dark: boolean }) {
   const { pathname } = useLocation();
   const panel = useRef<HTMLElement>(null);
+  const photo = dark ? '/images/bgtu-login-night' : '/images/bgtu-login-day';
 
   useLayoutEffect(() => {
     if (panel.current) panel.current.scrollTop = 0;
@@ -231,8 +247,9 @@ function AuthLayout({ dark }: { dark: boolean }) {
 
   return <main className={s.authPage}>
     <div className={s.authVisual}>
-      <img src={dark ? '/images/bgtu-login-night.webp' : '/images/bgtu-login.webp'}
-        alt="Осенняя аллея вдоль корпуса БГТУ" width={957} height={1277} />
+      <img src={`${photo}-957.webp`} srcSet={`${photo}-640.webp 640w, ${photo}-957.webp 957w`}
+        sizes="(max-width: 840px) 92vw, 957px" alt="Осенняя аллея вдоль корпуса БГТУ"
+        width={957} height={1277} fetchPriority="high" decoding="async" />
     </div>
     <section ref={panel} className={s.authSide} aria-labelledby="auth-title">
       <div className={s.authContent}>
@@ -304,7 +321,7 @@ function Workspace({ user, children, onLogout }: {
   const [error, setError] = useState('');
   return <div className={s.cabinet}>
     <aside className={s.cabinetSidebar} data-cabinet-sidebar>
-      <Brand cabinet />
+      <Brand />
       <nav aria-label="Кабинет">
         {user.role === 'ADMIN' && <NavLink to="/admin"><Glyph name="settings" /> Администрирование</NavLink>}
         {user.role === 'STUDENT' && <NavLink to="/profile"><Glyph name="profile" /> Профиль</NavLink>}
@@ -314,8 +331,9 @@ function Workspace({ user, children, onLogout }: {
           <NavLink to="/review"><Glyph name="review" /> Проверка работ</NavLink>
           <NavLink to="/rating"><Glyph name="rating" /> Рейтинг студентов</NavLink>
           <NavLink to="/analytics"><Glyph name="rating" /> Аналитика</NavLink>
-          <NavLink to="/group-approval"><Glyph name="approval" /> Подтверждение группы</NavLink>
         </>}
+        {(user.role !== 'STUDENT' || user.groupLeader) &&
+          <NavLink to="/group-approval"><Glyph name="approval" /> Подтверждение группы</NavLink>}
         {user.role !== 'ADMIN' && <>
           <NavLink to="/activities"><Glyph name="activities" /> Активности</NavLink>
           <NavLink to="/polls"><Glyph name="poll" /> Опросы</NavLink>

@@ -10,11 +10,11 @@
 .identityCopy { flex: 1; min-width: 0; overflow-wrap: anywhere; }
 .identityHeading { display: flex; align-items: center; justify-content: space-between; gap: var(--identity-gap); }
 .identityHeading button { flex: none; }
-.identityTitle { min-width: 0; font-size: clamp(1.5rem, 3vw, 2rem); line-height: 1.1; letter-spacing: -.032em; font-weight: 800; }
+.identityTitle { min-width: 0; font-size: clamp(1.5rem, 3vw, 2rem); line-height: 1.1; letter-spacing: -.032em; font-weight: var(--weight-heading); }
 .subtitle { margin-top: 6px; color: var(--muted); font-size: .875rem; line-height: 1.5; }
 .avatar {
   display: grid; place-items: center; flex: none; width: var(--cabinet-avatar); aspect-ratio: 1;
-  border-radius: 50%; color: var(--accent); background: var(--tint); font-size: 1.125rem; font-weight: 800;
+  border-radius: 50%; color: var(--accent); background: var(--tint); font-size: 1.125rem; font-weight: var(--weight-heading);
 }
 .metrics {
   display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--column-gap);
@@ -24,12 +24,12 @@
   display: flex; flex-direction: column; gap: 8px; min-height: 100px; padding: clamp(12px, 1.5vw, 24px);
 }
 .metric:first-child { grid-column: 1 / -1; }
-.metric dt { color: var(--muted); font-size: .875rem; font-weight: 700; }
+.metric dt { color: var(--muted); font-size: .875rem; font-weight: var(--weight-control); }
 .metric dd {
   display: flex; align-items: baseline; gap: 8px; margin: auto 0 0;
-  font-size: clamp(1.625rem, 3vw, 2rem); line-height: 1.15; font-weight: 800; font-variant-numeric: tabular-nums;
+  font-size: clamp(1.625rem, 3vw, 2rem); line-height: 1.15; font-weight: var(--weight-heading); font-variant-numeric: tabular-nums;
 }
-.metric dd small { color: var(--muted); font-size: .875rem; font-weight: 700; }
+.metric dd small { color: var(--muted); font-size: .875rem; font-weight: var(--weight-control); }
 .sections { display: grid; gap: var(--column-gap); }
 .section:global(.panel) { padding: clamp(16px, 1.55vw, 26px); }
 .section h2 { font-size: 1.375rem; line-height: 1.2; letter-spacing: -.026em; }

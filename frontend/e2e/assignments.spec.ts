@@ -355,16 +355,20 @@ test('главная переключает дневное и ночное фо�
   await page.emulateMedia({ colorScheme: 'light' });
   await page.goto('/');
   const hero = page.getByRole('region', { name: 'БГТУ' });
-  await expect(hero).toHaveCSS('background-image', /bgtu-day\.jpg/);
-  await page.getByRole('button', { name: 'Тёмная тема' }).click();
-  await expect(hero).toHaveCSS('background-image', /bgtu-night\.png/);
-  const night = await page.evaluate(async () => {
-    const image = new Image();
-    image.src = '/images/bgtu-night.png';
-    await image.decode();
-    return image.naturalWidth;
+  const photo = hero.locator('img');
+  const loadedSource = () => photo.evaluate(element => {
+    const image = element as HTMLImageElement;
+    return image.complete && image.naturalWidth > 0 ? image.currentSrc : '';
   });
-  expect(night).toBeGreaterThan(1000);
+  await expect.poll(loadedSource).toMatch(/bgtu-hero-day-\d+\.webp$/);
+  await expect(photo).toHaveJSProperty('fetchPriority', 'high');
+  await page.getByRole('button', { name: 'Тёмная тема' }).click();
+  await expect.poll(loadedSource).toMatch(/bgtu-hero-night-\d+\.webp$/);
+  const reloadedPhotos: string[] = [];
+  page.on('request', request => {
+    if (request.resourceType() === 'image') reloadedPhotos.push(request.url());
+  });
   await page.reload();
-  await expect(hero).toHaveCSS('background-image', /bgtu-night\.png/);
+  await expect.poll(loadedSource).toMatch(/bgtu-hero-night-\d+\.webp$/);
+  expect(reloadedPhotos.some(url => url.includes('bgtu-hero-day-'))).toBe(false);
 });

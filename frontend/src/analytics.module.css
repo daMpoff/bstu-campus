@@ -1,0 +1,182 @@
+.readout {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  justify-content: space-between;
+  gap: .75rem 1.5rem;
+}
+.readoutValue {
+  display: grid;
+  gap: .2rem;
+  min-width: 0;
+}
+.readoutValue time,
+.readoutValue output span {
+  color: var(--muted);
+}
+.readoutValue output {
+  display: flex;
+  align-items: baseline;
+  gap: .45rem;
+  line-height: 1.1;
+}
+.readoutValue output strong {
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-variant-numeric: tabular-nums;
+}
+.readout label {
+  flex: 0 1 16rem;
+  color: var(--muted);
+  font-size: .875rem;
+}
+.trend {
+  --plot-height: clamp(10rem, 24vw, 15rem);
+  display: grid;
+  grid-template-columns: 2.65rem minmax(0, 1fr);
+  gap: .7rem;
+  padding: 1rem .85rem .1rem 0;
+  color: var(--muted);
+  font-size: .875rem;
+  font-variant-numeric: tabular-nums;
+}
+.scale,
+.plotArea {
+  position: relative;
+  height: var(--plot-height);
+}
+.scale span {
+  position: absolute;
+  right: 0;
+  white-space: nowrap;
+  transform: translateY(-50%);
+}
+.plotArea svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+.gridline {
+  position: absolute;
+  inset-inline: 0;
+  border-top: 1px solid var(--border);
+}
+.area {
+  fill: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+.line {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2.5px;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.guide {
+  position: absolute;
+  inset-block: 0;
+  border-left: 1px dashed var(--control-border);
+  pointer-events: none;
+}
+.point {
+  position: absolute;
+  width: .55rem;
+  aspect-ratio: 1;
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+  background: var(--panel);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  transition: background-color var(--interaction-duration);
+}
+.point[data-active='true'] {
+  background: var(--accent);
+  box-shadow: 0 0 0 .23rem var(--tint);
+}
+.months {
+  position: relative;
+  height: 1.5rem;
+  margin-top: .45rem;
+}
+.months span {
+  position: absolute;
+  white-space: nowrap;
+  transform: translateX(-50%);
+}
+.months span[data-active='true'] { color: var(--accent); }
+.values {
+  border-top: 1px solid var(--border);
+  padding-top: .6rem;
+}
+.values summary {
+  width: fit-content;
+  padding: .65rem .2rem;
+  color: var(--accent);
+  cursor: pointer;
+}
+.values table {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+.values :is(th, td) {
+  padding: .55rem .2rem;
+  text-align: start;
+  border-top: 1px solid var(--border);
+}
+.values :is(th, td):last-child { text-align: end; }
+.values tbody th { font-weight: 400; }
+.budgetSummary {
+  display: grid;
+  gap: .65rem;
+  padding: .85rem;
+  border-radius: var(--radius-control);
+  background: color-mix(in srgb, var(--tint) 45%, var(--panel));
+}
+.track {
+  display: flex;
+  overflow: hidden;
+  height: .625rem;
+  border-radius: .35rem;
+  background: var(--tint);
+}
+.academic { background: var(--accent); }
+.public {
+  background: repeating-linear-gradient(135deg, var(--accepted-text) 0 4px,
+    color-mix(in srgb, var(--accepted-text) 82%, var(--panel)) 4px 7px);
+}
+.legend,
+.budgetMonthHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: .35rem 1rem;
+  font-variant-numeric: tabular-nums;
+}
+.legend {
+  color: var(--muted);
+  font-size: .875rem;
+}
+.legend span { display: inline-flex; align-items: center; gap: .4rem; }
+.legend i { width: .75rem; aspect-ratio: 1; border-radius: .2rem; }
+.budgetScale { margin-inline-start: auto; }
+.budgetMonth {
+  display: grid;
+  gap: .45rem;
+  padding: .7rem 0;
+  border-top: 1px solid var(--border);
+}
+.budgetMonthHead { justify-content: space-between; }
+.budgetMonthDetails {
+  color: var(--muted);
+  font-size: .875rem;
+}
+@media (max-width: 720px) {
+  .months span[data-minor='true'] { display: none; }
+}
+@media (max-width: 420px) {
+  .trend { grid-template-columns: 2.3rem minmax(0, 1fr); gap: .5rem; }
+  .months { font-size: .8rem; }
+  .months span[data-compact='true'] { display: none; }
+}
