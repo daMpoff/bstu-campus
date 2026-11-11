@@ -21,10 +21,33 @@ services:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/campus
       SPRING_DATASOURCE_USERNAME: campus
       SPRING_DATASOURCE_PASSWORD: campus-local
-      CAMPUS_DEMO: "true"
+      CAMPUS_DEMO: "${CAMPUS_DEMO:-true}"
       CAMPUS_SEMESTER_AMOUNT: "${CAMPUS_SEMESTER_AMOUNT:-200}"
       CAMPUS_SEMESTER_START_DAYS: "${CAMPUS_SEMESTER_START_DAYS:-02-01,09-01}"
+      CAMPUS_ACTIVITY_MONTHLY_LIMIT: "${CAMPUS_ACTIVITY_MONTHLY_LIMIT:-1000}"
+      CAMPUS_SMTP_HOST: "${CAMPUS_SMTP_HOST:-mail}"
+      CAMPUS_SMTP_PORT: "${CAMPUS_SMTP_PORT:-1025}"
+      CAMPUS_SMTP_USERNAME: "${CAMPUS_SMTP_USERNAME:-}"
+      CAMPUS_SMTP_PASSWORD: "${CAMPUS_SMTP_PASSWORD:-}"
+      CAMPUS_SMTP_AUTH: "${CAMPUS_SMTP_AUTH:-false}"
+      CAMPUS_SMTP_STARTTLS: "${CAMPUS_SMTP_STARTTLS:-false}"
+      CAMPUS_SMTP_SSL: "${CAMPUS_SMTP_SSL:-false}"
+      CAMPUS_MAIL_FROM: "${CAMPUS_MAIL_FROM:-campus@bgtu.test}"
+      CAMPUS_PUBLIC_URL: "${CAMPUS_PUBLIC_URL:-http://localhost:8080}"
+      CAMPUS_LLM_URL: "${CAMPUS_LLM_URL:-}"
+      CAMPUS_LLM_MODEL: "${CAMPUS_LLM_MODEL:-}"
+      CAMPUS_LLM_API_KEY: "${CAMPUS_LLM_API_KEY:-}"
+      CAMPUS_LLM_REASONING_EFFORT: "${CAMPUS_LLM_REASONING_EFFORT:-}"
     ports:
       - "127.0.0.1:8080:8080"
+  mail:
+    image: axllent/mailpit:v1.27.4
+    ports:
+      - "127.0.0.1:8025:8025"
+    environment:
+      MP_DATABASE: /data/mailpit.db
+    volumes:
+      - campus-mail:/data
 volumes:
   campus-db:
+  campus-mail:

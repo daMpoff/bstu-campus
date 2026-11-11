@@ -3,23 +3,25 @@ import { Link, useParams } from 'react-router-dom';
 import { ApiError, api, type StudentProfileData } from './api';
 import { dateTime, StatusBadge } from './Assignments';
 import { CabinetMetric, CabinetPage } from './Cabinet';
+import { formatPoints, pointLabels } from './points';
 import cabinet from './cabinet.module.css';
 import s from './profile.module.css';
 
 const maxRating = 1000;
 
-export function StudentProfile({ user, themeToggle }: { user: { id: number }; themeToggle: ReactNode }) {
+export function StudentProfile({ user, themeToggle }: { user: { id: number; groupVerified: boolean }; themeToggle: ReactNode }) {
   const { id } = useParams();
   const studentId = id ?? String(user.id);
   if (!/^\d+$/.test(studentId) || !Number.isSafeInteger(Number(studentId)) || Number(studentId) < 1) {
     return <CabinetPage themeToggle={themeToggle}><p className="error" role="alert">Профиль студента не найден.</p></CabinetPage>;
   }
   return <ProfileScreen key={studentId} studentId={Number(studentId)} ownProfile={Number(studentId) === user.id}
+    pendingGroup={Number(studentId) === user.id && !user.groupVerified}
     themeToggle={themeToggle} />;
 }
 
-function ProfileScreen({ studentId, ownProfile, themeToggle }: {
-  studentId: number; ownProfile: boolean; themeToggle: ReactNode;
+function ProfileScreen({ studentId, ownProfile, pendingGroup, themeToggle }: {
+  studentId: number; ownProfile: boolean; pendingGroup: boolean; themeToggle: ReactNode;
 }) {
   const [profile, setProfile] = useState<StudentProfileData>();
   const [error, setError] = useState('');
@@ -60,6 +62,9 @@ function ProfileScreen({ studentId, ownProfile, themeToggle }: {
   const visibleAssignments = personal?.assignments.filter(item => (item.status === 'ACCEPTED') === completed);
 
   return <CabinetPage name={student?.fullName} subtitle={subtitle} themeToggle={themeToggle}>
+    {pendingGroup && <p className={`panel ${cabinet.section}`} role="status">
+      Группа ожидает подтверждения преподавателем. После подтверждения здесь появятся задания группы.
+    </p>}
     {error && <div className={s.feedback}>
       <p className="error" role="alert">{error}</p>
       <button type="button" className="button outline" onClick={() => { setError(''); setRetry(value => value + 1); }}>
@@ -77,8 +82,8 @@ function ProfileScreen({ studentId, ownProfile, themeToggle }: {
               transform="rotate(-90 21 21)" />
           </svg>
       </CabinetMetric>
-      <CabinetMetric label="Учебная активность"><span aria-label="Баллы пока недоступны">—</span> <small>БУА</small></CabinetMetric>
-      <CabinetMetric label="Общественная активность"><span aria-label="Баллы пока недоступны">—</span> <small>БОА</small></CabinetMetric>
+      <CabinetMetric label="Учебная активность">{formatPoints(student.academicActivityPoints)} <small>БУА</small></CabinetMetric>
+      <CabinetMetric label="Общественная активность">{formatPoints(student.publicActivityPoints)} <small>БОА</small></CabinetMetric>
     </dl>}
     {personal && visibleAssignments && <div className={cabinet.sections} data-cabinet-sections>
       <section className={`panel ${cabinet.section} ${cabinet.widePanel}`} aria-labelledby="profile-assignments-title">
@@ -90,7 +95,9 @@ function ProfileScreen({ studentId, ownProfile, themeToggle }: {
         {visibleAssignments.length ? <ul className={s.list}>
           {visibleAssignments.map(item => <li key={item.id} className={s.assignmentRow}>
             <div>
-              <Link to={`/assignments/${item.id}`} className={s.assignmentLink}>{item.title}</Link>
+              {ownProfile
+                ? <Link to={`/assignments/${item.id}`} className={s.assignmentLink}>{item.title}</Link>
+                : <span className={s.historyTitle}>{item.title}</span>}
               <p className={s.date}>До <time dateTime={item.deadline}>{dateTime(item.deadline)} МСК</time></p>
             </div>
             <StatusBadge status={item.status} />
@@ -100,17 +107,18 @@ function ProfileScreen({ studentId, ownProfile, themeToggle }: {
       <section className={`panel ${cabinet.section}`} aria-labelledby="profile-history-title">
         <h2 id="profile-history-title">История баллов</h2>
         {personal.ratingHistory.length ? <ul className={s.list}>
-          {personal.ratingHistory.map(entry => <li key={entry.id} className={s.historyRow}>
+          {personal.ratingHistory.map(entry => <li key={`${entry.currency}-${entry.id}`} className={s.historyRow}>
             <div>
-              <p className={s.historyTitle}>{entry.semesterStart
-                ? 'Пополнение в начале семестра' : `Просрочка: ${entry.assignmentTitle}`}</p>
+              <p className={s.historyTitle}>{entry.activityTitle ?? (entry.semesterStart
+                ? 'Пополнение в начале семестра' : `Просрочка: ${entry.assignmentTitle}`)}</p>
+              {entry.teacherName && <span className={s.date}>Начислил преподаватель · {entry.teacherName}</span>}
               <time className={s.date} dateTime={entry.recordedAt}>{dateTime(entry.recordedAt)} МСК</time>
             </div>
             <span className={s.ratingChange} data-credit={entry.amount > 0}>
-              {entry.amount > 0 ? '+' : '−'}{Math.abs(entry.amount)} АР
+              {entry.amount > 0 ? '+' : '−'}{formatPoints(Math.abs(entry.amount))} {pointLabels[entry.currency]}
             </span>
           </li>)}
-        </ul> : <p className={s.empty}>Изменений рейтинга пока нет.</p>}
+        </ul> : <p className={s.empty}>Изменений баллов пока нет.</p>}
       </section>
     </div>}
   </CabinetPage>;

@@ -1,0 +1,12 @@
+.heading { margin-bottom: 20px; }
+.list { margin: 0; padding: 0; list-style: none; }
+.row { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: baseline; gap: 8px 16px; padding-block: 12px; }
+.row:first-child { padding-top: 0; }
+.row:last-child { padding-bottom: 0; }
+.row + .row { border-top: 1px solid var(--border); }
+.student { color: var(--text); font-weight: 750; overflow-wrap: anywhere; text-decoration: none; }
+.student:hover { color: var(--accent); text-decoration: underline; }
+.activity { margin-top: 4px; overflow-wrap: anywhere; }
+.time { display: block; margin-top: 4px; color: var(--muted); font-size: .875rem; }
+.points { color: var(--accepted-text); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.more { margin-top: 16px; }

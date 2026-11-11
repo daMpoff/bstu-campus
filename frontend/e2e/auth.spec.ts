@@ -45,3 +45,26 @@ test('преподаватель возвращается к открытой с
   await page.goto('/login');
   await expect(page).toHaveURL(/\/assignments$/);
 });
+
+test('истёкшая сессия возвращает на вход и сохраняет запрошенную страницу', async ({ page, context }) => {
+  await page.goto('/login');
+  await page.getByRole('button', { name: 'Студент', exact: true }).click();
+  await page.getByRole('button', { name: 'Войти', exact: true }).click();
+  await expect(page).toHaveURL(/\/profile$/);
+
+  await context.clearCookies();
+  await page.getByRole('link', { name: 'Активности', exact: true }).click();
+  await expect(page).toHaveURL(/\/login$/);
+  await expect(page.getByRole('link', { name: 'Профиль', exact: true })).toHaveCount(0);
+  await page.getByRole('button', { name: 'Студент', exact: true }).click();
+  await page.getByLabel('Пароль').fill('wrong-password');
+  await page.getByRole('button', { name: 'Войти', exact: true }).click();
+  await expect(page.getByRole('alert')).toHaveText('Проверьте email и пароль.');
+  await expect(page).toHaveURL(/\/login$/);
+
+  await page.getByLabel('Пароль').fill('demo2026');
+  await page.getByRole('button', { name: 'Войти', exact: true }).click();
+  await expect(page).toHaveURL(/\/activities$/);
+  await expect(page.getByRole('heading', { name: 'Активности', exact: true })).toBeVisible();
+  expect((await page.request.get('/api/me')).status()).toBe(200);
+});

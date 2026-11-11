@@ -12,9 +12,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/registration")
 class RegistrationController {
     private final RegistrationService service;
+    private final RegistrationConfirmation confirmation;
 
-    RegistrationController(RegistrationService service) {
+    RegistrationController(RegistrationService service, RegistrationConfirmation confirmation) {
         this.service = service;
+        this.confirmation = confirmation;
     }
 
     @GetMapping("/catalog")
@@ -26,5 +28,20 @@ class RegistrationController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void register(@RequestBody RegistrationService.SignUp input) {
         service.register(input);
+    }
+
+    record Verification(String token) {}
+    record Resend(String email) {}
+
+    @PostMapping("/confirm-email")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    void confirmEmail(@RequestBody Verification input) {
+        confirmation.confirmEmail(input.token());
+    }
+
+    @PostMapping("/resend-email")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    void resendEmail(@RequestBody Resend input) {
+        confirmation.resend(input.email());
     }
 }

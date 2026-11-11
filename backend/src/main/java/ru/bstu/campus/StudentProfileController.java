@@ -1,7 +1,5 @@
 package ru.bstu.campus;
 
-import java.security.Principal;
-
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,7 +13,7 @@ class StudentProfileController {
     }
 
     @GetMapping("/api/profiles/{id}")
-    StudentProfileService.Profile profile(@PathVariable long id, Principal principal) {
-        return profiles.profile(id, principal.getName());
+    StudentProfileService.Profile profile(@PathVariable long id) {
+        return profiles.profile(id);
     }
 }

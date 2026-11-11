@@ -29,6 +29,9 @@
 .sections { display: grid; gap: var(--column-gap); }
 .section:global(.panel) { padding: clamp(16px, 1.55vw, 26px); }
 .section h2 { font-size: 1.375rem; line-height: 1.2; letter-spacing: -.026em; }
+@media (max-width: 360px) {
+  .identityTitle { font-size: 1.25rem; }
+}
 @media (min-width: 640px) {
   .metrics { grid-template-columns: var(--three-columns); }
   .metric:first-child { grid-column: auto; }

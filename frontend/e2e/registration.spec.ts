@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { csrf as csrfHeaders, verificationToken } from './helpers/confirmation';
 
 const password = 'register-demo-2026';
 
@@ -10,8 +11,20 @@ async function fillCredentials(page: Page, fullName: string, email: string) {
 
 async function registerAndLogin(page: Page, email: string, destination: RegExp) {
   await page.getByRole('button', { name: 'Зарегистрироваться' }).click();
-  await expect(page.getByRole('status')).toHaveText('Аккаунт создан. Введите пароль, чтобы войти.');
+  await expect(page.getByRole('status')).toHaveText('Аккаунт создан. Подтвердите email по ссылке из письма.');
   await expect(page.getByLabel('Email')).toHaveValue(email);
+  await page.getByLabel('Пароль').fill(password);
+  await page.getByRole('button', { name: 'Войти', exact: true }).click();
+  await expect(page.getByRole('alert')).toHaveText('Проверьте email и пароль.');
+  const token = await verificationToken(email);
+  await page.goto(`/confirm-email#${token}`);
+  await page.getByRole('button', { name: 'Подтвердить email' }).click();
+  await expect(page.getByRole('status')).toHaveText('Email подтверждён. Войдите в кабинет.');
+  const reused = await page.request.post('/api/registration/confirm-email', {
+    headers: await csrfHeaders(page.request), data: { token },
+  });
+  expect(reused.status()).toBe(400);
+  await page.getByLabel('Email').fill(email);
   await page.getByLabel('Пароль').fill(password);
   await page.getByRole('button', { name: 'Войти', exact: true }).click();
   await expect(page).toHaveURL(destination);
@@ -19,6 +32,7 @@ async function registerAndLogin(page: Page, email: string, destination: RegExp) 
 }
 
 test('обе роли регистрируются со справочниками, студент получает открытое задание своей группы', async ({ browser }) => {
+  test.setTimeout(75_000);
   const teacher = await browser.newPage();
   const student = await browser.newPage({ viewport: { width: 320, height: 800 }, hasTouch: true });
   const suffix = Date.now();
@@ -103,10 +117,22 @@ test('обе роли регистрируются со справочникам
     await results.getByRole('option', { name: groupName, exact: true }).tap();
     expect(await student.evaluate(() => document.documentElement.scrollWidth)).toBe(320);
     await registerAndLogin(student, studentEmail, /\/profile$/);
+    await expect(student.getByText(/Группа ожидает подтверждения/)).toBeVisible();
+    expect(await (await student.request.get('/api/student/assignments')).json()).toEqual([]);
+    expect(await (await student.request.get('/api/student/activities')).json()).toEqual([]);
+    const pending = await (await student.request.get('/api/me')).json();
+    expect(pending.groupVerified).toBe(false);
+    const approvalPath = `/api/teacher/groups/${groupId}/pending-students/${pending.id}`;
+    expect((await student.request.post(approvalPath, { headers: await csrfHeaders(student.request) })).status()).toBe(403);
+    await teacher.getByRole('link', { name: 'Подтверждение группы', exact: true }).click();
+    await teacher.getByLabel('Учебная группа').selectOption(String(groupId));
+    await teacher.getByRole('button', { name: 'Подтвердить группу · Тестовый Студент' }).click();
+    await expect(teacher.getByRole('status')).toContainText('Группа подтверждена');
+    await expect(student.getByText(/Группа ожидает подтверждения/)).toHaveCount(0, { timeout: 10_000 });
     await expect(student.getByRole('link', { name: new RegExp(title) })).toBeVisible();
     await expect(student.getByText(expiredTitle)).toHaveCount(0);
     expect(await (await student.request.get('/api/me')).json()).toMatchObject({
-      role: 'STUDENT', facultyName, groupName, rating: 1000,
+      role: 'STUDENT', facultyName, groupName, rating: 1000, groupVerified: true,
     });
 
     const payload = { role: 'STUDENT', email: studentEmail.toUpperCase(), password,

@@ -1,5 +1,7 @@
 .git
 .verify
+.env
+.env.*
 **/node_modules
 **/dist
 **/target

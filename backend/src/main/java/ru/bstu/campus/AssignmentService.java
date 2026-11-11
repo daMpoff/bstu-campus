@@ -2,13 +2,11 @@ package ru.bstu.campus;
 
 import java.sql.Types;
 import java.time.Clock;
-import java.time.Duration;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Service;
@@ -20,16 +18,18 @@ import org.springframework.web.server.ResponseStatusException;
 class AssignmentService {
     private final JdbcClient db;
     private final Clock clock;
-    private final Duration interval;
+    private final CampusSettings settings;
+    private final RatingScheduler ratings;
 
-    AssignmentService(JdbcClient db, Clock clock, @Value("${campus.penalty.interval}") Duration interval) {
+    AssignmentService(JdbcClient db, Clock clock, CampusSettings settings, RatingScheduler ratings) {
         this.db = db;
         this.clock = clock;
-        this.interval = interval;
+        this.settings = settings;
+        this.ratings = ratings;
     }
 
     record Account(long id, String fullName, String role, String groupName, int rating,
-                   String facultyName, String departmentName) {}
+                   String facultyName, String departmentName, boolean groupVerified) {}
     record Group(long id, String name) {}
     record Assignment(long id, String title, String description, Instant deadline, int penaltyLimit,
                       List<String> groups, int total, int accepted, int waiting) {}
@@ -45,14 +45,14 @@ class AssignmentService {
 
     Account account(String email) {
         return db.sql("""
-            SELECT u.id, u.full_name, u.role, g.name, u.rating, f.name, d.name
+            SELECT u.id, u.full_name, u.role, g.name, u.rating, f.name, d.name, u.group_verified
             FROM campus_user u
             LEFT JOIN study_group g ON g.id = u.group_id
             LEFT JOIN department d ON d.id = u.department_id
-            LEFT JOIN faculty f ON f.id = COALESCE(u.faculty_id, d.faculty_id)
+            LEFT JOIN faculty f ON f.id = COALESCE(g.faculty_id, u.faculty_id, d.faculty_id)
             WHERE u.email = :email
             """).param("email", email).query((row, index) -> new Account(row.getLong(1), row.getString(2),
-                row.getString(3), row.getString(4), row.getInt(5), row.getString(6), row.getString(7))).optional()
+                row.getString(3), row.getString(4), row.getInt(5), row.getString(6), row.getString(7), row.getBoolean(8))).optional()
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
     }
 
@@ -101,7 +101,7 @@ class AssignmentService {
         }
         return db.sql("""
             SELECT id, full_name, rating FROM campus_user
-            WHERE group_id = :group AND role = 'STUDENT'
+            WHERE group_id = :group AND role = 'STUDENT' AND group_verified AND email_verified
             ORDER BY rating DESC, full_name, id
             """).param("group", group).query(RankedStudent.class).list();
     }
@@ -133,8 +133,9 @@ class AssignmentService {
             """).param("id", id).param("groups", groups).update();
         db.sql("""
             INSERT INTO student_work (assignment_id, student_id, next_penalty_at)
-            SELECT :id, id, :next FROM campus_user WHERE role = 'STUDENT' AND group_id IN (:groups)
-            """).param("id", id).param("next", timestamp(input.deadline().plus(interval)))
+            SELECT :id, id, :next FROM campus_user
+            WHERE role = 'STUDENT' AND group_id IN (:groups) AND group_verified AND email_verified
+            """).param("id", id).param("next", timestamp(input.deadline().plus(settings.current().penaltyInterval())))
             .param("groups", groups).update();
         return id;
     }
@@ -143,7 +144,7 @@ class AssignmentService {
         ownedBy(teacher, assignment);
         Instant now = clock.instant();
         return db.sql("""
-            SELECT w.*, u.full_name, g.name, a.deadline
+            SELECT w.student_id, w.status, w.work_link, w.file_name, w.deducted, u.full_name, g.name, a.deadline
             FROM student_work w JOIN campus_user u ON u.id = w.student_id
             JOIN study_group g ON g.id = u.group_id JOIN assignment a ON a.id = w.assignment_id
             WHERE w.assignment_id = :id ORDER BY g.name, u.full_name
@@ -188,7 +189,8 @@ class AssignmentService {
             UPDATE student_work w SET status = :status, next_penalty_at = GREATEST(a.deadline, :now) + CAST(:interval AS interval)
             FROM assignment a WHERE w.assignment_id = a.id AND w.assignment_id = :id AND w.student_id IN (:students)
             """).param("status", input.action()).param("now", timestamp(clock.instant()))
-            .param("interval", interval.toMillis() + " milliseconds").param("id", assignment).param("students", ids).update();
+            .param("interval", settings.current().penaltyIntervalSeconds() + " seconds")
+            .param("id", assignment).param("students", ids).update();
     }
 
     @Transactional
@@ -200,11 +202,13 @@ class AssignmentService {
         if (!("OPEN".equals(state) || "RETURNED".equals(state))) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Эта работа уже сдана.");
         }
+        Instant now = clock.instant();
+        ratings.settleBeforeSubmission(assignment, student, now);
         db.sql("""
             UPDATE student_work SET status = 'SUBMITTED', work_link = :link, file_name = :fileName,
                 file_content = :content, submitted_at = :now WHERE assignment_id = :id AND student_id = :student
             """).param("link", link, Types.VARCHAR).param("fileName", fileName, Types.VARCHAR)
-            .param("content", content, Types.BINARY).param("now", timestamp(clock.instant()))
+            .param("content", content, Types.BINARY).param("now", timestamp(now))
             .param("id", assignment).param("student", student).update();
     }
 

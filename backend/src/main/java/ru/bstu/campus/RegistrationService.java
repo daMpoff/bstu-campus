@@ -2,13 +2,10 @@ package ru.bstu.campus;
 
 import java.nio.charset.StandardCharsets;
 import java.sql.Types;
-import java.time.Clock;
-import java.time.Duration;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,15 +19,12 @@ class RegistrationService {
 
     private final JdbcClient db;
     private final PasswordEncoder passwords;
-    private final Clock clock;
-    private final Duration penaltyInterval;
+    private final RegistrationConfirmation confirmation;
 
-    RegistrationService(JdbcClient db, PasswordEncoder passwords, Clock clock,
-                        @Value("${campus.penalty.interval}") Duration penaltyInterval) {
+    RegistrationService(JdbcClient db, PasswordEncoder passwords, RegistrationConfirmation confirmation) {
         this.db = db;
         this.passwords = passwords;
-        this.clock = clock;
-        this.penaltyInterval = penaltyInterval;
+        this.confirmation = confirmation;
     }
 
     record Faculty(long id, String name) {}
@@ -79,24 +73,22 @@ class RegistrationService {
             validateTeacher(input);
         }
         long user = db.sql("""
-            INSERT INTO campus_user(email, password_hash, full_name, role, group_id, faculty_id, department_id)
-            VALUES (:email, :password, :name, :role, :groupId, :faculty, :department)
+            INSERT INTO campus_user(email, password_hash, full_name, role, group_id, faculty_id, department_id, group_verified)
+            VALUES (:email, :password, :name, :role, :groupId, :faculty, :department, :teacher)
             ON CONFLICT (email) DO NOTHING RETURNING id
             """).param("email", email).param("password", passwords.encode(password)).param("name", fullName)
             .param("role", input.role()).param("groupId", input.groupId(), Types.BIGINT)
             .param("faculty", input.facultyId(), Types.BIGINT).param("department", input.departmentId(), Types.BIGINT)
+            .param("teacher", !student)
             .query(Long.class).optional()
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.CONFLICT, "Этот email уже зарегистрирован."));
-        if (student) {
-            assignOpenWork(user, input.groupId());
-        }
+        confirmation.issue(user, email);
     }
 
     private void validateStudent(SignUp input) {
         if (input.facultyId() == null || input.groupId() == null || input.departmentId() != null) {
             throw badRequest("Выберите факультет и учебную группу.");
         }
-        // Assignment creation takes the same lock before assigning work to this group.
         if (db.sql("""
             SELECT id FROM study_group
             WHERE id = :groupId AND faculty_id = :facultyId AND study_form IS NOT NULL
@@ -113,16 +105,6 @@ class RegistrationService {
                     .query(Long.class).optional().isEmpty()) {
             throw badRequest("Выберите кафедру из списка.");
         }
-    }
-
-    private void assignOpenWork(long student, long group) {
-        db.sql("""
-            INSERT INTO student_work(assignment_id, student_id, next_penalty_at)
-            SELECT a.id, :student, a.deadline + CAST(:interval AS interval)
-            FROM assignment a JOIN assignment_group g ON g.assignment_id = a.id
-            WHERE g.group_id = :groupId AND a.deadline > :now
-            """).param("student", student).param("interval", penaltyInterval.toMillis() + " milliseconds")
-            .param("groupId", group).param("now", AssignmentService.timestamp(clock.instant())).update();
     }
 
     private static ResponseStatusException badRequest(String message) {

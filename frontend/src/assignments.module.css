@@ -6,6 +6,14 @@
 .heading p { margin-top: .4rem; color: var(--muted); }
 .formLayout { display: grid; grid-template-columns: minmax(0, 2.1fr) minmax(190px, 1fr); gap: 1rem; align-items: start; }
 .form { display: grid; gap: 1rem; }
+.draft { min-width: 0; border: 1px solid var(--border); border-radius: var(--radius-control); background: var(--paper); }
+.draft summary { min-height: 44px; padding: .6rem .8rem; color: var(--accent); font-weight: 700; cursor: pointer; }
+.draftBody, .draftPreview { display: grid; gap: .75rem; justify-items: start; }
+.draftBody { padding: 0 .8rem .8rem; }
+.draftBody label { width: 100%; }
+.draftBody textarea { margin-top: .25rem; }
+.draftPreview { width: 100%; padding-top: .75rem; border-top: 1px solid var(--border); overflow-wrap: anywhere; }
+.draftPreview p { white-space: pre-wrap; }
 .field { display: grid; grid-template-columns: minmax(120px, .48fr) minmax(0, 1fr); align-items: start; gap: .8rem; }
 .field > span { padding-top: .55rem; font-weight: 750; }
 .field b, .groupField b { color: var(--accent); }

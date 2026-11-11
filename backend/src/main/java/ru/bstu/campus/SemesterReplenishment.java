@@ -12,7 +12,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -26,20 +25,13 @@ class SemesterReplenishment {
     private final JdbcClient db;
     private final TransactionTemplate transaction;
     private final Clock clock;
-    private final int amount;
-    private final List<MonthDay> startDays;
+    private final CampusSettings settings;
 
-    SemesterReplenishment(JdbcClient db, TransactionTemplate transaction, Clock clock,
-                         @Value("${campus.semester.amount}") int amount,
-                         @Value("${campus.semester.start-days}") String startDays) {
-        if (amount < 0) {
-            throw new IllegalArgumentException("Размер семестрового пополнения АР не может быть отрицательным.");
-        }
+    SemesterReplenishment(JdbcClient db, TransactionTemplate transaction, Clock clock, CampusSettings settings) {
         this.db = db;
         this.transaction = transaction;
         this.clock = clock;
-        this.amount = amount;
-        this.startDays = parseStartDays(startDays);
+        this.settings = settings;
     }
 
     record Term(int year, boolean autumn) {
@@ -50,22 +42,24 @@ class SemesterReplenishment {
 
     @Scheduled(fixedDelayString = "${campus.semester.check-interval:1m}")
     void replenishDueSemesters() {
+        var policy = settings.current();
+        int amount = policy.semesterAmount();
         if (amount == 0) return;
 
         LocalDate earliest = db.sql("""
-            SELECT min(semester_credit_from) FROM campus_user WHERE role = 'STUDENT'
+            SELECT min(semester_credit_from) FROM campus_user WHERE role = 'STUDENT' AND email_verified AND group_verified
             """).query(LocalDate.class).optional().orElse(null);
         if (earliest == null) return;
 
         Instant now = clock.instant();
         Set<Term> applied = db.sql("SELECT semester_start FROM semester_replenishment_run")
             .query(LocalDate.class).list().stream().map(Term::of).collect(Collectors.toSet());
-        for (LocalDate start : dueDates(startDays, earliest, now, applied)) {
-            transaction.executeWithoutResult(status -> replenish(start, now));
+        for (LocalDate start : dueDates(parseStartDays(policy.semesterStartDays()), earliest, now, applied)) {
+            transaction.executeWithoutResult(status -> replenish(start, now, amount));
         }
     }
 
-    private void replenish(LocalDate start, Instant now) {
+    private void replenish(LocalDate start, Instant now, int amount) {
         var recordedAt = AssignmentService.timestamp(now);
         int inserted = db.sql("""
             INSERT INTO semester_replenishment_run (semester_start, amount, applied_at)
@@ -78,7 +72,7 @@ class SemesterReplenishment {
             WITH eligible AS (
                 SELECT id, LEAST(:amount, :maxRating - rating) AS credit
                 FROM campus_user
-                WHERE role = 'STUDENT' AND semester_credit_from <= :start AND rating < :maxRating
+                WHERE role = 'STUDENT' AND email_verified AND group_verified AND semester_credit_from <= :start AND rating < :maxRating
                 ORDER BY id FOR UPDATE
             ), credited AS (
                 UPDATE campus_user u SET rating = u.rating + e.credit

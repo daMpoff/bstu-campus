@@ -1,6 +1,8 @@
-import { useEffect, useState, type FormEvent, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { api, post, type Account, type Attachment, type Group, type Status, type StudentAssignment, type TeacherAssignment, type Work } from './api';
+import { AssignmentDraft } from './AssignmentDraft';
+import { TargetGroups } from './TargetGroups';
 import s from './assignments.module.css';
 
 const statusLabels: Record<Status, string> = {
@@ -68,10 +70,12 @@ export function AssignmentList({ user }: { user: Account }) {
 
 export function NewAssignment() {
   const [groups, setGroups] = useState<Group[]>();
-  const [groupSearch, setGroupSearch] = useState('');
   const [selected, setSelected] = useState<number[]>([]);
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
+  const titleInput = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -103,32 +107,15 @@ export function NewAssignment() {
     }
   }
 
-  const query = groupSearch.trim().toLocaleLowerCase('ru-RU');
-  const visibleGroups = groups?.filter(group =>
-    selected.includes(group.id) || group.name.toLocaleLowerCase('ru-RU').includes(query));
-
   return <>
     <Heading trail={<><Link to="/assignments">Задания</Link><span>/</span> Новое задание</>} title="Новое задание"
       description="Назначьте задание учебным группам и задайте параметры выполнения." />
     <div className={s.formLayout}>
       <form className={`panel ${s.form}`} onSubmit={submit}>
-        <label className={s.field}><span>Название <b>*</b></span><input name="title" placeholder="Курсовая работа — этап 1" maxLength={160} required /></label>
-        <label className={s.field}><span>Описание <b>*</b></span><textarea name="description" rows={3} maxLength={5000} required placeholder="Что нужно сделать и как сдать работу?" /></label>
-        <fieldset className={s.groupField}>
-          <legend>Учебные группы <b>*</b></legend>
-          <div className={s.groupPicker}>
-            <input type="search" aria-label="Поиск учебной группы" placeholder="Введите часть шифра группы"
-              value={groupSearch} onChange={event => setGroupSearch(event.target.value)} disabled={!groups} />
-            <div className={s.groupOptions}>
-              {!groups && <span className="muted">Загрузка групп…</span>}
-              {visibleGroups?.length === 0 && <span className="muted">Группы не найдены.</span>}
-              {visibleGroups?.map(group => <label key={group.id} className={s.groupChoice}>
-                <input type="checkbox" checked={selected.includes(group.id)} onChange={event => setSelected(ids => event.target.checked ? [...ids, group.id] : ids.filter(id => id !== group.id))} />
-                <span>{group.name}</span>
-              </label>)}
-            </div>
-          </div>
-        </fieldset>
+        <AssignmentDraft onApply={draft => { setTitle(draft.title); setDescription(draft.description); titleInput.current?.focus(); }} />
+        <label className={s.field}><span>Название <b>*</b></span><input ref={titleInput} name="title" value={title} onChange={event => setTitle(event.target.value)} placeholder="Курсовая работа — этап 1" maxLength={160} required /></label>
+        <label className={s.field}><span>Описание <b>*</b></span><textarea name="description" value={description} onChange={event => setDescription(event.target.value)} rows={3} maxLength={5000} required placeholder="Что нужно сделать и как сдать работу?" /></label>
+        <TargetGroups groups={groups} selected={selected} onChange={setSelected} />
         <div className={s.field}><span>Дедлайн <b>*</b></span><div className={s.deadline}><label>Дата<input type="date" name="date" required /></label><label>Время (МСК)<input type="time" name="time" defaultValue="23:59" required /></label></div></div>
         <label className={s.field}><span>Лимит списания, АР <b>*</b></span><input type="number" name="limit" min={0} max={1000} defaultValue={100} required /></label>
         <div className={s.formFooter}>
@@ -215,9 +202,11 @@ function TeacherDetail({ id }: { id: number }) {
 function StudentDetail({ user, id }: { user: Account; id: number }) {
   const [item, setItem] = useState<StudentAssignment>();
   const [rating, setRating] = useState(user.rating);
-  const [error, setError] = useState('');
+  const [loadError, setLoadError] = useState('');
+  const [submitError, setSubmitError] = useState('');
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState('');
+  const refreshVersion = useRef(0);
 
   async function load() {
     const [items, account] = await Promise.all([api<StudentAssignment[]>('/student/assignments'), api<Account>('/me')]);
@@ -229,11 +218,16 @@ function StudentDetail({ user, id }: { user: Account; id: number }) {
   useEffect(() => {
     let active = true;
     async function refresh() {
+      const version = refreshVersion.current;
       try {
         const result = await load();
-        if (active) { setItem(result.current); setRating(result.rating); }
+        if (active && version === refreshVersion.current) {
+          setItem(result.current);
+          setRating(result.rating);
+          setLoadError('');
+        }
       } catch (failure) {
-        if (active) setError(failureText(failure));
+        if (active && version === refreshVersion.current) setLoadError(failureText(failure));
       }
     }
     void refresh();
@@ -243,23 +237,30 @@ function StudentDetail({ user, id }: { user: Account; id: number }) {
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setError('');
+    setSubmitError('');
     setNotice('');
     const fields = new FormData(event.currentTarget);
     const file = fields.get('file');
     if (!String(fields.get('link')).trim() && (!(file instanceof File) || !file.size)) {
-      setError('Приложите ссылку или файл.');
+      setSubmitError('Приложите ссылку или файл.');
       return;
     }
     setBusy(true);
     try {
       await api(`/student/assignments/${id}/submit`, { method: 'POST', body: fields });
-      const result = await load();
-      setItem(result.current);
-      setRating(result.rating);
+      refreshVersion.current += 1;
+      setItem(current => current && { ...current, status: 'SUBMITTED', link: null, fileName: null });
       setNotice('Работа отправлена на проверку.');
+      try {
+        const result = await load();
+        setItem(result.current);
+        setRating(result.rating);
+        setLoadError('');
+      } catch (failure) {
+        setLoadError(failureText(failure));
+      }
     } catch (failure) {
-      setError(failureText(failure));
+      setSubmitError(failureText(failure));
     } finally {
       setBusy(false);
     }
@@ -268,7 +269,7 @@ function StudentDetail({ user, id }: { user: Account; id: number }) {
   return <>
     <Heading trail={<><Link to="/assignments">Задания</Link><span>/</span> Просмотр</>} title={item?.title ?? 'Задание'}
       description={item && `${item.teacherName} · дедлайн ${dateTime(item.deadline)} МСК`} />
-    {error && <p className="error" role="alert">{error}</p>}
+    {loadError && <p className="error" role="alert">{loadError}</p>}
     {item && <div className={s.formLayout}>
       <section className="panel">
         <StatusBadge status={item.status} />
@@ -279,6 +280,7 @@ function StudentDetail({ user, id }: { user: Account; id: number }) {
           <h2>{item.status === 'RETURNED' ? 'Отправить исправленную работу' : 'Сдать работу'}</h2>
           <label>Ссылка на работу<input name="link" type="url" placeholder="https://" maxLength={2048} /></label>
           <label>Или файл до 10 МБ<input name="file" type="file" /></label>
+          {submitError && <p className="error" role="alert">{submitError}</p>}
           <button type="submit" className="button primary" disabled={busy}>{busy ? 'Отправляем…' : 'Сдать работу'} <span aria-hidden="true">→</span></button>
         </form>}
       </section>

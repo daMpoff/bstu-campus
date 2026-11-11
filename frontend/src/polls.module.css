@@ -1,0 +1,51 @@
+.heading, .cardHeading, .resultLabel, .editorActions {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: .75rem;
+}
+.heading, .detailHeading { margin-bottom: 1.25rem; }
+.heading h1, .detailHeading h1, .cardHeading h2 { margin: 0; overflow-wrap: anywhere; }
+.cardHeading a { color: var(--text); text-decoration: none; }
+.cardHeading a:hover { color: var(--accent); text-decoration: underline; }
+.state { color: var(--accent); font-weight: 700; }
+.stack { display: grid; gap: 1rem; min-width: 0; }
+.description { white-space: pre-wrap; overflow-wrap: anywhere; margin: .65rem 0; }
+.meta { color: var(--muted); margin: .35rem 0 0; overflow-wrap: anywhere; }
+.editor { max-width: 54rem; }
+.questionEditor, .ballotQuestion {
+  display: grid;
+  min-inline-size: 0;
+  gap: .75rem;
+  padding: 1rem;
+  margin: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-control);
+}
+.questionEditor legend, .ballotQuestion legend {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  font-weight: 750;
+  padding-inline: .35rem;
+}
+.editorActions { justify-content: flex-start; }
+.optionEditor { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: .75rem; }
+.choice { display: flex; align-items: center; gap: .65rem; min-height: 44px; cursor: pointer; overflow-wrap: anywhere; }
+.ballotQuestion .choice { padding: .25rem .6rem; border-radius: var(--radius-control); }
+.ballotQuestion .choice:has(input:checked) { background: var(--tint); }
+.resultQuestion { border-top: 1px solid var(--border); padding-top: 1rem; overflow-wrap: anywhere; }
+.resultQuestion h3 { margin: 0 0 .5rem; }
+.resultOptions { padding: 0; margin: .75rem 0 0; list-style: none; display: grid; gap: .8rem; }
+.resultLabel { flex-wrap: nowrap; margin-bottom: .25rem; }
+.resultLabel span:last-child { flex-shrink: 0; font-variant-numeric: tabular-nums; color: var(--muted); }
+.resultOptions progress { display: block; width: 100%; height: .55rem; accent-color: var(--accent-strong); }
+.respondent { padding: .65rem 0; border-bottom: 1px solid var(--border); }
+.respondent summary { cursor: pointer; min-height: 44px; padding-top: .5rem; font-weight: 700; }
+.respondent dl { margin: .75rem 0 0; }
+.respondent dt { font-weight: 700; }
+.respondent dd { margin: 0 0 .75rem; color: var(--muted); }
+@media (max-width: 440px) {
+  .optionEditor { grid-template-columns: minmax(0, 1fr); }
+  .optionEditor button { justify-self: start; }
+}

@@ -1,4 +1,21 @@
 spring:
+  task:
+    scheduling:
+      pool:
+        size: 3
+  mail:
+    host: ${CAMPUS_SMTP_HOST:localhost}
+    port: ${CAMPUS_SMTP_PORT:1025}
+    username: ${CAMPUS_SMTP_USERNAME:}
+    password: ${CAMPUS_SMTP_PASSWORD:}
+    properties:
+      "[mail.smtp.auth]": ${CAMPUS_SMTP_AUTH:false}
+      "[mail.smtp.starttls.enable]": ${CAMPUS_SMTP_STARTTLS:false}
+      "[mail.smtp.starttls.required]": ${CAMPUS_SMTP_STARTTLS:false}
+      "[mail.smtp.ssl.enable]": ${CAMPUS_SMTP_SSL:false}
+      "[mail.smtp.connectiontimeout]": 3000
+      "[mail.smtp.timeout]": 3000
+      "[mail.smtp.writetimeout]": 3000
   mvc:
     problemdetails:
       enabled: true
@@ -18,9 +35,19 @@ server:
         same-site: lax
 campus:
   demo: false
+  public-url: ${CAMPUS_PUBLIC_URL:http://localhost:8080}
+  mail:
+    from: ${CAMPUS_MAIL_FROM:campus@bgtu.test}
+  llm:
+    url: ${CAMPUS_LLM_URL:}
+    model: ${CAMPUS_LLM_MODEL:}
+    api-key: ${CAMPUS_LLM_API_KEY:}
+    reasoning-effort: ${CAMPUS_LLM_REASONING_EFFORT:}
   penalty:
     amount: 20
     interval: 60s
   semester:
     amount: ${CAMPUS_SEMESTER_AMOUNT:200}
     start-days: "${CAMPUS_SEMESTER_START_DAYS:02-01,09-01}"
+  activities:
+    monthly-limit: ${CAMPUS_ACTIVITY_MONTHLY_LIMIT:1000}

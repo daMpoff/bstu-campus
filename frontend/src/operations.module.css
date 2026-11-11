@@ -1,0 +1,31 @@
+.page, .panel, .editor { display: grid; align-content: start; gap: 1rem; min-width: 0; }
+.page h1 { font-size: clamp(1.5rem, 6vw, 2.75rem); overflow-wrap: anywhere; }
+.panel > :global(.button), .template { justify-self: start; }
+.panel h2 { font-size: 1.375rem; }
+.panel label { display: grid; gap: .375rem; min-width: 0; }
+.controls, .fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr)); gap: .75rem; align-items: end; }
+.controls :global(.button) { justify-self: start; }
+.actions, .switcher { display: flex; flex-wrap: wrap; gap: .5rem; }
+.switcher [aria-pressed='true'] { background: var(--tint); border-color: var(--accent); }
+.editor { padding: 1rem 0; border-block: 1px solid var(--border); }
+.editor + .editor { padding-top: 0; border-top: 0; }
+.rows { margin: 0; padding: 0; list-style: none; }
+.row { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .75rem; padding: .75rem 0; border-bottom: 1px solid var(--border); }
+.rowText { flex: 1 1 13rem; min-width: 0; overflow-wrap: anywhere; }
+.row p { font-size: .875rem; }
+.notice { color: var(--accepted-text); background: var(--accepted-bg); border-radius: var(--radius-control); padding: .625rem .75rem; }
+.stat { display: flex; flex-wrap: wrap; align-items: baseline; gap: .5rem 1rem; }
+.stat strong { font-size: clamp(1.5rem, 3.5vw, 2.25rem); line-height: 1.15; font-variant-numeric: tabular-nums; }
+.chart { display: grid; gap: .5rem; margin: 0; padding: 0; list-style: none; }
+.chartRow { display: grid; grid-template-columns: 7rem minmax(0, 1fr) 4rem; align-items: center; gap: .625rem; font-variant-numeric: tabular-nums; }
+.chartRow strong { text-align: end; }
+.track { border-radius: 5px; background: var(--tint); overflow: hidden; height: .625rem; }
+.bar { display: block; height: 100%; background: var(--accent); border-radius: inherit; }
+.numbers { display: flex; flex-wrap: wrap; gap: .375rem 1rem; font-variant-numeric: tabular-nums; }
+.numbers span { white-space: nowrap; }
+.rank { flex: 0 0 1.75rem; color: var(--muted); font-variant-numeric: tabular-nums; }
+.rankedText { display: flex; align-items: baseline; min-width: 0; overflow-wrap: anywhere; }
+@media (min-width: 1024px) {
+  .budgetNumbers { display: grid; grid-template-columns: repeat(4, 7rem); text-align: end; }
+  .budgetNumbers span { white-space: normal; overflow-wrap: anywhere; }
+}

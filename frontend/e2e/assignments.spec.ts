@@ -64,6 +64,10 @@ test('группа получает задание, студент сдаёт р
       multipart: { link: 'https://example.org/unauthorized' },
     });
     expect(forgedWork.status()).toBe(404);
+    await outsider.goto(`/profiles/${me.id}`);
+    const publicActiveAssignments = outsider.getByRole('region', { name: 'Задания' });
+    await expect(publicActiveAssignments.getByRole('listitem').filter({ hasText: title })).toContainText('Сдано на проверку');
+    await expect(publicActiveAssignments.getByRole('link')).toHaveCount(0);
 
     const row = teacher.getByRole('listitem').filter({ hasText: 'Алексей Смирнов' });
     await teacher.getByRole('button', { name: 'Обновить' }).click();
@@ -106,10 +110,23 @@ test('группа получает задание, студент сдаёт р
 
     await row.getByRole('link', { name: 'Алексей Смирнов' }).click();
     await expect(teacher.getByRole('heading', { name: 'Алексей Смирнов' })).toBeVisible();
-    await expect(teacher.getByRole('region', { name: 'История баллов' })).toHaveCount(0);
-    const publicProfile = await outsider.request.get(`/api/profiles/${me.id}`);
-    expect(publicProfile.ok()).toBe(true);
-    expect(await publicProfile.json()).toMatchObject({ student: { id: me.id }, personal: null });
+    for (const viewer of [teacher, outsider]) {
+      const publicProfile = await viewer.request.get(`/api/profiles/${me.id}`);
+      expect(publicProfile.ok()).toBe(true);
+      expect(await publicProfile.json()).toMatchObject({
+        student: { id: me.id, academicActivityPoints: expect.any(Number), publicActivityPoints: expect.any(Number) },
+        personal: {
+          assignments: expect.arrayContaining([expect.objectContaining({ title, status: 'ACCEPTED' })]),
+          ratingHistory: expect.arrayContaining([expect.objectContaining({ assignmentTitle: title, amount: -20, currency: 'AR' })]),
+        },
+      });
+      await viewer.goto(`/profiles/${me.id}`);
+      await expect(viewer.getByRole('region', { name: 'История баллов' }).getByRole('listitem').filter({ hasText: title })).toContainText('−20 АР');
+      const publicAssignments = viewer.getByRole('region', { name: 'Задания' });
+      await publicAssignments.getByRole('button', { name: 'Завершённые' }).click();
+      await expect(publicAssignments.getByRole('listitem').filter({ hasText: title })).toContainText('Принято');
+      await expect(publicAssignments.getByRole('link')).toHaveCount(0);
+    }
 
     await teacher.getByRole('navigation', { name: 'Кабинет' }).getByRole('link', { name: 'Задания' }).click();
     await expect(progress).toContainText('Принято 1');
