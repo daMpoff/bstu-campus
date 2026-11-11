@@ -52,6 +52,16 @@ class AssignmentDraftServiceTest {
     }
 
     @Test
+    void supportsDraftWhenProviderDoesNotImplementJsonMode() throws IOException {
+        String fenced = "```json\n{\"title\":\"Запросы SQL\",\"description\":\"Напишите три запроса.\"}\n```";
+        String completion = json.writeValueAsString(Map.of("choices", List.of(Map.of("message", Map.of("content", fenced)))));
+        var draft = service(200, completion, false).generate("Три запроса SELECT.");
+
+        assertEquals("Запросы SQL", draft.title());
+        assertFalse(sent.get().body().has("response_format"));
+    }
+
+    @Test
     void rejectsEmptyAndOversizedNotesBeforeCallingProvider() throws IOException {
         var service = service(200, "{}");
         assertEquals(HttpStatus.BAD_REQUEST, assertThrows(ResponseStatusException.class, () -> service.generate("  ")).getStatusCode());
@@ -61,7 +71,8 @@ class AssignmentDraftServiceTest {
 
     @Test
     void reportsUnconfiguredProvider() {
-        var service = new AssignmentDraftService(json, "", "", "", "");
+        var service = new AssignmentDraftService(json,
+            new OpenAiChatClient(json, new LlmProperties("auto", "", "", "", "", "", true, "")));
         assertFalse(service.available());
         assertEquals(HttpStatus.SERVICE_UNAVAILABLE,
             assertThrows(ResponseStatusException.class, () -> service.generate("Тезис")).getStatusCode());
@@ -83,6 +94,10 @@ class AssignmentDraftServiceTest {
     }
 
     private AssignmentDraftService service(int status, String response) throws IOException {
+        return service(status, response, true);
+    }
+
+    private AssignmentDraftService service(int status, String response, boolean jsonMode) throws IOException {
         provider = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
         provider.createContext("/v1/chat/completions", exchange -> {
             try (exchange) {
@@ -95,7 +110,8 @@ class AssignmentDraftServiceTest {
             }
         });
         provider.start();
-        return new AssignmentDraftService(json, "http://127.0.0.1:" + provider.getAddress().getPort() + "/v1/chat/completions",
-            "test-model", "test-key", "none");
+        var settings = new LlmProperties("auto", "http://127.0.0.1:" + provider.getAddress().getPort() + "/v1/chat/completions",
+            "", "test-model", "test-key", "none", jsonMode, "");
+        return new AssignmentDraftService(json, new OpenAiChatClient(json, settings));
     }
 }

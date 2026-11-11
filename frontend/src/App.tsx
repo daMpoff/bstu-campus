@@ -13,6 +13,7 @@ import { Polls, NewPoll, PollDetail } from './Polls';
 import { PersonalFeed } from './PersonalFeed';
 import { Admin } from './Admin';
 import { Analytics } from './Analytics';
+import { CampusAssistant } from './CampusAssistant';
 import s from './layout.module.css';
 
 function Glyph({ name }: { name: 'sun' | 'moon' | 'tasks' | 'review' | 'rating' | 'logout' | 'arrow' | 'profile' | 'activities' | 'rewards' | 'poll' | 'feed' | 'approval' | 'settings' }) {
@@ -166,6 +167,7 @@ export function App() {
       <Route path="/profiles/:id" element={requireAccount(user => <StudentProfile user={user} themeToggle={themeToggle} />, true)} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
+    {account && inCabinet && <CampusAssistant key={account.id} user={account} />}
   </>;
 }
 

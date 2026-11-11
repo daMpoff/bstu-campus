@@ -93,24 +93,20 @@ class AssignmentController {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Укажите корректную ссылку http или https.");
             }
         }
-        boolean hasFile = file != null && !file.isEmpty();
-        if (workLink == null && !hasFile) {
+        var upload = AssignmentUpload.read(file);
+        if (workLink == null && upload == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Приложите ссылку или файл.");
         }
-        String fileName = hasFile ? file.getOriginalFilename() : null;
-        if (hasFile) {
-            fileName = fileName == null ? "work" : fileName.replace('\\', '/');
-            fileName = fileName.substring(fileName.lastIndexOf('/') + 1).replaceAll("[\\p{Cntrl}]", "").strip();
-            if (fileName.isEmpty() || fileName.length() > 180) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Укажите имя файла длиной до 180 символов.");
-            }
-        }
-        service.submit(me(principal).id(), id, workLink, fileName, hasFile ? file.getBytes() : null);
+        service.submit(me(principal).id(), id, workLink, upload == null ? null : upload.name(),
+            upload == null ? null : upload.content());
     }
 
     @GetMapping("/works/{id}/files/{studentId}")
     ResponseEntity<byte[]> download(Principal principal, @PathVariable long id, @PathVariable long studentId) {
-        var file = service.attachment(me(principal), id, studentId);
+        return download(service.attachment(me(principal), id, studentId));
+    }
+
+    static ResponseEntity<byte[]> download(AssignmentService.Attachment file) {
         return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM)
             .header(HttpHeaders.CONTENT_DISPOSITION, ContentDisposition.attachment()
                 .filename(file.name(), StandardCharsets.UTF_8).build().toString())
@@ -119,10 +115,20 @@ class AssignmentController {
     }
 
     @GetMapping("/teacher/assignments/{id}/works/{studentId}/preview")
-    ResponseEntity<byte[]> preview(Principal principal, @PathVariable long id, @PathVariable long studentId) {
+    ResponseEntity<byte[]> previewForTeacher(Principal principal, @PathVariable long id, @PathVariable long studentId) {
         var account = me(principal);
         if (!"TEACHER".equals(account.role())) throw new ResponseStatusException(HttpStatus.FORBIDDEN);
-        var file = service.attachment(account, id, studentId);
+        return preview(service.attachment(account, id, studentId));
+    }
+
+    @GetMapping("/student/assignments/{id}/preview")
+    ResponseEntity<byte[]> previewForStudent(Principal principal, @PathVariable long id) {
+        var account = me(principal);
+        if (!"STUDENT".equals(account.role())) throw new ResponseStatusException(HttpStatus.FORBIDDEN);
+        return preview(service.attachment(account, id, account.id()));
+    }
+
+    static ResponseEntity<byte[]> preview(AssignmentService.Attachment file) {
         MediaType type = AttachmentPreview.type(file.name(), file.content()).orElseThrow(() ->
             new ResponseStatusException(HttpStatus.UNSUPPORTED_MEDIA_TYPE, "Файл доступен для скачивания."));
         return ResponseEntity.ok().contentType(type)

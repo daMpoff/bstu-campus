@@ -39,10 +39,14 @@ campus:
   mail:
     from: ${CAMPUS_MAIL_FROM:campus@bgtu.test}
   llm:
+    provider: ${CAMPUS_LLM_PROVIDER:auto}
     url: ${CAMPUS_LLM_URL:}
+    base-url: ${CAMPUS_LLM_BASE_URL:}
     model: ${CAMPUS_LLM_MODEL:}
     api-key: ${CAMPUS_LLM_API_KEY:}
     reasoning-effort: ${CAMPUS_LLM_REASONING_EFFORT:}
+    json-mode: ${CAMPUS_LLM_JSON_MODE:true}
+    token-field: ${CAMPUS_LLM_TOKEN_FIELD:}
   penalty:
     amount: 20
     interval: 60s

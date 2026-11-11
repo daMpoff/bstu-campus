@@ -1,0 +1,10 @@
+.deadline {
+  display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: .2rem .65rem;
+  color: var(--muted); font-size: .8125rem; line-height: 1.5; font-variant-numeric: tabular-nums;
+}
+.deadline > span[role='timer'] { white-space: nowrap; }
+.deadline[data-tone='soon'] > span[role='timer'] { color: var(--returned-text); }
+.deadline[data-tone='overdue'] > span[role='timer'] { color: var(--error-text); }
+.penalty { display: inline-flex; flex-wrap: wrap; gap: .2rem .55rem; font-size: .8125rem; color: var(--muted); }
+.penalty > span { white-space: nowrap; }
+.penalty strong { color: var(--text); font-variant-numeric: tabular-nums; }

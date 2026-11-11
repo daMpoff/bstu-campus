@@ -49,7 +49,11 @@ test('преподаватель возвращается к открытой с
 test('истёкшая сессия возвращает на вход и сохраняет запрошенную страницу', async ({ page, context }) => {
   await page.goto('/login');
   await page.getByRole('button', { name: 'Студент', exact: true }).click();
-  await page.getByRole('button', { name: 'Войти', exact: true }).click();
+  await Promise.all([
+    page.waitForResponse(response => response.url().endsWith('/api/student/activities') && response.ok()),
+    page.waitForResponse(response => response.url().endsWith('/api/student/polls') && response.ok()),
+    page.getByRole('button', { name: 'Войти', exact: true }).click(),
+  ]);
   await expect(page).toHaveURL(/\/profile$/);
 
   await context.clearCookies();

@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { api } from './api';
 import { useCabinetResource } from './useCabinetResource';
 import s from './operations.module.css';
@@ -227,7 +228,12 @@ function SettingsForm() {
 }
 
 export function Admin() {
-  const [tab, setTab] = useState<'catalog' | 'import' | 'settings'>('catalog');
+  const [params, setParams] = useSearchParams();
+  const selected = params.get('tab');
+  const tab = selected === 'import' || selected === 'settings' ? selected : 'catalog';
+  function setTab(next: 'catalog' | 'import' | 'settings') {
+    setParams(next === 'catalog' ? {} : { tab: next });
+  }
   return <div className={s.page}>
     <h1>Администрирование</h1>
     <div className={s.switcher} aria-label="Разделы администрирования" role="group">

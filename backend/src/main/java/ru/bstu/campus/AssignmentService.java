@@ -1,5 +1,7 @@
 package ru.bstu.campus;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Types;
 import java.time.Clock;
 import java.time.Instant;
@@ -32,15 +34,16 @@ class AssignmentService {
                    String facultyName, String departmentName, boolean groupVerified) {}
     record Group(long id, String name) {}
     record Assignment(long id, String title, String description, Instant deadline, int penaltyLimit,
-                      List<String> groups, int total, int accepted, int waiting) {}
+                      List<String> groups, int total, int accepted, int waiting, boolean individual) {}
     record PendingWork(long assignmentId, String assignmentTitle, long studentId, String studentName,
                        String groupName, String link, String fileName, boolean previewAvailable) {}
     record TeacherDashboard(List<Assignment> assignments, List<PendingWork> pendingWorks) {}
     record RankedStudent(long id, String fullName, int rating) {}
     record Work(long studentId, String studentName, String groupName, String status, String link,
-                String fileName, int deducted, boolean previewAvailable) {}
+                String fileName, int deducted, boolean previewAvailable, int rating) {}
     record StudentAssignment(long id, String title, String description, Instant deadline, int penaltyLimit,
-                             String teacherName, String status, String link, String fileName, int deducted) {}
+                             String teacherName, String status, String link, String fileName, int deducted,
+                             boolean previewAvailable, boolean individual) {}
     record Attachment(String name, byte[] content) {}
 
     Account account(String email) {
@@ -77,20 +80,21 @@ class AssignmentService {
             """).param("teacher", teacher).query((row, index) -> new Assignment(row.getLong("id"),
                 row.getString("title"), row.getString("description"), row.getObject("deadline", OffsetDateTime.class).toInstant(),
                 row.getInt("penalty_limit"), List.of((String[]) row.getArray("groups").getArray()),
-                row.getInt("total"), row.getInt("accepted"), row.getInt("waiting"))).list();
+                row.getInt("total"), row.getInt("accepted"), row.getInt("waiting"), row.getBoolean("individual"))).list();
     }
 
     @Transactional(readOnly = true, isolation = Isolation.REPEATABLE_READ)
     TeacherDashboard dashboard(long teacher) {
         List<PendingWork> pending = db.sql("""
-            SELECT a.id, a.title, u.id, u.full_name, g.name, w.work_link, w.file_name, w.preview_available
+            SELECT a.id, a.title, u.id, u.full_name, g.name, w.work_link, w.file_name, w.preview_available,
+                   CASE WHEN w.preview_available IS NULL THEN w.file_content END AS legacy_file
             FROM student_work w JOIN assignment a ON a.id = w.assignment_id
             JOIN campus_user u ON u.id = w.student_id JOIN study_group g ON g.id = u.group_id
             WHERE a.teacher_id = :teacher AND w.status = 'SUBMITTED'
             ORDER BY w.submitted_at DESC, a.id DESC, u.id
             """).param("teacher", teacher).query((row, index) -> new PendingWork(
                 row.getLong(1), row.getString(2), row.getLong(3), row.getString(4), row.getString(5),
-                row.getString(6), row.getString(7), previewAvailable(row.getObject(8, Boolean.class), row.getString(7)))).list();
+                row.getString(6), row.getString(7), previewAvailable(row))).list();
         return new TeacherDashboard(teaching(teacher), pending);
     }
 
@@ -108,6 +112,18 @@ class AssignmentService {
 
     @Transactional
     long create(long teacher, AssignmentController.NewAssignment input) {
+        return create(teacher, input, null);
+    }
+
+    @Transactional
+    long createForStudent(long teacher, long student, String title, String description, Instant deadline, Integer limit) {
+        long group = db.sql("""
+            SELECT group_id FROM campus_user WHERE id = :id AND role = 'STUDENT' AND group_verified AND email_verified
+            """).param("id", student).query(Long.class).optional().orElseThrow(AssignmentService::notFound);
+        return create(teacher, new AssignmentController.NewAssignment(title, description, List.of(group), deadline, limit), student);
+    }
+
+    private long create(long teacher, AssignmentController.NewAssignment input, Long student) {
         String title = input.title() == null ? "" : input.title().strip();
         String description = input.description() == null ? "" : input.description().strip();
         Integer limit = input.penaltyLimit();
@@ -123,20 +139,23 @@ class AssignmentService {
             throw badRequest("Выберите группы из списка.");
         }
         long id = db.sql("""
-            INSERT INTO assignment (teacher_id, title, description, deadline, penalty_limit)
-            VALUES (:teacher, :title, :description, :deadline, :limit) RETURNING id
+            INSERT INTO assignment (teacher_id, title, description, deadline, penalty_limit, individual)
+            VALUES (:teacher, :title, :description, :deadline, :limit, :individual) RETURNING id
             """).param("teacher", teacher).param("title", title).param("description", description)
-            .param("deadline", timestamp(input.deadline())).param("limit", limit).query(Long.class).single();
+            .param("deadline", timestamp(input.deadline())).param("limit", limit).param("individual", student != null)
+            .query(Long.class).single();
         db.sql("""
             INSERT INTO assignment_group (assignment_id, group_id)
             SELECT :id, id FROM study_group WHERE id IN (:groups)
             """).param("id", id).param("groups", groups).update();
-        db.sql("""
+        int assigned = db.sql("""
             INSERT INTO student_work (assignment_id, student_id, next_penalty_at)
             SELECT :id, id, :next FROM campus_user
             WHERE role = 'STUDENT' AND group_id IN (:groups) AND group_verified AND email_verified
+              AND (:student IS NULL OR id = :student)
             """).param("id", id).param("next", timestamp(input.deadline().plus(settings.current().penaltyInterval())))
-            .param("groups", groups).update();
+            .param("groups", groups).param("student", student, Types.BIGINT).update();
+        if (student != null && assigned != 1) throw notFound();
         return id;
     }
 
@@ -144,7 +163,8 @@ class AssignmentService {
         ownedBy(teacher, assignment);
         Instant now = clock.instant();
         return db.sql("""
-            SELECT w.student_id, w.status, w.work_link, w.file_name, w.deducted, w.preview_available, u.full_name, g.name, a.deadline
+            SELECT w.student_id, w.status, w.work_link, w.file_name, w.deducted, w.preview_available, u.full_name, u.rating, g.name, a.deadline,
+                   CASE WHEN w.preview_available IS NULL THEN w.file_content END AS legacy_file
             FROM student_work w JOIN campus_user u ON u.id = w.student_id
             JOIN study_group g ON g.id = u.group_id JOIN assignment a ON a.id = w.assignment_id
             WHERE w.assignment_id = :id ORDER BY g.name, u.full_name
@@ -152,13 +172,14 @@ class AssignmentService {
                 row.getString("full_name"), row.getString("name"),
                 visibleStatus(row.getString("status"), row.getObject("deadline", OffsetDateTime.class).toInstant(), now),
                 row.getString("work_link"), row.getString("file_name"), row.getInt("deducted"),
-                previewAvailable(row.getObject("preview_available", Boolean.class), row.getString("file_name")))).list();
+                previewAvailable(row), row.getInt("rating"))).list();
     }
 
     List<StudentAssignment> studying(long student) {
         Instant now = clock.instant();
         return db.sql("""
-            SELECT a.*, u.full_name, w.status, w.work_link, w.file_name, w.deducted
+            SELECT a.*, u.full_name, w.status, w.work_link, w.file_name, w.deducted, w.preview_available,
+                   CASE WHEN w.preview_available IS NULL THEN w.file_content END AS legacy_file
             FROM student_work w JOIN assignment a ON a.id = w.assignment_id
             JOIN campus_user u ON u.id = a.teacher_id
             WHERE w.student_id = :student ORDER BY a.id DESC
@@ -167,7 +188,8 @@ class AssignmentService {
                 return new StudentAssignment(row.getLong("id"), row.getString("title"), row.getString("description"),
                     deadline, row.getInt("penalty_limit"), row.getString("full_name"),
                     visibleStatus(row.getString("status"), deadline, now),
-                    row.getString("work_link"), row.getString("file_name"), row.getInt("deducted"));
+                    row.getString("work_link"), row.getString("file_name"), row.getInt("deducted"), previewAvailable(row),
+                    row.getBoolean("individual"));
             }).list();
     }
 
@@ -225,8 +247,10 @@ class AssignmentService {
             .orElseThrow(AssignmentService::notFound);
     }
 
-    private static boolean previewAvailable(Boolean validated, String fileName) {
-        return validated != null ? validated : AttachmentPreview.supportsName(fileName);
+    private static boolean previewAvailable(ResultSet row) throws SQLException {
+        Boolean validated = row.getObject("preview_available", Boolean.class);
+        return validated != null ? validated
+            : AttachmentPreview.type(row.getString("file_name"), row.getBytes("legacy_file")).isPresent();
     }
 
     private void ownedBy(long teacher, long assignment) {
@@ -239,7 +263,7 @@ class AssignmentService {
         return value.atOffset(ZoneOffset.UTC);
     }
 
-    private static String visibleStatus(String status, Instant deadline, Instant now) {
+    static String visibleStatus(String status, Instant deadline, Instant now) {
         return "OPEN".equals(status) && !now.isBefore(deadline) ? "OVERDUE" : status;
     }
 

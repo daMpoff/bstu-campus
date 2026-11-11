@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { post, type Group, type PendingWork, type RankedStudent, type TeacherAssignment, type TeacherDashboardData } from './api';
-import { Attachments } from './Assignments';
+import { DeadlineIndicator } from './AssignmentDeadline';
+import { Attachments } from './AttachmentPreview';
 import { CabinetMetric } from './Cabinet';
 import cabinet from './cabinet.module.css';
 import { useCabinetResource } from './useCabinetResource';
@@ -34,8 +35,12 @@ function AssignmentRow({ assignment }: { assignment: TeacherAssignment }) {
       <h3><Link to={`/assignments/${assignment.id}`}>{assignment.title}</Link></h3>
       <p className={s.description}>{assignment.description}</p>
       <div className={s.taskMeta}>
-        <span className={s.groups}>{assignment.groups.map(group => <span className={s.groupBadge} key={group}>{group}</span>)}</span>
-        <span>до <time dateTime={assignment.deadline}>{deadlineFormatter.format(new Date(assignment.deadline))}</time> · лимит {assignment.penaltyLimit} АР</span>
+        <span className={s.groups}>
+          {assignment.individual && <span className={s.groupBadge}>Личное задание</span>}
+          {assignment.groups.map(group => <span className={s.groupBadge} key={group}>{group}</span>)}
+        </span>
+        <span>до <time dateTime={assignment.deadline}>{deadlineFormatter.format(new Date(assignment.deadline))} МСК</time> · лимит {assignment.penaltyLimit} АР</span>
+        <DeadlineIndicator deadline={assignment.deadline} allSubmitted={assignment.accepted + assignment.waiting === assignment.total} />
       </div>
     </div>
     <AssignmentProgress {...assignment} />

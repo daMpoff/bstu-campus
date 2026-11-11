@@ -1,5 +1,5 @@
-import { useState, type FormEvent } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useEffect, useState, type FormEvent } from 'react';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { post, type Activity, type ActivityDetail, type ActivityKind, type ActivityParticipant, type Group, type ParticipationLevel, type StudentActivity } from './api';
 import { dateTime } from './Assignments';
 import { activityPointLabel, formatPoints } from './points';
@@ -51,9 +51,18 @@ export function TeacherActivities() {
 
 export function StudentActivities() {
   const { data, error, reload } = useCabinetResource<StudentActivity[]>('/student/activities', 6000);
+  const { hash } = useLocation();
+  const activityAnchor = data?.find(({ activity }) => hash === `#activity-${activity.id}`)?.activity.id;
   const [busy, setBusy] = useState<number>();
   const [enrollmentError, setEnrollmentError] = useState<{ id: number; message: string }>();
   const [enrollmentNotice, setEnrollmentNotice] = useState<number>();
+
+  useEffect(() => {
+    if (activityAnchor === undefined) return;
+    const activity = document.getElementById(`activity-${activityAnchor}`);
+    activity?.focus({ preventScroll: true });
+    activity?.scrollIntoView({ block: 'start' });
+  }, [activityAnchor]);
 
   async function enroll(id: number) {
     if (busy) return;
@@ -76,8 +85,9 @@ export function StudentActivities() {
     {error && <p className="error" role="alert">{error}</p>}
     {!data && !error && <p className="muted" role="status">Загружаем активности…</p>}
     {data?.length === 0 && <p className={panel}>Для вашей группы пока нет активностей.</p>}
-    <div className={s.cards}>{data?.map(({ activity, participation, points, enrolled, canEnroll }) => <article className={panel} key={activity.id}>
-      <div className={s.cardHeading}><h2>{activity.title}</h2><ActivityKindLabel kind={activity.kind} /></div>
+    <div className={s.cards}>{data?.map(({ activity, participation, points, enrolled, canEnroll }) => <article
+      className={`${panel} ${s.activityAnchor}`} key={activity.id} id={`activity-${activity.id}`} aria-labelledby={`activity-title-${activity.id}`} tabIndex={-1}>
+      <div className={s.cardHeading}><h2 id={`activity-title-${activity.id}`}>{activity.title}</h2><ActivityKindLabel kind={activity.kind} /></div>
       <ActivityInfo activity={activity} />
       <p className={s.meta}>Преподаватель · {activity.teacherName}</p>
       {points !== null ? <p className={s.earned}>Участие {participation}% · +{formatPoints(points)} {activityPointLabel(activity.kind)}</p>

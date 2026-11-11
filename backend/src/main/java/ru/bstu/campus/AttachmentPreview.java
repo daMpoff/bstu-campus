@@ -19,13 +19,6 @@ final class AttachmentPreview {
 
     private AttachmentPreview() {}
 
-    static boolean supportsName(String name) {
-        return switch (extension(name)) {
-            case "pdf", "png", "jpg", "jpeg", "gif", "webp", "txt" -> true;
-            default -> false;
-        };
-    }
-
     static Optional<MediaType> type(String name, byte[] content) {
         if (content == null || content.length == 0) return Optional.empty();
         MediaType type = switch (extension(name)) {

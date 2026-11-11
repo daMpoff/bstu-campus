@@ -116,7 +116,7 @@ class RegistrationConfirmation {
             INSERT INTO student_work (assignment_id, student_id, next_penalty_at)
             SELECT a.id, :student, a.deadline + CAST(:interval AS interval)
             FROM assignment a JOIN assignment_group g ON g.assignment_id = a.id
-            WHERE g.group_id = :group AND a.deadline > :now
+            WHERE g.group_id = :group AND a.deadline > :now AND NOT a.individual
             ON CONFLICT DO NOTHING
             """).param("student", studentId).param("group", groupId).param("now", AssignmentService.timestamp(clock.instant()))
             .param("interval", settings.current().penaltyIntervalSeconds() + " seconds").update();

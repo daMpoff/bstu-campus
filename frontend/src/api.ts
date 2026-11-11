@@ -10,7 +10,7 @@ export type RegistrationCatalog = {
   groups: (Group & { studyForm: 'очная' | 'очно-заочное' | 'заочное'; facultyId: number })[];
 };
 export type Status = 'OPEN' | 'OVERDUE' | 'SUBMITTED' | 'RETURNED' | 'ACCEPTED';
-export type BaseAssignment = { id: number; title: string; description: string; deadline: string; penaltyLimit: number };
+export type BaseAssignment = { id: number; title: string; description: string; deadline: string; penaltyLimit: number; individual?: boolean };
 export type TeacherAssignment = BaseAssignment & { groups: string[]; total: number; accepted: number; waiting: number };
 export type Attachment = { link: string | null; fileName: string | null; previewAvailable?: boolean };
 export type PendingWork = Attachment & {
@@ -36,8 +36,10 @@ export type Reward = {
 };
 export type RewardPage = { entries: Reward[]; nextBeforeId: number | null };
 export type StudentAssignment = BaseAssignment & Attachment & { teacherName: string; status: Status; deducted: number };
-export type Work = Attachment & { studentId: number; studentName: string; groupName: string; status: Status; deducted: number };
-export type ProfileAssignment = Pick<StudentAssignment, 'id' | 'title' | 'deadline' | 'status'>;
+export type Work = Attachment & { studentId: number; studentName: string; groupName: string; status: Status; deducted: number; rating: number };
+export type ProfileAssignment = Pick<StudentAssignment, 'id' | 'title' | 'deadline' | 'status'> & {
+  penaltyLimit: number | null; deducted: number | null;
+};
 export type StudentProfileData = {
   student: {
     id: number; fullName: string; facultyName: string | null; groupName: string; rating: number;
@@ -61,7 +63,7 @@ export class ApiError extends Error {
 export const sessionExpiredEvent = 'campus-session-expired';
 let sessionVersion = 0;
 
-export async function api<T>(path: string, init?: RequestInit): Promise<T> {
+export async function apiResponse(path: string, init?: RequestInit): Promise<Response> {
   const headers = new Headers(init?.headers);
   if (init?.method && init.method !== 'GET') {
     const token = await api<{ headerName: string; token: string }>('/csrf');
@@ -80,6 +82,11 @@ export async function api<T>(path: string, init?: RequestInit): Promise<T> {
     throw new ApiError(response.status, body?.detail || body?.message || defaultMessage);
   }
   if (path === '/login' || path === '/logout') sessionVersion += 1;
+  return response;
+}
+
+export async function api<T>(path: string, init?: RequestInit): Promise<T> {
+  const response = await apiResponse(path, init);
   return (response.status === 204 ? undefined : await response.json()) as T;
 }
 

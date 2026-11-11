@@ -1,13 +1,78 @@
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { ApiError, api, type StudentProfileData } from './api';
+import { ApiError, api, type ProfileAssignment, type StudentActivity, type StudentProfileData } from './api';
+import { canSubmitWork, DeadlineIndicator, useDeadlineClock } from './AssignmentDeadline';
 import { dateTime, StatusBadge } from './Assignments';
 import { CabinetMetric, CabinetPage } from './Cabinet';
-import { formatPoints, pointLabels } from './points';
+import { activityPointLabel, formatPoints, pointLabels } from './points';
+import { useCabinetResource } from './useCabinetResource';
 import cabinet from './cabinet.module.css';
 import s from './profile.module.css';
 
 const maxRating = 1000;
+const day = 24 * 60 * 60 * 1000;
+const byDeadline = (left: ProfileAssignment, right: ProfileAssignment) => Date.parse(left.deadline) - Date.parse(right.deadline);
+
+function assignmentPenalty(item: ProfileAssignment, rating: number | undefined) {
+  if (typeof item.penaltyLimit !== 'number' || typeof item.deducted !== 'number' || rating === undefined) return undefined;
+  return { limit: item.penaltyLimit, deducted: item.deducted, rating };
+}
+
+function SubmissionOverview({ assignments }: { assignments: ProfileAssignment[] }) {
+  const now = useDeadlineClock();
+  const actionable = useMemo(() => assignments.filter(item => canSubmitWork(item.status)).sort(byDeadline), [assignments]);
+  const overdue = actionable.filter(item => item.status === 'OVERDUE' || Date.parse(item.deadline) <= now);
+  const soon = actionable.filter(item => item.status !== 'OVERDUE' && Date.parse(item.deadline) > now && Date.parse(item.deadline) <= now + day);
+  const waiting = assignments.filter(item => item.status === 'SUBMITTED').length;
+  const next = overdue[0] ?? actionable[0];
+
+  return <section className={`panel ${cabinet.section} ${cabinet.widePanel}`} aria-labelledby="student-submissions">
+    <h2 id="student-submissions">Сдача работ</h2>
+    <dl className={s.submissionCounts}>
+      <div><dt>Просрочено</dt><dd data-overdue={overdue.length > 0}>{overdue.length}</dd></div>
+      <div><dt>До 24 ч</dt><dd>{soon.length}</dd></div>
+      <div><dt>На проверке</dt><dd>{waiting}</dd></div>
+    </dl>
+    {next ? <div className={s.nextAssignment}>
+      <div>
+        <p className={s.itemLabel}>{overdue.length ? 'Просроченное задание' : 'Ближайший дедлайн'}</p>
+        <p className={s.historyTitle}>{next.title}</p>
+        <DeadlineIndicator deadline={next.deadline} status={next.status} />
+      </div>
+      <Link className="button primary" to={`/assignments/${next.id}`}>Открыть задание <span aria-hidden="true">→</span></Link>
+    </div> : <p className={s.empty}>Заданий, которые нужно сдать, пока нет.</p>}
+  </section>;
+}
+
+type UpcomingPoll = { id: number; title: string; endsAt: string; closed: boolean; voted: boolean };
+
+function UpcomingEvents() {
+  const activities = useCabinetResource<StudentActivity[]>('/student/activities', 30000);
+  const polls = useCabinetResource<UpcomingPoll[]>('/student/polls', 30000);
+  const now = Date.now();
+  const activity = activities.data?.filter(item => Date.parse(item.activity.occursAt) > now)
+    .sort((left, right) => Date.parse(left.activity.occursAt) - Date.parse(right.activity.occursAt))[0]?.activity;
+  const poll = polls.data?.filter(item => !item.closed && !item.voted && Date.parse(item.endsAt) > now)
+    .sort((left, right) => Date.parse(left.endsAt) - Date.parse(right.endsAt))[0];
+
+  return <section className={`panel ${cabinet.section}`} aria-labelledby="student-upcoming">
+    <h2 id="student-upcoming">Ближайшие события</h2>
+    {activity && <div className={s.upcomingItem}>
+      <p className={s.itemLabel}>{activity.kind === 'ACADEMIC' ? 'Учебная активность' : 'Общественная активность'}</p>
+      <Link to={`/activities#activity-${activity.id}`} className={s.eventLink}>{activity.title}</Link>
+      <p className={s.date}><time dateTime={activity.occursAt}>{dateTime(activity.occursAt)} МСК</time>
+        {' · до '}{formatPoints(activity.maxPoints)} {activityPointLabel(activity.kind)}</p>
+    </div>}
+    {poll && <div className={s.upcomingItem}>
+      <p className={s.itemLabel}>Опрос</p>
+      <Link to={`/polls/${poll.id}`} className={s.eventLink}>{poll.title}</Link>
+      <p className={s.date}>До <time dateTime={poll.endsAt}>{dateTime(poll.endsAt)} МСК</time></p>
+    </div>}
+    {!activity && !poll && <p className={s.empty}>{activities.error || polls.error
+      ? 'Не удалось загрузить ближайшие события.'
+      : activities.data && polls.data ? 'Ближайших активностей и открытых опросов пока нет.' : 'Загружаем события…'}</p>}
+  </section>;
+}
 
 export function StudentProfile({ user, themeToggle }: { user: { id: number; groupVerified: boolean }; themeToggle: ReactNode }) {
   const { id } = useParams();
@@ -60,6 +125,10 @@ function ProfileScreen({ studentId, ownProfile, pendingGroup, themeToggle }: {
   const { student, personal } = profile ?? {};
   const subtitle = student && [student.facultyName, student.groupName].filter(Boolean).join(' · ');
   const visibleAssignments = personal?.assignments.filter(item => (item.status === 'ACCEPTED') === completed);
+  if (ownProfile && !completed) {
+    visibleAssignments?.sort((left, right) =>
+      Number(canSubmitWork(right.status)) - Number(canSubmitWork(left.status)) || byDeadline(left, right));
+  }
 
   return <CabinetPage name={student?.fullName} subtitle={subtitle} themeToggle={themeToggle}>
     {pendingGroup && <p className={`panel ${cabinet.section}`} role="status">
@@ -85,6 +154,10 @@ function ProfileScreen({ studentId, ownProfile, pendingGroup, themeToggle }: {
       <CabinetMetric label="Учебная активность">{formatPoints(student.academicActivityPoints)} <small>БУА</small></CabinetMetric>
       <CabinetMetric label="Общественная активность">{formatPoints(student.publicActivityPoints)} <small>БОА</small></CabinetMetric>
     </dl>}
+    {ownProfile && !pendingGroup && personal && <div className={`${cabinet.sections} ${s.overview}`}>
+      <SubmissionOverview assignments={personal.assignments} />
+      <UpcomingEvents />
+    </div>}
     {personal && visibleAssignments && <div className={cabinet.sections} data-cabinet-sections>
       <section className={`panel ${cabinet.section} ${cabinet.widePanel}`} aria-labelledby="profile-assignments-title">
         <h2 id="profile-assignments-title">Задания</h2>
@@ -99,6 +172,7 @@ function ProfileScreen({ studentId, ownProfile, pendingGroup, themeToggle }: {
                 ? <Link to={`/assignments/${item.id}`} className={s.assignmentLink}>{item.title}</Link>
                 : <span className={s.historyTitle}>{item.title}</span>}
               <p className={s.date}>До <time dateTime={item.deadline}>{dateTime(item.deadline)} МСК</time></p>
+              {ownProfile && <DeadlineIndicator deadline={item.deadline} status={item.status} penalty={assignmentPenalty(item, student?.rating)} />}
             </div>
             <StatusBadge status={item.status} />
           </li>)}
@@ -110,7 +184,7 @@ function ProfileScreen({ studentId, ownProfile, pendingGroup, themeToggle }: {
           {personal.ratingHistory.map(entry => <li key={`${entry.currency}-${entry.id}`} className={s.historyRow}>
             <div>
               <p className={s.historyTitle}>{entry.activityTitle ?? (entry.semesterStart
-                ? 'Пополнение в начале семестра' : `Просрочка: ${entry.assignmentTitle}`)}</p>
+                ? 'Пополнение в начале семестра' : entry.assignmentTitle ? `Просрочка: ${entry.assignmentTitle}` : 'Просрочка задания')}</p>
               {entry.teacherName && <span className={s.date}>Начислил преподаватель · {entry.teacherName}</span>}
               <time className={s.date} dateTime={entry.recordedAt}>{dateTime(entry.recordedAt)} МСК</time>
             </div>

@@ -1,0 +1,14 @@
+.section {
+  display: grid;
+  gap: .6rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+  min-width: 0;
+}
+.section h2 { font-size: 1.05rem; }
+.list { display: grid; gap: .65rem; margin: 0; padding: 0; list-style: none; }
+.list li { display: grid; gap: .3rem; justify-items: start; }
+.list small { color: var(--muted); }
+.file { min-width: 0; max-width: 100%; }
+.file > :global(.button) { max-width: 100%; text-align: start; overflow-wrap: anywhere; }

@@ -1,7 +1,6 @@
 package ru.bstu.campus;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.awt.image.BufferedImage;
@@ -47,7 +46,7 @@ class AttachmentPreviewTest {
         assertTrue(AttachmentPreview.type("Работа.txt", utf8("\ufeff \n<html>Заголовок</html>")).isEmpty());
         assertTrue(AttachmentPreview.type("Работа.svg", utf8("<svg xmlns='http://www.w3.org/2000/svg'/> ")).isEmpty());
         assertTrue(AttachmentPreview.type("Работа.pdf", utf8("%PDF-1.7\nСодержимое файла")).isEmpty());
-        assertFalse(AttachmentPreview.supportsName("Работа.docx"));
+        assertTrue(AttachmentPreview.type("Работа.docx", utf8("Содержимое файла")).isEmpty());
     }
 
     private static byte[] utf8(String value) {
