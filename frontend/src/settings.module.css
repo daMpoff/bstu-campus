@@ -11,7 +11,8 @@
   margin-inline-end: 8px; padding: .45rem .65rem; border: 0; border-radius: var(--radius-control);
   background: var(--tint); color: var(--accent); font: inherit; cursor: pointer;
 }
-:global([data-cabinet-role='STUDENT']) .photoControls input::file-selector-button {
+:global([data-cabinet-role='STUDENT']) .photoControls input::file-selector-button,
+:global([data-cabinet-role='TEACHER']) .photoControls input::file-selector-button {
   font-size: var(--text-control); font-weight: var(--weight-control);
 }
 @media (max-width: 400px) {

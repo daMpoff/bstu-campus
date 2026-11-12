@@ -170,6 +170,20 @@ test('лента доставляет события нужной роли и г
     await expect(awarded.getByRole('link', { name: 'Начислены баллы активности' })).toHaveAttribute('href', '/profile', { timeout: 12_000 });
     await expect(awarded.locator('time')).toContainText('МСК');
     expect(await student.evaluate(() => document.documentElement.scrollWidth)).toBe(320);
+
+    await teacher.goto('/feed');
+    await expect(teacher.getByRole('heading', { name: 'Персональная лента', level: 1 })).toHaveCSS('font-size', '32px');
+    const submitted = teacher.getByRole('region', { name: 'События в ленте' }).getByRole('listitem')
+      .filter({ hasText: task }).filter({ has: teacher.getByRole('link', { name: 'Работа сдана', exact: true }) }).first();
+    await expect(submitted.getByRole('heading')).toHaveCSS('font-size', '16px');
+    await expect(submitted.locator('p')).toHaveCSS('font-size', '14px');
+    await expect(submitted.locator('time')).toHaveCSS('font-size', '14px');
+
+    await teacher.goto('/rewards');
+    await expect(teacher.getByRole('heading', { name: 'Лента наград', level: 1 })).toHaveCSS('font-size', '32px');
+    const reward = teacher.getByRole('region', { name: 'Начисления за активности' }).getByRole('listitem').filter({ hasText: activity });
+    await expect(reward.getByRole('heading')).toHaveCSS('font-size', '16px');
+    await expect(reward.getByRole('link')).toHaveCSS('font-size', '14px');
   } finally {
     await Promise.all([teacher.close(), student.close(), outsider.close()]);
   }

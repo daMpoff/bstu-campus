@@ -13,10 +13,11 @@
 .kind[data-public='true'] { color: var(--accepted-text); background: var(--accepted-bg); }
 .format { color: var(--text); border-color: var(--border); }
 .cards a, .studentName { color: var(--text); text-decoration: none; }
-.cards h2, .studentName { font-weight: var(--weight-heading); }
+.cards h2 { font-size: var(--text-item); line-height: var(--leading-item); }
+.studentName { font-weight: var(--weight-heading); }
 .cards a:hover, .studentName:hover { color: var(--accent); text-decoration: underline; }
 .description { margin-top: 6px; white-space: pre-wrap; overflow-wrap: anywhere; }
-.meta { color: var(--muted); font-size: var(--text-small); margin-top: 4px; overflow-wrap: anywhere; }
+.meta { color: var(--muted); font-size: var(--text-note); line-height: var(--leading-note); margin-top: 4px; overflow-wrap: anywhere; }
 .groups { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 10px; }
 .groups span {
   background: var(--tint); color: var(--accent); padding: 2px 7px; border-radius: 6px;

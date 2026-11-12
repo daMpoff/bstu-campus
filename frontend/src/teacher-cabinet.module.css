@@ -7,7 +7,7 @@
 .list > li:last-child { padding-bottom: 3px; }
 .taskRow { display: grid; grid-template-columns: minmax(0, 1fr); align-items: center; gap: 10px 18px; }
 .taskInfo, .workInfo { min-width: 0; overflow-wrap: anywhere; }
-.taskInfo h2 { margin: 0; font-size: 1rem; line-height: 1.3; font-weight: var(--weight-heading); }
+.taskInfo h2 { margin: 0; font-size: var(--text-item); line-height: var(--leading-item); }
 .taskInfo a, .workInfo a { color: inherit; text-decoration: none; }
 .taskInfo a:hover, .workInfo a:hover { color: var(--accent); text-decoration: underline; }
 .description {
@@ -28,7 +28,7 @@
   display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between;
   gap: 2px 8px; color: var(--muted); font-size: var(--text-small); font-weight: var(--weight-control);
 }
-.progressTitle strong { color: var(--text); font-size: .9375rem; font-variant-numeric: tabular-nums; }
+.progressTitle strong { color: var(--text); font-size: var(--text-item); font-variant-numeric: tabular-nums; }
 .progressTrack {
   display: flex; height: 6px; overflow: hidden; margin-block: 7px 8px; border-radius: 999px; background: var(--border);
 }
@@ -49,32 +49,32 @@
 .ranking { width: 100%; border-collapse: collapse; text-align: left; }
 .ranking th, .ranking td { padding: 12px 0; border-bottom: 1px solid var(--border); }
 .ranking tbody tr:last-child td { border-bottom: 0; }
-.ranking thead th { color: var(--muted); font-size: .875rem; }
+.ranking thead th { color: var(--muted); font-size: var(--text-control); font-weight: var(--weight-control); }
 .ranking th:last-child, .ranking td:last-child { text-align: right; white-space: nowrap; }
 .ranking td:first-child { padding-right: 12px; }
 .ranking td:last-child { font-variant-numeric: tabular-nums; font-weight: var(--weight-heading); }
 .ranking a { display: inline-flex; align-items: center; min-height: 44px; font-weight: var(--weight-control); text-underline-offset: .18em; }
 
 .reviewPage, .reviewWorkspace { display: grid; min-width: 0; gap: clamp(.75rem, 1.5vw, 1.25rem); }
-.reviewPage h1 { font-size: 2rem; overflow-wrap: anywhere; }
+.reviewPage h1 { overflow-wrap: anywhere; }
 .reviewQueue:global(.panel), .reviewDetail:global(.panel), .reviewEmpty:global(.panel) { padding: clamp(.875rem, 1.4vw, 1.25rem); }
 .reviewQueueHead, .reviewChoiceName { display: flex; align-items: baseline; flex-wrap: wrap; gap: .3rem .65rem; }
 .reviewQueueHead { justify-content: space-between; margin-bottom: .65rem; }
-.reviewQueueHead h2, .reviewDetailHead h2 { font-size: 1.25rem; overflow-wrap: anywhere; }
+.reviewQueueHead h2, .reviewDetailHead h2 { overflow-wrap: anywhere; }
 .reviewQueueHead p { color: var(--muted); font-size: var(--text-small); }
 .reviewList { list-style: none; padding: 3px; margin: -3px; max-block-size: min(36vh, 18rem); overflow: auto; }
 .reviewList li + li { border-top: 1px solid var(--border); }
 .reviewChoice {
   display: grid; gap: .22rem; width: 100%; min-height: 44px; padding: .65rem .75rem;
   border: 1px solid transparent; border-radius: var(--radius-control); color: var(--text);
-  background: transparent; text-align: start; line-height: 1.35; overflow-wrap: anywhere;
+  background: transparent; text-align: start; font-size: var(--text-item); line-height: var(--leading-item); overflow-wrap: anywhere;
   transition: background-color var(--interaction-duration) var(--interaction-ease);
 }
 .reviewChoice:hover:not(:disabled) { background: var(--paper); }
 .reviewChoice[aria-pressed='true'] { background: var(--tint); }
 .reviewChoice:focus-visible { outline-offset: -2px; }
 .reviewChoiceName strong { min-width: 0; }
-.reviewChoiceAssignment { color: var(--muted); font-size: var(--text-small); }
+.reviewChoiceAssignment { color: var(--muted); font-size: var(--text-note); line-height: var(--leading-note); font-weight: var(--weight-body); }
 .reviewDetail { display: grid; align-content: start; gap: .9rem; }
 .reviewDetailHead { display: grid; gap: .35rem; min-width: 0; }
 .reviewAssignment { color: var(--text); overflow-wrap: anywhere; text-underline-offset: .2em; }

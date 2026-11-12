@@ -3,8 +3,7 @@
 .trail span { color: var(--muted); }
 .heading { display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: .65rem; margin: 0 0 1.3rem; }
 .heading h1 { overflow-wrap: anywhere; }
-.heading p { margin-top: .4rem; color: var(--muted); }
-:global([data-cabinet-role='STUDENT']) .heading p { font-size: var(--text-small); line-height: var(--leading-note); }
+.heading p { margin-top: .4rem; color: var(--muted); font-size: var(--text-note); line-height: var(--leading-note); }
 .formLayout { display: grid; grid-template-columns: minmax(0, 2.1fr) minmax(190px, 1fr); gap: 1rem; align-items: start; }
 .form { display: grid; gap: 1rem; }
 .draft { min-width: 0; border: 1px solid var(--border); border-radius: var(--radius-control); background: var(--paper); }
@@ -28,9 +27,9 @@
 .deadline label { min-width: 0; font-size: var(--text-small); }
 .formFooter { display: grid; justify-items: start; gap: .65rem; padding-top: .9rem; border-top: 1px solid var(--border); }
 .reminder { border: 1px solid var(--border); border-radius: var(--radius-panel); overflow: hidden; background: var(--panel); }
-.reminder h2 { background: var(--tint); color: var(--accent); padding: 1rem; font-size: 1.22rem; }
+.reminder h2 { background: var(--tint); color: var(--accent); padding: 1rem; }
 .reminder ul { margin: 0; list-style: none; padding: .6rem 1rem; }
-.reminder li { padding: .42rem 0 .42rem 1.55rem; position: relative; font-size: .94rem; }
+.reminder li { padding: .42rem 0 .42rem 1.55rem; position: relative; font-size: var(--text-note); line-height: var(--leading-note); }
 .reminder li::before { content: '✓'; position: absolute; left: 0; font-weight: var(--weight-heading); color: var(--accent); }
 .assignmentList { display: grid; gap: clamp(16px, 1.7vw, 25px); container-type: inline-size; }
 .listHeading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px 24px; }
@@ -90,8 +89,9 @@
 .previewDialog::backdrop { background: color-mix(in srgb, var(--navy) 68%, transparent); }
 .previewHeader { display: flex; align-items: start; justify-content: space-between; gap: .8rem; padding: 1rem; border-bottom: 1px solid var(--border); }
 .previewHeader h2 { font-size: var(--text-section, 1.2rem); }
-.previewHeader p { margin-top: .2rem; font-size: .9rem; color: var(--muted); overflow-wrap: anywhere; }
-:global([data-cabinet-role='STUDENT']) .previewHeader p { font-size: var(--text-small); line-height: var(--leading-note); }
+.previewHeader p {
+  margin-top: .2rem; font-size: var(--text-note); line-height: var(--leading-note); color: var(--muted); overflow-wrap: anywhere;
+}
 .previewHeader button { flex-shrink: 0; }
 .previewBody { min-height: 4.5rem; overflow: auto; padding: 1rem; background: var(--paper); }
 .previewText { margin: 0; white-space: pre-wrap; overflow-wrap: anywhere; font: .9rem/1.6 var(--font-mono); }

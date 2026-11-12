@@ -44,7 +44,7 @@
   background: var(--paper);
   color: var(--text);
 }
-:where([data-cabinet-role='STUDENT']) {
+:where([data-cabinet-role='STUDENT'], [data-cabinet-role='TEACHER']) {
   --text-page: 2rem;
   --text-section: 1.25rem;
   --text-item: 1rem;
@@ -96,11 +96,11 @@ h2 { font-size: var(--text-section, 1.5rem); }
 h3 { font-size: var(--text-item, 1.17em); line-height: var(--leading-item, 1.2); }
 strong, b { font-weight: var(--weight-heading); }
 label { font-weight: var(--weight-control); }
-:where([data-cabinet-role='STUDENT']) :is(button, label, legend, summary) {
+:where([data-cabinet-role='STUDENT'], [data-cabinet-role='TEACHER']) :is(button, label, legend, summary) {
   font-size: var(--text-control);
   font-weight: var(--weight-control);
 }
-:where([data-cabinet-role='STUDENT']) :is(.button, .back) { font-size: var(--text-control); }
+:where([data-cabinet-role='STUDENT'], [data-cabinet-role='TEACHER']) :is(.button, .back) { font-size: var(--text-control); }
 input:not([type='checkbox'], [type='radio']), textarea, select {
   display: block; width: 100%; min-height: 44px; padding: .55rem .75rem; border: 1px solid var(--control-border);
   border-radius: var(--radius-control); color: var(--text); background: var(--panel);

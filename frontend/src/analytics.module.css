@@ -21,7 +21,7 @@
   line-height: 1.1;
 }
 .readoutValue output strong {
-  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-size: var(--text-metric);
   font-variant-numeric: tabular-nums;
 }
 .readout label {
@@ -126,7 +126,8 @@
   border-top: 1px solid var(--border);
 }
 .values :is(th, td):last-child { text-align: end; }
-.values tbody th { font-weight: 400; }
+.values thead th { font-size: var(--text-control); font-weight: var(--weight-control); }
+.values tbody th { font-weight: var(--weight-body); }
 .budgetSummary {
   display: grid;
   gap: .65rem;
@@ -177,6 +178,6 @@
 }
 @media (max-width: 420px) {
   .trend { grid-template-columns: 2.3rem minmax(0, 1fr); gap: .5rem; }
-  .months { font-size: .8rem; }
+  .months { font-size: var(--text-caption); }
   .months span[data-compact='true'] { display: none; }
 }

@@ -334,6 +334,12 @@
 - Встроенный просмотрщик браузера обрезал PDF в узкой колонке. Подключили PDF.js с локальным worker, масштабом по ширине панели и перелистыванием. В Edge на отдельном Docker-стенде открыли двухстраничный PDF и TXT, скачали ZIP, приняли и вернули работы, сверили статусы с кабинетом студента и проверили пустую очередь. Обе темы проверили на ширинах 320, 375 и 1440 px.
 - Сборка Docker прошла с 55 тестами Maven. Прошли 8 сценариев Playwright по заданиям, правам доступа к вложениям и навигации. От раздела «Задания» до кнопки «Принять» требуется два перехода.
 
+### Типографика кабинета преподавателя
+
+- В Edge на проде подтвердили Medeo Sans. Заголовки страниц преподавателя были от 24 до 44 px. В «Моих событиях» названия записей были 17,28 px, описания — 16 px, в «Ленте наград» названия достигали 24 px. Причина — общая шкала применялась только к студенту.
+- Расширили шкалу на преподавателя и привели к ней карточки, подписи таблиц, формы, показатели аналитики и помощник. В Edge на отдельном Docker-стенде проверили 10 разделов и 7 форм и карточек. В обеих темах на ширинах 320, 375 и 1440 px проверили вычисленные размеры, начертания, фактическую отрисовку Medeo Sans и отсутствие горизонтальной прокрутки. Для обеих лент сверили размеры со страницами студента.
+- Сборка фронтенда и 11 сценариев Playwright прошли. В сценарии с реальными начислениями и событиями добавили проверки размеров названий и подписей обеих лент под преподавателем.
+
 ### Промпт для вечернего фото страницы входа
 
 > Use case: lighting-weather. Asset: portrait photograph for the dark theme of the university login page. Edit Image 1, the daylight portrait of the BGTU alley. Use Image 2, the existing night hero, for lighting and color only. Convert Image 1 to photorealistic late evening with a deep navy sky, naturally dark foliage, warm amber light in a few existing windows, and subtle warm spill onto the brick facade and pavement. Keep the alley and the facade readable in the narrow center-right crop used on the site. Preserve Image 1’s portrait aspect ratio (957:1277), camera position, framing, perspective, building geometry, path, stairs, trees and railings. Change only time of day and lighting. No added objects, graphics, text, or watermark.

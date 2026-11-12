@@ -13,13 +13,13 @@
   background: var(--accent-strong);
   color: var(--on-accent);
   box-shadow: 0 .35rem 1.2rem color-mix(in srgb, var(--navy) 23%, transparent);
-  font-weight: var(--weight-heading);
+  font-size: var(--text-control);
+  font-weight: var(--weight-control);
   transition: background-color var(--interaction-duration) var(--interaction-ease);
 }
 
 .launcher:hover { background: var(--accent-hover); }
 .launcher.dragging { outline: 3px solid var(--focus-ring); outline-offset: 3px; }
-.launcher:global([data-cabinet-role='STUDENT']) { font-size: var(--text-control); font-weight: var(--weight-control); }
 .dialog {
   position: fixed;
   inset: auto max(1rem, env(safe-area-inset-right)) max(1rem, env(safe-area-inset-bottom)) auto;
@@ -136,8 +136,7 @@
 .transferHeader, .file { justify-content: space-between; }
 .transferHeader h3 { font-size: var(--text-item, 1rem); }
 .transferHeader .textButton { flex: none; }
-.transfer h4 { margin: .1rem 0 0; font-size: var(--text-item, .92rem); line-height: var(--leading-item, inherit); }
-.dialog:global([data-cabinet-role='STUDENT']) .transfer h4 { font-weight: var(--weight-heading); }
+.transfer h4 { margin: .1rem 0 0; font-size: var(--text-item); line-height: var(--leading-item); font-weight: var(--weight-heading); }
 .file { padding-left: .5rem; border-radius: var(--radius-control); background: var(--tint); color: var(--accent); }
 .file > span { flex: 1; font-size: var(--text-small); font-weight: var(--weight-control); }
 .file > svg { flex: none; width: 18px; }

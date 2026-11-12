@@ -7,7 +7,7 @@
 }
 .heading, .detailHeading { margin-bottom: 1.25rem; }
 .heading h1, .detailHeading h1, .cardHeading h2 { margin: 0; overflow-wrap: anywhere; }
-:global([data-cabinet-role='STUDENT']) .cardHeading h2 { font-size: var(--text-item); line-height: var(--leading-item); }
+.cardHeading h2 { font-size: var(--text-item); line-height: var(--leading-item); }
 .cardHeading a { color: var(--text); text-decoration: none; }
 .cardHeading a:hover { color: var(--accent); text-decoration: underline; }
 .state { color: var(--accent); font-size: var(--text-control, inherit); font-weight: var(--weight-control); }
@@ -35,8 +35,9 @@
 .editorActions { justify-content: flex-start; }
 .optionEditor { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: .75rem; }
 .choice { display: flex; align-items: center; gap: .65rem; min-height: 44px; cursor: pointer; overflow-wrap: anywhere; }
-.ballotQuestion .choice { padding: .25rem .6rem; border-radius: var(--radius-control); }
-:global([data-cabinet-role='STUDENT']) .ballotQuestion .choice { font-size: var(--text-body); font-weight: var(--weight-body); }
+.ballotQuestion .choice {
+  padding: .25rem .6rem; border-radius: var(--radius-control); font-size: var(--text-body); font-weight: var(--weight-body);
+}
 .ballotQuestion .choice:has(input:checked) { background: var(--tint); }
 .resultQuestion { border-top: 1px solid var(--border); padding-top: 1rem; overflow-wrap: anywhere; }
 .resultQuestion h3 { margin: 0 0 .5rem; }
