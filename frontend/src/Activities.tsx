@@ -1,5 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react';
-import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { post, type Activity, type ActivityDetail, type ActivityFormat, type ActivityKind, type ActivityParticipant, type Group, type ParticipationLevel, type StudentActivity } from './api';
 import { dateTime } from './Assignments';
 import { activityPointLabel, formatPoints } from './points';
@@ -14,6 +14,13 @@ const activityLabels = { ACADEMIC: 'Учебная', PUBLIC: 'Обществен
 export const activityFormatLabels: Record<ActivityFormat, string> = { IN_PERSON: 'Очно', REMOTE: 'Заочно' };
 const panel = `panel ${cabinet.section}`;
 const monthFormatter = new Intl.DateTimeFormat('ru-RU', { month: 'long', year: 'numeric', timeZone: 'UTC' });
+const agendaDate = new Intl.DateTimeFormat('ru-RU', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Europe/Moscow' });
+const agendaTime = new Intl.DateTimeFormat('ru-RU', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Moscow' });
+const activityFilters = [
+  { value: '', label: 'Все' },
+  { value: 'academic', label: 'Учебные' },
+  { value: 'public', label: 'Общественные' },
+];
 const failureText = (failure: unknown) => failure instanceof Error ? failure.message : 'Не удалось выполнить запрос.';
 
 function ActivityInfo({ activity }: { activity: Activity }) {
@@ -56,10 +63,26 @@ export function TeacherActivities() {
 export function StudentActivities() {
   const { data, error, reload } = useCabinetResource<StudentActivity[]>('/student/activities', 6000);
   const { hash } = useLocation();
-  const activityAnchor = data?.find(({ activity }) => hash === `#activity-${activity.id}`)?.activity.id;
+  const [params, setParams] = useSearchParams();
+  const linkedActivity = data?.find(({ activity }) => hash === `#activity-${activity.id}`)?.activity;
+  const activityAnchor = linkedActivity?.id;
+  const requestedFilter = activityFilters.find(option => option.value === params.get('type'))?.value ?? '';
+  const filter = linkedActivity && linkedActivity.kind.toLowerCase() !== requestedFilter ? '' : requestedFilter;
+  const now = Date.now();
+  const year = agendaDate.formatToParts(now).find(part => part.type === 'year')?.value;
+  const visible = (data ?? [])
+    .filter(({ activity }) => !filter || activity.kind.toLowerCase() === filter)
+    .map(item => ({ ...item, startsAt: Date.parse(item.activity.occursAt) }))
+    .sort((left, right) => left.startsAt - right.startsAt || left.activity.id - right.activity.id);
+  const sections = [
+    { id: 'upcoming-activities', title: 'Предстоящие', empty: 'Предстоящих активностей нет.', upcoming: true,
+      items: visible.filter(item => item.startsAt > now) },
+    { id: 'past-activities', title: 'Прошедшие', empty: 'Прошедших активностей нет.', upcoming: false,
+      items: visible.filter(item => item.startsAt <= now).reverse() },
+  ];
   const [busy, setBusy] = useState<number>();
   const [enrollmentError, setEnrollmentError] = useState<{ id: number; message: string }>();
-  const [enrollmentNotice, setEnrollmentNotice] = useState<number>();
+  const [enrollmentNotices, setEnrollmentNotices] = useState<ReadonlySet<number>>(() => new Set());
 
   useEffect(() => {
     if (activityAnchor === undefined) return;
@@ -72,10 +95,9 @@ export function StudentActivities() {
     if (busy) return;
     setBusy(id);
     setEnrollmentError(undefined);
-    setEnrollmentNotice(undefined);
     try {
       await post(`/student/activities/${id}/enroll`, {});
-      setEnrollmentNotice(id);
+      setEnrollmentNotices(current => new Set(current).add(id));
     } catch (failure) {
       setEnrollmentError({ id, message: failureText(failure) });
     } finally {
@@ -84,27 +106,64 @@ export function StudentActivities() {
     }
   }
 
-  return <>
-    <div className={s.heading}><h1>Активности</h1></div>
+  return <div className={s.agenda}>
+    <header className={s.agendaHeading}>
+      <h1>Активности</h1>
+      <div className={s.filters} role="group" aria-label="Тип активности">
+        {activityFilters.map(option => <button key={option.value} type="button" className={`button ${s.filter}`}
+          aria-pressed={filter === option.value}
+          onClick={() => setParams(option.value ? { type: option.value } : {})}>{option.label}</button>)}
+      </div>
+    </header>
     {error && <p className="error" role="alert">{error}</p>}
     {!data && !error && <p className="muted" role="status">Загружаем активности…</p>}
     {data?.length === 0 && <p className={panel}>Для вашей группы пока нет активностей.</p>}
-    <div className={s.cards}>{data?.map(({ activity, participation, points, enrolled, canEnroll }) => <article
-      className={`${panel} ${s.activityAnchor}`} key={activity.id} id={`activity-${activity.id}`} aria-labelledby={`activity-title-${activity.id}`} tabIndex={-1}>
-      <div className={s.cardHeading}><h2 id={`activity-title-${activity.id}`}>{activity.title}</h2>
-        <ActivityLabels kind={activity.kind} format={activity.format} /></div>
-      <ActivityInfo activity={activity} />
-      <p className={s.meta}>Преподаватель · {activity.teacherName}</p>
-      {points !== null ? <p className={s.earned}>Участие {participation}% · +{formatPoints(points)} {activityPointLabel(activity.kind)}</p>
-        : activity.kind === 'ACADEMIC'
-          ? <p className={s.meta}>{Date.parse(activity.occursAt) > Date.now() ? 'Предстоит' : 'Участие пока не подтверждено'}</p>
-          : enrolled || enrollmentNotice === activity.id ? <p className={s.earned} role="status">Вы записаны</p>
-          : canEnroll ? <button type="button" className={`button primary ${s.enroll}`} disabled={busy !== undefined}
-            onClick={() => void enroll(activity.id)}>{busy === activity.id ? 'Записываем…' : 'Записаться'}</button>
-          : <p className={s.meta}>Запись закрыта</p>}
-      {enrollmentError?.id === activity.id && <p className="error" role="alert">{enrollmentError.message}</p>}
-    </article>)}</div>
-  </>;
+    {!!data?.length && sections.map(section => <section className={`panel ${s.agendaSection}`} key={section.id} aria-labelledby={section.id}>
+      <h2 id={section.id}>{section.title}</h2>
+      {section.items.length === 0 && <p className={s.empty}>{section.empty}</p>}
+      {section.items.map(item => {
+        const { activity } = item;
+        const date = agendaDate.formatToParts(item.startsAt);
+        const eventYear = date.find(part => part.type === 'year')?.value;
+        const unit = activityPointLabel(activity.kind);
+        const enrolled = item.enrolled || enrollmentNotices.has(activity.id);
+        return <article className={s.agendaRow} key={activity.id} id={`activity-${activity.id}`}
+          aria-labelledby={`activity-title-${activity.id}`} tabIndex={-1}>
+          <time className={s.dateRail} dateTime={activity.occursAt}>
+            <strong>{date.find(part => part.type === 'day')?.value}</strong>{' '}
+            <span>{date.find(part => part.type === 'month')?.value}</span>
+            {eventYear !== year && <span>{eventYear}</span>}
+          </time>
+          <div className={s.agendaDetails}>
+            <div className={s.cardHeading}>
+              <h3 id={`activity-title-${activity.id}`}>{activity.title}</h3>
+              <span className={s.kind} data-public={activity.kind === 'PUBLIC'}>{activityLabels[activity.kind]}</span>
+            </div>
+            <p className={s.agendaMeta}>
+              <span>{agendaTime.format(item.startsAt)} МСК</span><span>{activity.teacherName}</span>
+              {activity.format && <span>{activityFormatLabels[activity.format]}</span>}
+              {item.points !== null && <span>до {formatPoints(activity.maxPoints)} {unit}</span>}
+            </p>
+            <p className={s.agendaDescription}>{activity.description}</p>
+          </div>
+          <div className={s.agendaOutcome}>
+            {item.points === null ? <>
+              <p className={s.maximum}>до {formatPoints(activity.maxPoints)} {unit}</p>
+              {enrolled ? <p className={s.award} role="status">Вы записаны</p>
+                : section.upcoming && item.canEnroll ? <button type="button" className="button primary" disabled={busy !== undefined}
+                  onClick={() => void enroll(activity.id)}>{busy === activity.id ? 'Записываем…' : 'Записаться'}</button>
+                : <p className={s.activityStatus}>{activity.kind === 'PUBLIC' ? 'Запись закрыта'
+                  : section.upcoming ? 'Предстоит' : 'Участие пока не подтверждено'}</p>}
+            </> : <>
+              <p className={s.participation}>{item.participation}% участия</p>
+              <p className={s.award}>+{formatPoints(item.points)} {unit}</p>
+            </>}
+          </div>
+          {enrollmentError?.id === activity.id && <p className={`error ${s.agendaError}`} role="alert">{enrollmentError.message}</p>}
+        </article>;
+      })}
+    </section>)}
+  </div>;
 }
 
 export function NewActivity() {

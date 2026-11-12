@@ -1,4 +1,5 @@
 import { expect, test, type APIRequestContext, type Page } from '@playwright/test';
+import type { StudentActivity } from '../src/api';
 import { verifyEmail } from './helpers/confirmation';
 
 async function csrf(context: APIRequestContext) {
@@ -23,6 +24,63 @@ async function registerTeacher(context: APIRequestContext, email: string, passwo
   expect(registration.status()).toBe(204);
   await verifyEmail(context, email);
 }
+
+test('студент фильтрует повестку и открывает прошедшую активность по прямой ссылке', async ({ page }) => {
+  await login(page, 'student@bgtu.test', 'demo2026');
+  await page.clock.setFixedTime(new Date('2026-11-12T12:00:00Z'));
+  const upcomingAcademic: StudentActivity = {
+    activity: {
+      id: 41911, title: 'Разбор плана запроса', description: 'Сравним планы выполнения запросов.',
+      occursAt: '2026-11-15T09:00:00Z', maxPoints: 60, kind: 'ACADEMIC', format: 'REMOTE',
+      teacherName: 'Елена Крылова', groups: ['ИВТ-24'],
+    },
+    participation: null, points: null, enrolled: false, canEnroll: false,
+  };
+  const pastPublic: StudentActivity = {
+    activity: {
+      ...upcomingAcademic.activity,
+      id: 41912, title: 'Экскурсия для абитуриентов', occursAt: '2026-11-10T09:00:00Z',
+      maxPoints: 65, kind: 'PUBLIC', format: null,
+    },
+    participation: 25, points: 16.25, enrolled: true, canEnroll: false,
+  };
+  await page.route('**/api/student/activities', route => route.fulfill({ json: [pastPublic, upcomingAcademic] }));
+  await page.setViewportSize({ width: 320, height: 800 });
+  await page.goto(`/activities?type=academic#activity-${pastPublic.activity.id}`);
+
+  const all = page.getByRole('button', { name: 'Все', exact: true });
+  const academic = page.getByRole('button', { name: 'Учебные', exact: true });
+  const publicActivities = page.getByRole('button', { name: 'Общественные', exact: true });
+  const upcoming = page.getByRole('region', { name: 'Предстоящие', exact: true });
+  const past = page.getByRole('region', { name: 'Прошедшие', exact: true });
+  const upcomingCard = upcoming.getByRole('article', { name: upcomingAcademic.activity.title });
+  const pastCard = past.getByRole('article', { name: pastPublic.activity.title });
+  await expect(pastCard).toBeFocused();
+  await expect(pastCard.getByText('+16,25 БОА', { exact: true })).toBeVisible();
+  await expect(pastCard.getByText('25% участия', { exact: true })).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(320);
+
+  await all.click();
+  await expect(all).toHaveAttribute('aria-pressed', 'true');
+  await expect(page).toHaveURL(/\/activities$/);
+  await expect(upcomingCard.getByText('Заочно', { exact: true })).toBeVisible();
+
+  await academic.click();
+  await expect(academic).toHaveAttribute('aria-pressed', 'true');
+  await expect(page).toHaveURL(/\/activities\?type=academic$/);
+  await expect(upcomingCard).toBeVisible();
+  await expect(pastCard).toHaveCount(0);
+
+  await publicActivities.click();
+  await expect(publicActivities).toHaveAttribute('aria-pressed', 'true');
+  await expect(page).toHaveURL(/\/activities\?type=public$/);
+  await expect(upcomingCard).toHaveCount(0);
+  await expect(pastCard).toBeVisible();
+
+  await all.click();
+  await expect(upcomingCard).toBeVisible();
+  await expect(pastCard).toBeVisible();
+});
 
 test('учебная активность начисляет долю БУА один раз и соблюдает бюджет каждой группы', async ({ browser }) => {
   test.setTimeout(60_000);
