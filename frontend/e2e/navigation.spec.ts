@@ -53,6 +53,7 @@ test('аккаунт, тема и выход доступны в боковом 
   await login(page, 'Студент', '/profile');
   await expect(main.getByRole('region', { name: 'Алексей Смирнов', exact: true })
     .getByRole('heading', { name: 'Алексей Смирнов', exact: true })).toBeVisible();
+  await expect(main).toHaveCSS('padding-top', '16px');
   await expect(sidebar.getByText('Алексей Смирнов', { exact: true })).toBeVisible();
   await expect(sidebar.getByText('Студент · ИВТ-24', { exact: true })).toBeVisible();
   await expect(main.getByRole('button', { name: /^(Светлая|Тёмная) тема$/ })).toHaveCount(0);
@@ -60,6 +61,11 @@ test('аккаунт, тема и выход доступны в боковом 
   await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth)).toBe(320);
   await lightTheme.click();
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+  await page.setViewportSize({ width: 1440, height: 880 });
+  await expect(main).toHaveCSS('padding-top', '24px');
+  await sidebar.getByRole('link', { name: 'Настройки профиля', exact: true }).click();
+  await expect(main.getByRole('heading', { name: 'Настройки профиля', exact: true })).toBeVisible();
+  await expect(main).toHaveCSS('padding-top', '24px');
 });
 
 test('гость и студент доходят до целевых разделов кабинета максимум за три перехода', async ({ page }) => {
