@@ -167,7 +167,10 @@ test('аналитика показывает историю АР, обе вал
     expect(await teacher.evaluate(() => document.documentElement.scrollWidth)).toBe(375);
     await teacher.getByLabel('Период отчёта').selectOption('12');
     await expect(trend.getByLabel('Месяц на графике').locator('option')).toHaveCount(12);
-    await teacher.getByRole('button', { name: 'Тёмная тема' }).click();
+    await teacher.getByRole('button', { name: 'Меню', exact: true }).click();
+    const drawer = teacher.getByRole('dialog', { name: 'Меню кабинета', exact: true });
+    await drawer.getByRole('button', { name: 'Тёмная тема', exact: true }).click();
+    await drawer.getByRole('button', { name: 'Закрыть меню', exact: true }).click();
     await teacher.setViewportSize({ width: 320, height: 812 });
     expect(await teacher.evaluate(() => document.documentElement.scrollWidth)).toBe(320);
   } finally {

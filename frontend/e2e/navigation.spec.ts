@@ -43,10 +43,31 @@ test('аккаунт, тема и выход доступны в боковом 
   await expect(lightTheme).toBeVisible();
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
   await page.setViewportSize({ width: 375, height: 850 });
-  await sidebar.getByRole('link', { name: 'Настройки профиля', exact: true }).click();
+  const menuButton = page.getByRole('button', { name: 'Меню', exact: true });
+  const drawer = page.getByRole('dialog', { name: 'Меню кабинета', exact: true });
+  const mobileNav = drawer.getByRole('navigation', { name: 'Кабинет', exact: true });
+  const mobileLogout = drawer.getByRole('button', { name: 'Выйти', exact: true });
+  await expect(sidebar).toBeHidden();
+  await expect(drawer).toBeHidden();
+  await menuButton.click();
+  await expect(drawer).toBeVisible();
+  await expect(drawer.getByText('Елена Крылова', { exact: true })).toBeVisible();
+  await expect(mobileNav.getByRole('link', { name: 'Задания', exact: true })).toHaveAttribute('aria-current', 'page');
+  await expect(mobileNav.getByRole('link', { name: 'Профиль', exact: true })).toHaveCount(0);
+  await mobileNav.getByRole('link', { name: 'Проверка работ', exact: true }).click();
+  await expect(drawer).toBeHidden();
+  await expect(page).toHaveURL('/review');
+  await page.getByRole('region', { name: 'На проверке', exact: true }).getByRole('button')
+    .filter({ hasText: 'Алексей Смирнов' }).filter({ hasText: 'Лабораторная работа № 2. Запросы к базе данных' }).click();
+  await expect(page.getByRole('region', { name: 'Выбранная работа', exact: true })
+    .getByRole('button', { name: 'Принять', exact: true })).toBeVisible();
+  await menuButton.click();
+  await mobileNav.getByRole('link', { name: 'Настройки профиля', exact: true }).click();
+  await expect(drawer).toBeHidden();
   await expect(main.getByRole('heading', { name: 'Настройки профиля', exact: true })).toBeVisible();
   await expect(main).toHaveCSS('padding-top', '16px');
-  await logout.click();
+  await menuButton.click();
+  await mobileLogout.click();
   await expect(page).toHaveURL('/');
 
   await page.setViewportSize({ width: 320, height: 850 });
@@ -54,14 +75,38 @@ test('аккаунт, тема и выход доступны в боковом 
   await expect(main.getByRole('region', { name: 'Алексей Смирнов', exact: true })
     .getByRole('heading', { name: 'Алексей Смирнов', exact: true })).toBeVisible();
   await expect(main).toHaveCSS('padding-top', '16px');
-  await expect(sidebar.getByText('Алексей Смирнов', { exact: true })).toBeVisible();
-  await expect(sidebar.getByText('ИВТ-24', { exact: true })).toBeVisible();
-  await expect(sidebar.locator('[data-cabinet-account]').getByText(/Студент/)).toHaveCount(0);
   await expect(main.getByRole('button', { name: /^(Светлая|Тёмная) тема$/ })).toHaveCount(0);
-  await expect(logout).toBeVisible();
+  await menuButton.click();
+  await expect(drawer.getByText('Алексей Смирнов', { exact: true })).toBeVisible();
+  await expect(drawer.getByText('ИВТ-24', { exact: true })).toBeVisible();
+  await expect(drawer.getByText(/Студент/)).toHaveCount(0);
+  await expect(mobileNav.getByRole('link', { name: 'Профиль', exact: true })).toHaveAttribute('aria-current', 'page');
+  await expect(mobileNav.getByRole('link', { name: 'Проверка работ', exact: true })).toHaveCount(0);
+  await expect(mobileLogout).toBeVisible();
   await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth)).toBe(320);
-  await lightTheme.click();
+  await drawer.getByRole('button', { name: 'Светлая тема', exact: true }).click();
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+  await drawer.getByRole('button', { name: 'Закрыть меню', exact: true }).click();
+  await expect(drawer).toBeHidden();
+  await expect(menuButton).toBeFocused();
+
+  await menuButton.press('Enter');
+  await expect(drawer).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(drawer).toBeHidden();
+  await expect(menuButton).toBeFocused();
+
+  await menuButton.click();
+  await expect(drawer).toBeVisible();
+  await page.mouse.click(318, 400);
+  await expect(drawer).toBeHidden();
+
+  await menuButton.click();
+  await expect(drawer).toBeVisible();
+  await page.setViewportSize({ width: 860, height: 850 });
+  await expect(drawer).toBeHidden();
+  await expect(menuButton).toBeHidden();
+  await expect(sidebar).toBeVisible();
   await page.setViewportSize({ width: 1440, height: 880 });
   await expect(main).toHaveCSS('padding-top', '24px');
   await sidebar.getByRole('link', { name: 'Настройки профиля', exact: true }).click();

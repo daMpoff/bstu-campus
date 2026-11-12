@@ -12,7 +12,7 @@ async function login(page: Page, email: string, password: string) {
   await page.getByLabel('Email').fill(email);
   await page.getByLabel('Пароль').fill(password);
   await page.getByRole('button', { name: 'Войти', exact: true }).click();
-  await expect(page.getByRole('link', { name: 'Активности', exact: true })).toBeVisible();
+  await expect(page.locator('[data-cabinet-page]')).toBeVisible();
 }
 
 async function registerTeacher(context: APIRequestContext, email: string, password: string) {
@@ -249,6 +249,8 @@ test('общественная активность принимает запи�
     });
     expect((await enroll(observer, publicId)).status()).toBe(404);
     expect((await enroll(student, academicId)).status()).toBe(400);
+    const studentMenu = student.getByRole('button', { name: 'Меню', exact: true });
+    await studentMenu.click();
     await student.getByRole('link', { name: 'Активности', exact: true }).click();
     await expect(student.getByRole('article', { name: upcoming, exact: true }).getByText('Очно', { exact: true })).toBeVisible();
     const event = student.getByRole('article').filter({ hasText: publicTitle });
@@ -272,7 +274,8 @@ test('общественная активность принимает запи�
     expect((await confirm(academicId, me.id, 50)).status()).toBe(204);
     await expect(teacher.getByRole('region', { name: 'Бюджет групп' })).toContainText('Осталось 900', { timeout: 9000 });
 
-    await student.getByRole('link', { name: 'Профиль' }).click();
+    await studentMenu.click();
+    await student.getByRole('link', { name: 'Профиль', exact: true }).click();
     const history = student.getByRole('region', { name: 'История баллов' });
     await expect(history.getByRole('listitem').filter({ hasText: publicTitle })).toContainText('+60 БОА');
     await expect(history.getByRole('listitem').filter({ hasText: academicTitle })).toContainText('+40 БУА');

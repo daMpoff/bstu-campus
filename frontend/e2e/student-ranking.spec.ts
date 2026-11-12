@@ -51,6 +51,7 @@ test('студент сравнивает результат с лидерами
   await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(375);
   const placeLink = page.getByRole('link', { name: `${viewer.place.toLocaleString('ru-RU')}-е место в рейтинге`, exact: true });
   await expect(placeLink).toHaveAttribute('href', '/rating');
+  await page.getByRole('button', { name: 'Меню', exact: true }).click();
   await page.getByRole('navigation', { name: 'Кабинет' }).getByRole('link', { name: 'Задания', exact: true }).click();
   await expect(page).toHaveURL('/assignments');
   await expect(scale).toHaveAttribute('value', String(viewer.points));

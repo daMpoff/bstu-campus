@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState, type FormEvent, type ReactNode } from 'react';
+import { useEffect, useId, useLayoutEffect, useRef, useState, type FormEvent, type MouseEvent, type ReactNode } from 'react';
 import { Link, Navigate, NavLink, Outlet, Route, Routes, useLocation } from 'react-router-dom';
 import { api, ApiError, sessionExpiredEvent, type Account, type Role } from './api';
 import { AssignmentDetail, AssignmentList, NewAssignment } from './Assignments';
@@ -18,7 +18,7 @@ import { ProfileSettings } from './ProfileSettings';
 import { StudentRanking } from './StudentRanking';
 import s from './layout.module.css';
 
-function Glyph({ name }: { name: 'sun' | 'moon' | 'tasks' | 'review' | 'rating' | 'logout' | 'arrow' | 'profile' | 'activities' | 'rewards' | 'poll' | 'feed' | 'approval' | 'settings' }) {
+function Glyph({ name }: { name: 'sun' | 'moon' | 'tasks' | 'review' | 'rating' | 'logout' | 'arrow' | 'profile' | 'activities' | 'rewards' | 'poll' | 'feed' | 'approval' | 'settings' | 'menu' | 'close' }) {
   const paths = {
     sun: 'M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.4 1.4m11.2 11.2L19 19M5 19l1.4-1.4M17.6 6.4 19 5M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0z',
     moon: 'M21 13a9 9 0 1 1-10-10 7 7 0 0 0 10 10z',
@@ -34,6 +34,8 @@ function Glyph({ name }: { name: 'sun' | 'moon' | 'tasks' | 'review' | 'rating' 
     feed: 'M5 6h14M5 12h14M5 18h14M2 6h.1M2 12h.1M2 18h.1',
     approval: 'M11 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0ZM2 20v-2a5 5 0 0 1 9-3m2 2 3 3 6-7',
     settings: 'M4 7h16M4 17h16M9 4v6m6 4v6',
+    menu: 'M4 6h16M4 12h16M4 18h16',
+    close: 'm6 6 12 12M18 6 6 18',
   };
   return <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d={paths[name]} /></svg>;
 }
@@ -314,14 +316,88 @@ function Login({ onLogin }: { onLogin: (user: Account) => void }) {
   </>;
 }
 
+const desktopCabinet = '(min-width: 860px)';
+
+function MobileCabinetMenu({ children }: { children: ReactNode }) {
+  const id = useId();
+  const drawer = useRef<HTMLDialogElement>(null);
+  const trigger = useRef<HTMLButtonElement>(null);
+  const closeButton = useRef<HTMLButtonElement>(null);
+  const [open, setOpen] = useState(false);
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    drawer.current?.close();
+  }, [pathname]);
+
+  function openMenu() {
+    if (!drawer.current || drawer.current.open) return;
+    drawer.current.showModal();
+    closeButton.current?.focus();
+    setOpen(true);
+  }
+
+  function closeMenu() {
+    drawer.current?.close();
+  }
+
+  function restoreFocus() {
+    if (drawer.current?.open) return;
+    setOpen(false);
+    trigger.current?.focus({ preventScroll: true });
+  }
+
+  function handleDrawerClick(event: MouseEvent<HTMLDialogElement>) {
+    if (event.target === event.currentTarget) {
+      const { left, right, top, bottom } = event.currentTarget.getBoundingClientRect();
+      if (event.clientX < left || event.clientX >= right || event.clientY < top || event.clientY >= bottom) closeMenu();
+      return;
+    }
+    if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey || !(event.target instanceof Element)) return;
+    const link = event.target.closest('a[href]');
+    if (link) {
+      closeMenu();
+      if (link.getAttribute('href') !== pathname) window.scrollTo(0, 0);
+    }
+  }
+
+  return <>
+    <header className={s.cabinetMobileHeader}>
+      <Brand />
+      <button className={s.cabinetMenuButton} type="button" ref={trigger} aria-haspopup="dialog" aria-controls={id}
+        aria-expanded={open} onClick={openMenu}>
+        <Glyph name="menu" /> Меню
+      </button>
+    </header>
+    <dialog id={id} ref={drawer} className={`${s.cabinetSidebar} ${s.cabinetDrawer}`} data-cabinet-sidebar
+      aria-label="Меню кабинета" onClose={restoreFocus} onClick={handleDrawerClick}>
+      <div className={s.drawerHeader}>
+        <Brand />
+        <button className={s.drawerClose} type="button" ref={closeButton} aria-label="Закрыть меню" onClick={closeMenu}>
+          <Glyph name="close" />
+        </button>
+      </div>
+      {children}
+    </dialog>
+  </>;
+}
+
 function Workspace({ user, children, onLogout, themeToggle }: {
   user: Account; children: ReactNode; onLogout: () => Promise<void>; themeToggle: ReactNode;
 }) {
   const [error, setError] = useState('');
+  const [desktop, setDesktop] = useState(() => matchMedia(desktopCabinet).matches);
   const accountLabel = { STUDENT: user.groupName, TEACHER: null, ADMIN: 'Администратор' }[user.role];
-  return <div className={s.cabinet} data-cabinet-role={user.role}>
-    <aside className={s.cabinetSidebar} data-cabinet-sidebar>
-      <Brand />
+
+  useEffect(() => {
+    const media = matchMedia(desktopCabinet);
+    const update = () => setDesktop(media.matches);
+    update();
+    media.addEventListener('change', update);
+    return () => media.removeEventListener('change', update);
+  }, []);
+
+  const sidebar = <>
       <nav aria-label="Кабинет">
         {user.role === 'ADMIN' && <NavLink to="/admin"><Glyph name="settings" /> Администрирование</NavLink>}
         {user.role === 'STUDENT' && <NavLink to="/profile"><Glyph name="profile" /> Профиль</NavLink>}
@@ -357,7 +433,13 @@ function Workspace({ user, children, onLogout, themeToggle }: {
         </div>
         {error && <p className={s.sidebarError} role="alert">{error}</p>}
       </div>
-    </aside>
+  </>;
+
+  return <div className={s.cabinet} data-cabinet-role={user.role}>
+    {desktop || user.role === 'ADMIN' ? <aside className={s.cabinetSidebar} data-cabinet-sidebar>
+      <Brand />
+      {sidebar}
+    </aside> : <MobileCabinetMenu>{sidebar}</MobileCabinetMenu>}
     {children}
   </div>;
 }
