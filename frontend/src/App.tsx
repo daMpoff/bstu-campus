@@ -5,7 +5,7 @@ import { AssignmentDetail, AssignmentList, NewAssignment } from './Assignments';
 import { Registration } from './Registration';
 import { StudentProfile } from './StudentProfile';
 import { CabinetAvatar, CabinetPage } from './Cabinet';
-import { TeacherDashboard, TeacherRating } from './TeacherCabinet';
+import { TeacherDashboard, TeacherRating, TeacherReview } from './TeacherCabinet';
 import { NewActivity, StudentActivities, TeacherActivities, TeacherActivityDetail } from './Activities';
 import { Rewards } from './Rewards';
 import { ConfirmEmail, GroupApproval } from './Confirmation';
@@ -158,7 +158,7 @@ export function App() {
       <Route path="/assignments" element={requireAccount(user => user.role === 'TEACHER' ? <TeacherDashboard /> : <AssignmentList user={user} />)} />
       <Route path="/assignments/new" element={requireAccount(user => user.role === 'TEACHER' ? <NewAssignment /> : <Navigate to={cabinet} replace />)} />
       <Route path="/assignments/:id" element={requireAccount(user => <AssignmentDetail user={user} />)} />
-      <Route path="/review" element={requireAccount(user => user.role === 'TEACHER' ? <TeacherDashboard reviewOnly /> : <Navigate to={cabinet} replace />)} />
+      <Route path="/review" element={requireAccount(user => user.role === 'TEACHER' ? <TeacherReview /> : <Navigate to={cabinet} replace />)} />
       <Route path="/rating" element={requireAccount(user => user.role === 'TEACHER' ? <TeacherRating /> : <StudentRanking />)} />
       <Route path="/activities" element={requireAccount(user => user.role === 'TEACHER' ? <TeacherActivities /> : <StudentActivities />)} />
       <Route path="/activities/new" element={requireAccount(user => user.role === 'TEACHER' ? <NewActivity /> : <Navigate to="/activities" replace />)} />

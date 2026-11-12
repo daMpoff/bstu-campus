@@ -328,6 +328,12 @@
 - Привели страницы студента и помощник к общей шкале Medeo Sans. Заголовки страниц — 32 px, разделов — 20 px, записи и основной текст — 16 px, подписи и кнопки — 14 px, ключевые показатели — 28 px. В персональной ленте заголовок стал компактнее, детали события и время используют один размер и начертание.
 - Сборка фронтенда и шесть сценариев Playwright прошли. В Edge под демо-студентом сверили вычисленные размеры и начертания и фактическую загрузку Medeo Sans на восьми страницах кабинета, в карточках задания и опроса, в открытом профиле и в помощнике. Обе темы проверили при 320, 375 и 1440 px. Отдельный сквозной сценарий проверил доступ студента-старосты к подтверждению группы.
 
+### Рабочий экран проверки работ
+
+- Перенесли выбранный макет в `/review`. Слева очередь с группами, справа открывается работа и доступны принятие и возврат. После решения открывается соседняя работа. На узком экране очередь расположена над работой.
+- Встроенный просмотрщик браузера обрезал PDF в узкой колонке. Подключили PDF.js с локальным worker, масштабом по ширине панели и перелистыванием. В Edge на отдельном Docker-стенде открыли двухстраничный PDF и TXT, скачали ZIP, приняли и вернули работы, сверили статусы с кабинетом студента и проверили пустую очередь. Обе темы проверили на ширинах 320, 375 и 1440 px.
+- Сборка Docker прошла с 55 тестами Maven. Прошли 8 сценариев Playwright по заданиям, правам доступа к вложениям и навигации. От раздела «Задания» до кнопки «Принять» требуется два перехода.
+
 ### Промпт для вечернего фото страницы входа
 
 > Use case: lighting-weather. Asset: portrait photograph for the dark theme of the university login page. Edit Image 1, the daylight portrait of the BGTU alley. Use Image 2, the existing night hero, for lighting and color only. Convert Image 1 to photorealistic late evening with a deep navy sky, naturally dark foliage, warm amber light in a few existing windows, and subtle warm spill onto the brick facade and pavement. Keep the alley and the facade readable in the narrow center-right crop used on the site. Preserve Image 1’s portrait aspect ratio (957:1277), camera position, framing, perspective, building geometry, path, stairs, trees and railings. Change only time of day and lighting. No added objects, graphics, text, or watermark.

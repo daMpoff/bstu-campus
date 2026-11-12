@@ -29,5 +29,5 @@ export function useCabinetResource<T>(path: string, interval = 0) {
     return () => { controller.abort(); window.clearTimeout(timer); };
   }, [path, interval, version]);
 
-  return { data, error, reload: () => setVersion(current => current + 1) };
+  return { data, error, setData, reload: () => setVersion(current => current + 1) };
 }

@@ -21,7 +21,7 @@ function penaltyPanel(page: Page) {
   });
 }
 
-async function expectInlinePreview(page: Page, trigger: Locator, closeWithEscape = false) {
+async function expectModalPreview(page: Page, trigger: Locator, closeWithEscape = false) {
   const location = page.url();
   const openPages = page.context().pages().length;
   await trigger.click();
@@ -38,6 +38,21 @@ async function expectInlinePreview(page: Page, trigger: Locator, closeWithEscape
   if (closeWithEscape) await page.keyboard.press('Escape');
   else await close.click();
   await expect(dialog).toBeHidden();
+}
+
+function queuedWork(page: Page, studentName: string, assignmentTitle: string) {
+  return page.getByRole('region', { name: 'На проверке', exact: true }).getByRole('button')
+    .filter({ hasText: studentName }).filter({ hasText: assignmentTitle });
+}
+
+async function selectWork(page: Page, studentName: string, assignmentTitle: string) {
+  const choice = queuedWork(page, studentName, assignmentTitle);
+  await choice.click();
+  await expect(choice).toHaveAttribute('aria-pressed', 'true');
+  const details = page.getByRole('region', { name: 'Выбранная работа', exact: true });
+  await expect(details.getByRole('heading', { name: studentName, exact: true })).toBeVisible();
+  await expect(details).toContainText(assignmentTitle);
+  return details;
 }
 
 test('группа получает задание, студент сдаёт работу, преподаватель возвращает и принимает', async ({ browser, request }) => {
@@ -126,27 +141,35 @@ test('группа получает задание, студент сдаёт р
     await expect(progress).toContainText('1 из 2');
     await expect(progress).toContainText('На проверке 1');
     await teacher.getByRole('link', { name: 'Все работы на проверке' }).click();
-    const pending = teacher.getByRole('listitem').filter({ hasText: 'Алексей Смирнов' }).filter({ hasText: title });
-    await expect(pending.getByRole('link', { name: /Открыть ссылку/ })).toHaveAttribute('href', 'https://example.org/work');
-    await pending.getByRole('button', { name: 'Вернуть на доработку' }).click();
-    await expect(pending).toHaveCount(0);
+    const waiting = queuedWork(teacher, 'Алексей Смирнов', title);
+    const details = await selectWork(teacher, 'Алексей Смирнов', title);
+    await expect(details.getByRole('link', { name: /Открыть ссылку/ })).toHaveAttribute('href', 'https://example.org/work');
+    await details.getByRole('button', { name: 'Вернуть на доработку', exact: true }).click();
+    await expect(waiting).toHaveCount(0);
     await expect(student.getByText('На доработке', { exact: true })).toBeVisible({ timeout: 10_000 });
     await student.getByLabel('Или файл до 10 МБ').setInputFiles({
       name: 'работа.txt', mimeType: 'text/plain', buffer: Buffer.from('Исправленная работа'),
     });
     await student.getByRole('button', { name: 'Сдать работу' }).click();
     await expect(student.getByText('Сдано на проверку', { exact: true })).toBeVisible();
-    await expectInlinePreview(student, student.getByRole('button', { name: /Предпросмотр/ }));
+    await expectModalPreview(student, student.getByRole('button', { name: /Предпросмотр/ }));
     await expect(student.getByRole('link', { name: /Скачать работа\.txt/ })).toHaveCount(0);
 
     const teacherPreviewPath = `/api/teacher${detailPath}/works/${me.id}/preview`;
     const studentPreviewPath = `/api/student${detailPath}/preview`;
     await teacher.goto('/review');
-    await expectInlinePreview(teacher, pending.getByRole('button', { name: /Предпросмотр/ }), true);
-    await expect(pending.getByRole('link', { name: /Скачать/ })).toHaveCount(0);
+    const openPages = teacher.context().pages().length;
+    const previewDetails = await selectWork(teacher, 'Алексей Смирнов', title);
+    await expect(previewDetails).toContainText('работа.txt');
+    await expect(previewDetails.locator('pre')).toHaveText('Исправленная работа');
+    await expect(previewDetails.getByRole('button', { name: 'Принять', exact: true })).toBeVisible();
+    await expect(previewDetails.getByRole('link', { name: /Скачать/ })).toHaveCount(0);
+    await expect(teacher.getByRole('dialog')).toHaveCount(0);
+    await expect(teacher).toHaveURL(/\/review$/);
+    expect(teacher.context().pages()).toHaveLength(openPages);
 
     await teacher.goto(detailPath);
-    await expectInlinePreview(teacher, row.getByRole('button', { name: /Предпросмотр/ }));
+    await expectModalPreview(teacher, row.getByRole('button', { name: /Предпросмотр/ }), true);
     await expect(row.getByRole('link', { name: /Скачать/ })).toHaveCount(0);
     const previews = await Promise.all([teacher.request.get(teacherPreviewPath), student.request.get(studentPreviewPath)]);
     for (const preview of previews) {
@@ -241,10 +264,10 @@ test('неподдерживаемое вложение доступно для 
     await student.getByRole('button', { name: 'Сдать работу' }).click();
     await expect(student.getByText('Сдано на проверку', { exact: true })).toBeVisible();
     await teacher.goto('/review');
-    const pending = teacher.getByRole('listitem').filter({ hasText: title });
+    const details = await selectWork(teacher, 'Алексей Смирнов', title);
     const downloadPath = `/api/works/${id}/files/${studentId}`;
 
-    for (const [page, attachment] of [[student, student.locator('main')], [teacher, pending]] as const) {
+    for (const [page, attachment] of [[student, student.locator('main')], [teacher, details]] as const) {
       const downloadLink = attachment.getByRole('link', { name: /Скачать работа\.zip/ });
       await expect(downloadLink).toHaveAttribute('href', downloadPath);
       await expect(attachment.getByRole('button', { name: /Предпросмотр/ })).toHaveCount(0);

@@ -99,6 +99,16 @@
 .previewPdf { display: block; width: 100%; height: min(68dvh, 48rem); border: 0; }
 .previewMessage { display: grid; gap: .65rem; justify-items: start; overflow-wrap: anywhere; }
 .previewMessage a { max-width: 100%; }
+.inlinePreview { display: grid; min-width: 0; gap: .45rem; }
+.inlineToolbar {
+  min-height: 44px; justify-content: space-between; padding: .45rem .7rem;
+  border: 1px solid var(--border); border-radius: var(--radius-control);
+  background: color-mix(in srgb, var(--paper) 45%, var(--panel));
+}
+.inlineFileName { display: flex; align-items: center; gap: .5rem; min-width: 0; font-weight: var(--weight-control); }
+.inlineFileName svg { flex: none; }
+.inlinePreview .previewBody { max-height: clamp(17rem, 56dvh, 38rem); border-radius: var(--radius-control); }
+.inlinePreview .previewImage { max-height: min(48dvh, 34rem); }
 .works { list-style: none; padding: 0; margin: 1rem 0 0; }
 .works li { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) minmax(0, 1fr); gap: .5rem; align-items: center; border-top: 1px solid var(--border); padding: .7rem 0; }
 .workPerson { display: flex; align-items: center; gap: .45rem; overflow-wrap: anywhere; }

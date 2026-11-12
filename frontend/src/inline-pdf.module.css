@@ -1,0 +1,15 @@
+.viewer { min-width: 0; display: grid; gap: .5rem; }
+.stage {
+  display: grid; justify-items: center; align-content: start;
+  max-block-size: clamp(14rem, 47dvh, 34rem); min-width: 0;
+  overflow: auto; scrollbar-gutter: stable both-edges;
+}
+.stage:focus-visible { outline-offset: -3px; }
+.loading { margin: 1rem; }
+.canvas { display: block; max-inline-size: 100%; block-size: auto; background: #fff; }
+.canvas[hidden] { display: none; }
+.pages {
+  display: flex; align-items: center; justify-content: center; gap: .75rem;
+  font-size: var(--text-small); font-variant-numeric: tabular-nums;
+}
+.pages button { min-inline-size: 44px; padding-inline: .55rem; }

@@ -89,11 +89,13 @@ test('преподаватель и администратор доходят д
   const heading = (name: string) => () => page.getByRole('heading', { name, exact: true });
   await login(page, 'Преподаватель', '/assignments');
   await navigate(page, '/assignments', [link('Новое задание')], button('Назначить задание'));
-  await navigate(page, '/assignments', [menu('Проверка работ')],
-    () => page.getByRole('listitem').filter({ hasText: 'Запросы к базе данных' }).getByRole('button', { name: 'Принять', exact: true }));
-  await navigate(page, '/assignments', [menu('Проверка работ'),
-    () => page.getByRole('button', { name: /Предпросмотр Запросы к каталогу/ })],
-    () => page.getByRole('dialog', { name: 'Предпросмотр вложения' }));
+  const reviewDetails = page.getByRole('region', { name: 'Выбранная работа', exact: true });
+  const reviewChoice = page.getByRole('region', { name: 'На проверке', exact: true }).getByRole('button')
+    .filter({ hasText: 'Алексей Смирнов' }).filter({ hasText: 'Лабораторная работа № 2. Запросы к базе данных' });
+  await navigate(page, '/assignments', [menu('Проверка работ'), () => reviewChoice], () => reviewDetails.locator('pre'));
+  await expect(reviewChoice).toHaveAttribute('aria-pressed', 'true');
+  await expect(reviewDetails).toContainText('Запросы к каталогу.txt');
+  await expect(reviewDetails.getByRole('button', { name: 'Принять', exact: true })).toBeVisible();
   await navigate(page, '/assignments', [() => page.getByRole('region', { name: 'Задания', exact: true })
     .getByRole('link', { name: 'Лабораторная работа № 2. Запросы к базе данных', exact: true })],
     button('Принять выбранные'));
