@@ -349,6 +349,10 @@
 
 - Студент и преподаватель используют одинаковый верхний отступ основной области и бокового меню на широком экране. Он составляет 24 px. При меню над содержимым верхний отступ основной области составляет 16 px. В профиле студента отступ применяется к карточке с именем и аватаром.
 
+### Группа в боковом меню студента
+
+- Под именем студента оставили только название учебной группы. Если группа не указана, подпись под именем не выводится.
+
 ### Промпт для вечернего фото страницы входа
 
 > Use case: lighting-weather. Asset: portrait photograph for the dark theme of the university login page. Edit Image 1, the daylight portrait of the BGTU alley. Use Image 2, the existing night hero, for lighting and color only. Convert Image 1 to photorealistic late evening with a deep navy sky, naturally dark foliage, warm amber light in a few existing windows, and subtle warm spill onto the brick facade and pavement. Keep the alley and the facade readable in the narrow center-right crop used on the site. Preserve Image 1’s portrait aspect ratio (957:1277), camera position, framing, perspective, building geometry, path, stairs, trees and railings. Change only time of day and lighting. No added objects, graphics, text, or watermark.

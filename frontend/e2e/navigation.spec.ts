@@ -55,7 +55,8 @@ test('аккаунт, тема и выход доступны в боковом 
     .getByRole('heading', { name: 'Алексей Смирнов', exact: true })).toBeVisible();
   await expect(main).toHaveCSS('padding-top', '16px');
   await expect(sidebar.getByText('Алексей Смирнов', { exact: true })).toBeVisible();
-  await expect(sidebar.getByText('Студент · ИВТ-24', { exact: true })).toBeVisible();
+  await expect(sidebar.getByText('ИВТ-24', { exact: true })).toBeVisible();
+  await expect(sidebar.locator('[data-cabinet-account]').getByText(/Студент/)).toHaveCount(0);
   await expect(main.getByRole('button', { name: /^(Светлая|Тёмная) тема$/ })).toHaveCount(0);
   await expect(logout).toBeVisible();
   await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth)).toBe(320);
