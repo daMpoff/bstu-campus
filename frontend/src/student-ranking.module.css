@@ -4,7 +4,7 @@
   --ranking-soft: color-mix(in srgb, var(--panel) 63%, var(--paper));
   --ranking-highlight: color-mix(in srgb, var(--panel) 51%, var(--tint));
 }
-.pageTitle { margin-bottom: 1rem; font-size: clamp(1.75rem, 3vw, 2.25rem); }
+.pageTitle { margin-bottom: 1rem; font-size: var(--text-page, clamp(1.75rem, 3vw, 2.25rem)); }
 .filters { display: grid; gap: .65rem; }
 .filters label {
   display: grid; min-width: 0; align-content: start; gap: .3rem;
@@ -16,15 +16,15 @@
 .summaryTop { display: grid; }
 .personalCard, .comparison { min-width: 0; padding: var(--ranking-inset); }
 .personalCard { background: var(--ranking-highlight); }
-.personalCard h2, .comparisonHead h2, .podiumStrip h2 { font-size: 1rem; }
+.personalCard h2, .comparisonHead h2, .podiumStrip h2 { font-size: var(--text-item, 1rem); line-height: var(--leading-item, 1.2); }
 .personalCard h2, .personalPlace, .personalPoints strong { color: var(--accent); }
 .personalPlace {
-  margin-block: .25rem .45rem; font-size: clamp(1.65rem, 4vw, 2.35rem); line-height: 1.12;
-  font-weight: var(--weight-heading); letter-spacing: -.035em; overflow-wrap: anywhere;
+  margin-block: .25rem .45rem; font-size: var(--text-metric, clamp(1.65rem, 4vw, 2.35rem)); line-height: 1.15;
+  font-weight: var(--weight-heading); letter-spacing: -.018em; overflow-wrap: anywhere;
 }
-.personalCard[data-ranked='false'] .personalPlace { font-size: 1.25rem; letter-spacing: -.015em; }
+.personalCard[data-ranked='false'] .personalPlace { font-size: var(--text-section, 1.25rem); line-height: 1.2; }
 .personalPoints { color: var(--muted); font-size: var(--text-small); font-variant-numeric: tabular-nums; }
-.personalPoints strong { font-size: 1.45rem; font-weight: var(--weight-heading); }
+.personalPoints strong { font-size: var(--text-section, 1.45rem); font-weight: var(--weight-heading); }
 .comparison { display: grid; align-content: center; gap: .55rem; }
 .comparisonHead, .comparisonLabel { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: .2rem .65rem; }
 .difference { color: var(--accent); font-size: var(--text-small); }
@@ -48,7 +48,7 @@
 .medal {
   display: inline-grid; place-items: center; flex: none; min-inline-size: 1.65rem; min-block-size: 1.65rem;
   padding-inline: .24rem; border-radius: 1rem; background: var(--ranking-highlight); color: var(--accent);
-  font-size: .8125rem; font-weight: var(--weight-heading); font-variant-numeric: tabular-nums;
+  font-size: var(--text-small); font-weight: var(--weight-heading); font-variant-numeric: tabular-nums;
 }
 :is(.podiumEntry, .table tr, .table td)[data-place='1'] .medal, .medal[data-place='1'] {
   background: var(--returned-bg); color: var(--returned-text);
@@ -68,7 +68,7 @@
   display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .35rem 1rem;
   padding: .75rem var(--ranking-inset);
 }
-.sectionHead :is(h2, h3) { font-size: 1.2rem; }
+.sectionHead :is(h2, h3) { font-size: var(--text-section, 1.2rem); }
 .sectionHead p { font-size: var(--text-small); }
 .table { width: 100%; table-layout: fixed; border-collapse: collapse; text-align: start; }
 .table th {
@@ -82,15 +82,17 @@
 .table :is(th:first-child, th:last-child) { white-space: nowrap; }
 .table :is(th, td):nth-child(2) { text-align: start; }
 .table td:first-child, .table td:last-child { font-weight: var(--weight-heading); font-variant-numeric: tabular-nums; }
-.table td:last-child { font-size: clamp(.875rem, 3.9vw, 1rem); }
+.table td:last-child { font-size: var(--text-body, clamp(.875rem, 3.9vw, 1rem)); }
 .table tr[data-viewer='true'] { background: var(--ranking-highlight); }
 .table tr[data-viewer='true'] td:last-child { color: var(--accent); }
-.studentLink { color: var(--text); font-weight: var(--weight-heading); text-decoration: none; text-underline-offset: .16em; }
+.studentLink {
+  color: var(--text); font-size: var(--text-item, 1rem); font-weight: var(--weight-heading); line-height: var(--leading-item, 1.5);
+  text-decoration: none; text-underline-offset: .16em;
+}
 .studentLink:hover { color: var(--accent); text-decoration: underline; }
-.podiumNames .studentLink { font-size: var(--text-small); }
 .you {
   display: inline-block; margin-inline-start: .35rem; padding: 0 .3rem; border-radius: .25rem;
-  background: var(--tint); color: var(--accent); font-size: .75rem; font-weight: var(--weight-control); vertical-align: middle;
+  background: var(--tint); color: var(--accent); font-size: var(--text-caption, .75rem); font-weight: var(--weight-control); vertical-align: middle;
 }
 .pagination {
   display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: .6rem 1rem;

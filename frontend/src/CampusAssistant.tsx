@@ -348,12 +348,12 @@ export function CampusAssistant({ user }: { user: Account }) {
   const selected = confirmedDraft ?? assignment;
   const canConfirm = Boolean(recipient && selected && (confirmedDraft || file));
   return <>
-    <button type="button" className={`${s.launcher}${dragging && !open ? ` ${s.dragging}` : ''}`}
+    <button type="button" className={`${s.launcher}${dragging && !open ? ` ${s.dragging}` : ''}`} data-cabinet-role={user.role}
       aria-label="Помощник" aria-haspopup="dialog" aria-expanded={open} onClick={show}
       onDragOver={dragOver} onDragLeave={leaveDrag} onDrop={drop}>
       <Icon name="chat" /><span>Помощник</span>
     </button>
-    <dialog ref={dialog} className={`${s.dialog}${dragging ? ` ${s.dragging}` : ''}`}
+    <dialog ref={dialog} className={`${s.dialog}${dragging ? ` ${s.dragging}` : ''}`} data-cabinet-role={user.role}
       aria-labelledby={titleId} onClose={onClose}
       onDragOver={dragOver} onDragLeave={leaveDrag} onDrop={drop}>
       <header className={s.header}>

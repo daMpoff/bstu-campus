@@ -155,11 +155,11 @@
 .cabinetSidebar .brand { gap: 12px; min-width: 0; flex: initial; }
 .cabinetSidebar .brandLogo { width: var(--cabinet-avatar); height: var(--cabinet-avatar); background: #5a31fb; }
 .cabinetSidebar .brand strong { font-size: 1.5rem; letter-spacing: 0; }
-.cabinetSidebar .brand small { font-size: .8125rem; font-weight: var(--weight-control); line-height: 1.25; }
+.cabinetSidebar .brand small { font-size: var(--text-caption, .8125rem); font-weight: var(--weight-control); line-height: 1.25; }
 .cabinetSidebar nav { display: flex; flex-wrap: wrap; gap: 5px; }
 .cabinetSidebar nav a {
   display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 8px 10px;
-  border-radius: var(--radius-control); color: var(--text); font-size: .9375rem; font-weight: var(--weight-control); text-decoration: none;
+  border-radius: var(--radius-control); color: var(--text); font-size: var(--text-control, .9375rem); font-weight: var(--weight-control); text-decoration: none;
   transition: background-color var(--interaction-duration) var(--interaction-ease),
     color var(--interaction-duration) var(--interaction-ease);
 }
@@ -170,10 +170,10 @@
   display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 8px;
   padding-block-start: 12px; border-top: 1px solid var(--border);
 }
-.sidebarAccount .sidebarAvatar { width: 34px; font-size: .875rem; }
+.sidebarAccount .sidebarAvatar { width: 34px; font-size: var(--text-small); }
 .sidebarIdentity { min-width: 0; overflow-wrap: anywhere; }
-.sidebarName { font-size: .875rem; line-height: 1.25; font-weight: var(--weight-heading); }
-.sidebarRole { margin-top: 3px; font-size: .75rem; line-height: 1.3; color: var(--muted); }
+.sidebarName { font-size: var(--text-small); line-height: var(--leading-item, 1.25); font-weight: var(--weight-heading); }
+.sidebarRole { margin-top: 3px; font-size: var(--text-caption, .75rem); line-height: var(--leading-note, 1.3); color: var(--muted); }
 .sidebarActions { display: flex; gap: 4px; }
 .sidebarActions button {
   display: grid; place-items: center; width: 44px; height: 44px; padding: 0;
@@ -182,7 +182,7 @@
     color var(--interaction-duration) var(--interaction-ease);
 }
 .sidebarActions svg { width: 19px; height: 19px; }
-.sidebarError { grid-column: 1 / -1; font-size: .8125rem; color: var(--error-text); }
+.sidebarError { grid-column: 1 / -1; font-size: var(--text-control, .8125rem); color: var(--error-text); }
 @media (min-width: 860px) {
   .cabinet {
     --cabinet-top: clamp(26px, 2.7vw, 45px);
@@ -196,9 +196,9 @@
   }
   .cabinetSidebar .brand { flex: none; margin-inline-start: clamp(0px, .36vw, 6px); gap: clamp(9px, .85vw, 14px); }
   .cabinetSidebar .brandLogo { padding: 4px; }
-  .cabinetSidebar .brand small { font-size: clamp(.75rem, .9vw, .8125rem); }
+  .cabinetSidebar .brand small { font-size: var(--text-caption, clamp(.75rem, .9vw, .8125rem)); }
   .cabinetSidebar nav { flex-direction: column; flex-wrap: nowrap; gap: 8px; min-height: 0; overflow: auto; }
-  .cabinetSidebar nav a { flex: none; padding-inline: 13px; font-size: 1rem; }
+  .cabinetSidebar nav a { flex: none; padding-inline: 13px; font-size: var(--text-control, 1rem); }
   .sidebarAccount { flex: none; margin-top: auto; }
 }
 @media (min-width: 1150px) {

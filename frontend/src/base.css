@@ -33,6 +33,7 @@
   --panel-duration: 230ms;
   --interaction-ease: cubic-bezier(.22, .66, .32, 1);
   --text-small: .875rem;
+  --weight-body: 400;
   --weight-control: 500;
   --weight-heading: 600;
   --hero-scrim: linear-gradient(90deg, #151638f5, #151638cc 26%, #15163830 62%, transparent);
@@ -42,6 +43,20 @@
   line-height: 1.5;
   background: var(--paper);
   color: var(--text);
+}
+:where([data-cabinet-role='STUDENT']) {
+  --text-page: 2rem;
+  --text-section: 1.25rem;
+  --text-item: 1rem;
+  --text-body: 1rem;
+  --text-note: var(--text-small);
+  --text-control: var(--text-small);
+  --text-caption: .75rem;
+  --text-metric: 1.75rem;
+  --leading-item: 1.35;
+  --leading-note: 1.4;
+  font-size: var(--text-body);
+  font-weight: var(--weight-body);
 }
 :root[data-theme='dark'] {
   color-scheme: dark;
@@ -76,13 +91,20 @@ button:disabled { cursor: not-allowed; opacity: .55; }
 :focus-visible { outline: 3px solid var(--focus-ring); outline-offset: 3px; }
 h1, h2, h3, p { margin: 0; }
 h1, h2, h3 { line-height: 1.2; letter-spacing: -.018em; font-weight: var(--weight-heading); }
-h1 { font-size: clamp(2rem, 4vw, 2.75rem); }
-h2 { font-size: 1.5rem; }
+h1 { font-size: var(--text-page, clamp(2rem, 4vw, 2.75rem)); }
+h2 { font-size: var(--text-section, 1.5rem); }
+h3 { font-size: var(--text-item, 1.17em); line-height: var(--leading-item, 1.2); }
 strong, b { font-weight: var(--weight-heading); }
 label { font-weight: var(--weight-control); }
+:where([data-cabinet-role='STUDENT']) :is(button, label, legend, summary) {
+  font-size: var(--text-control);
+  font-weight: var(--weight-control);
+}
+:where([data-cabinet-role='STUDENT']) :is(.button, .back) { font-size: var(--text-control); }
 input:not([type='checkbox'], [type='radio']), textarea, select {
   display: block; width: 100%; min-height: 44px; padding: .55rem .75rem; border: 1px solid var(--control-border);
-  border-radius: var(--radius-control); color: var(--text); background: var(--panel); font-weight: 400;
+  border-radius: var(--radius-control); color: var(--text); background: var(--panel);
+  font-size: var(--text-body, inherit); font-weight: var(--weight-body);
 }
 ::placeholder { color: var(--muted); opacity: 1; }
 input[type='checkbox'], input[type='radio'] { accent-color: var(--accent-strong); width: 1.05rem; height: 1.05rem; flex: none; }
@@ -99,7 +121,8 @@ dialog[open]::backdrop { animation: backdrop-enter var(--panel-duration) var(--i
 }
 .button {
   display: inline-flex; align-items: center; justify-content: center; gap: .65rem; min-height: 44px;
-  padding: .58rem 1rem; border-radius: var(--radius-control); border: 1px solid transparent; font-weight: var(--weight-control); text-decoration: none;
+  padding: .58rem 1rem; border-radius: var(--radius-control); border: 1px solid transparent;
+  font-weight: var(--weight-control); text-decoration: none;
   transition: background-color var(--interaction-duration) var(--interaction-ease),
     border-color var(--interaction-duration) var(--interaction-ease), color var(--interaction-duration) var(--interaction-ease);
 }

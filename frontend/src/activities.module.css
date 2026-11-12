@@ -7,30 +7,30 @@
 .labels { display: flex; flex-wrap: wrap; gap: 6px; min-width: 0; }
 .kind, .format {
   padding: 3px 8px; border: 1px solid transparent; border-radius: 6px;
-  font-size: var(--text-small, .875rem); font-weight: 500; line-height: 1.35;
+  font-size: var(--text-small); font-weight: var(--weight-control); line-height: var(--leading-note, 1.35);
 }
 .kind { color: var(--accent); background: var(--tint); }
 .kind[data-public='true'] { color: var(--accepted-text); background: var(--accepted-bg); }
 .format { color: var(--text); border-color: var(--border); }
 .cards a, .studentName { color: var(--text); text-decoration: none; }
-.cards h2, .studentName { font-weight: 600; }
+.cards h2, .studentName { font-weight: var(--weight-heading); }
 .cards a:hover, .studentName:hover { color: var(--accent); text-decoration: underline; }
 .description { margin-top: 6px; white-space: pre-wrap; overflow-wrap: anywhere; }
-.meta { color: var(--muted); font-size: var(--text-small, .875rem); margin-top: 4px; overflow-wrap: anywhere; }
+.meta { color: var(--muted); font-size: var(--text-small); margin-top: 4px; overflow-wrap: anywhere; }
 .groups { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 10px; }
 .groups span {
   background: var(--tint); color: var(--accent); padding: 2px 7px; border-radius: 6px;
-  font-size: var(--text-small, .875rem); font-weight: 500;
+  font-size: var(--text-small); font-weight: var(--weight-control);
 }
 .activityForm { max-width: 840px; }
-.earned { color: var(--accepted-text); font-weight: 600; margin-top: 6px; }
+.earned { color: var(--accepted-text); font-weight: var(--weight-heading); margin-top: 6px; }
 .list { list-style: none; margin: 12px 0 0; padding: 0; }
 .list > li { border-top: 1px solid var(--border); padding-block: 12px; }
 .list > li:last-child { padding-bottom: 0; }
 .participant, .confirm { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px 12px; }
 .participant > div { min-width: 0; overflow-wrap: anywhere; }
 .confirm { align-items: end; }
-.confirm label { font-size: var(--text-small, .875rem); }
+.confirm label { font-size: var(--text-small); }
 .confirm select { margin-top: 3px; }
 .budget p { overflow-wrap: anywhere; }
 
@@ -46,7 +46,7 @@
   background: var(--accent-strong); color: var(--on-accent); border-color: transparent;
 }
 .agendaSection:global(.panel) { padding: clamp(.875rem, 1.55vw, 1.5rem); }
-.agendaSection h2 { margin-bottom: .35rem; font-size: clamp(1.25rem, 2vw, 1.5rem); }
+.agendaSection h2 { margin-bottom: .35rem; font-size: var(--text-section, clamp(1.25rem, 2vw, 1.5rem)); }
 .agendaRow {
   display: grid; grid-template-columns: 5.5rem minmax(0, 1fr) minmax(9rem, auto);
   align-items: center; gap: .65rem clamp(1rem, 1.8vw, 1.65rem); padding-block: 1rem;
@@ -58,20 +58,20 @@
 .dateRail {
   display: grid; justify-items: start; align-content: center; min-width: 0;
   padding-inline: .65rem; border-inline-end: 1px solid var(--border);
-  font-size: var(--text-small); line-height: 1.3; color: var(--muted);
+  font-size: var(--text-small); line-height: var(--leading-note, 1.3); color: var(--muted);
 }
 .dateRail strong {
-  font-size: clamp(1.6rem, 2.5vw, 2.15rem); font-variant-numeric: tabular-nums;
+  font-size: var(--text-section, clamp(1.6rem, 2.5vw, 2.15rem)); font-variant-numeric: tabular-nums;
   line-height: 1; color: var(--text); margin-bottom: .2rem;
 }
 .agendaDetails { min-width: 0; overflow-wrap: anywhere; }
-.agendaDetails h3 { min-width: 0; font-size: clamp(1rem, 1.5vw, 1.25rem); }
+.agendaDetails h3 { min-width: 0; font-size: var(--text-item, clamp(1rem, 1.5vw, 1.25rem)); }
 .agendaMeta {
   display: flex; flex-wrap: wrap; align-items: baseline; gap: .15rem .55rem;
-  margin-top: .3rem; color: var(--muted); font-size: var(--text-small);
+  margin-top: .3rem; color: var(--muted); font-size: var(--text-small); line-height: var(--leading-note, 1.5);
 }
 .agendaMeta span + span::before { content: '·'; margin-inline-end: .55rem; }
-.agendaDescription { margin-top: .25rem; white-space: pre-wrap; color: var(--muted); font-size: var(--text-small); }
+.agendaDescription { margin-top: .25rem; white-space: pre-wrap; color: var(--muted); font-size: var(--text-small); line-height: var(--leading-note, 1.5); }
 .agendaOutcome {
   display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end;
   justify-self: end; gap: .35rem .75rem; max-width: 16rem; min-width: 0;

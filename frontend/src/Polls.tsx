@@ -29,7 +29,7 @@ const pollPath = (teacher: boolean) => teacher ? '/teacher/polls' : '/student/po
 function PollInfo({ poll }: { poll: Poll }) {
   return <>
     <p className={s.description}>{poll.description}</p>
-    <p className="muted">{poll.closed ? 'Дата окончания ' : 'До '}
+    <p className={`muted ${s.note}`}>{poll.closed ? 'Дата окончания ' : 'До '}
       <time dateTime={poll.endsAt}>{dateTime(poll.endsAt)} МСК</time>
       {poll.anonymous ? ' · Анонимный опрос' : ' · Именной опрос'}</p>
   </>;
@@ -219,7 +219,7 @@ function PollBallot({ data, onVote }: { data: PollData; onVote: () => void }) {
   }
 
   return <form className={`${panel} ${s.editor} ${s.stack}`} onSubmit={vote}>
-    <p className="muted" role="status">{sent ? 'Ответ принят. Загружаем результаты…' : `Ответов ${answered} из ${data.questions.length}`}</p>
+    <p className={`muted ${s.note}`} role="status">{sent ? 'Ответ принят. Загружаем результаты…' : `Ответов ${answered} из ${data.questions.length}`}</p>
     {data.questions.map(question => <fieldset className={s.ballotQuestion} key={question.id} disabled={busy || sent}>
       <legend>{question.text}</legend>
       <p className={s.meta}>{question.choiceType === 'SINGLE' ? 'Выберите один вариант.' : 'Можно выбрать несколько вариантов.'}</p>
@@ -239,7 +239,7 @@ function PollResults({ data }: { data: PollData }) {
   const totals = new Map(data.results?.options.map(option => [option.optionId, option.votes]));
   const responses = data.poll.responseCount ?? 0;
   return <section className={`${panel} ${s.stack}`} aria-labelledby="poll-results-title">
-    <div><h2 id="poll-results-title">Результаты опроса</h2><p className="muted" role="status">Участников {responses}</p></div>
+    <div><h2 id="poll-results-title">Результаты опроса</h2><p className={`muted ${s.note}`} role="status">Участников {responses}</p></div>
     {data.questions.map(question => <div className={s.resultQuestion} key={question.id}>
       <h3>{question.text}</h3>
       {question.choiceType === 'MULTIPLE' && <p className={s.meta}>Доля участников, выбравших вариант.</p>}

@@ -320,7 +320,7 @@ function Workspace({ user, children, onLogout, themeToggle }: {
   const [error, setError] = useState('');
   const roleLabels = { STUDENT: 'Студент', TEACHER: 'Преподаватель', ADMIN: 'Администратор' };
   const accountLabel = [roleLabels[user.role], user.role === 'STUDENT' && user.groupName].filter(Boolean).join(' · ');
-  return <div className={s.cabinet}>
+  return <div className={s.cabinet} data-cabinet-role={user.role}>
     <aside className={s.cabinetSidebar} data-cabinet-sidebar>
       <Brand />
       <nav aria-label="Кабинет">

@@ -19,11 +19,14 @@
 .event:first-child { padding-top: 0; }
 .event:last-child { padding-bottom: 0; }
 .event + .event { border-top: 1px solid var(--border); }
-.event h2 { font-size: 1.08rem; margin: 0; overflow-wrap: anywhere; }
+.event h2 { font-size: var(--text-item, 1.08rem); line-height: var(--leading-item, 1.2); margin: 0; overflow-wrap: anywhere; }
 .event h2 a { color: var(--text); }
 .event h2 a:hover { color: var(--accent); }
-.event p { color: var(--muted); margin: .25rem 0 0; overflow-wrap: anywhere; }
-.event time { color: var(--muted); font-size: .88rem; }
+.event p {
+  color: var(--muted); font-size: var(--text-note, inherit); line-height: var(--leading-note, 1.5);
+  margin: .25rem 0 0; overflow-wrap: anywhere;
+}
+.event time { color: var(--muted); font-size: var(--text-small); line-height: var(--leading-note, 1.5); }
 .icon {
   display: grid;
   place-items: center;

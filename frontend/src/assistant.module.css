@@ -19,6 +19,7 @@
 
 .launcher:hover { background: var(--accent-hover); }
 .launcher.dragging { outline: 3px solid var(--focus-ring); outline-offset: 3px; }
+.launcher:global([data-cabinet-role='STUDENT']) { font-size: var(--text-control); font-weight: var(--weight-control); }
 .dialog {
   position: fixed;
   inset: auto max(1rem, env(safe-area-inset-right)) max(1rem, env(safe-area-inset-bottom)) auto;
@@ -49,8 +50,10 @@
   border-bottom: 1px solid var(--border);
 }
 
-.header h2 { font-size: 1.22rem; }
-.header p, .status, .choices span, .selected > span { font-size: var(--text-small); color: var(--muted); }
+.header h2 { font-size: var(--text-section, 1.22rem); }
+.header p, .status, .choices span, .selected > span {
+  font-size: var(--text-small); line-height: var(--leading-note, inherit); color: var(--muted);
+}
 .header p { margin-top: .15rem; }
 .iconButton, .textButton {
   min-height: 44px;
@@ -61,7 +64,7 @@
 }
 
 .iconButton { display: inline-grid; place-items: center; width: 44px; flex: none; padding: 0; }
-.textButton { padding: .35rem .55rem; font-size: var(--text-small); font-weight: var(--weight-control); }
+.textButton { padding: .35rem .55rem; font-size: var(--text-control, var(--text-small)); font-weight: var(--weight-control); }
 .iconButton:hover:not(:disabled), .textButton:hover:not(:disabled) { background: var(--tint); }
 .scroll { padding: .85rem 1rem; overflow-y: auto; overscroll-behavior: contain; background: var(--paper); }
 .messages { display: grid; gap: .65rem; }
@@ -71,7 +74,7 @@
   border: 1px solid var(--border);
   border-radius: var(--radius-control);
   background: var(--panel);
-  font-size: .94rem;
+  font-size: var(--text-body, .94rem);
 }
 
 .answer p, .user p { white-space: pre-wrap; overflow-wrap: anywhere; }
@@ -84,30 +87,35 @@
   border-radius: var(--radius-control);
   background: transparent;
   color: var(--accent);
-  font-size: var(--text-small);
+  font-size: var(--text-control, var(--text-small));
   font-weight: var(--weight-control);
   text-align: left;
 }
 
 .shortcuts button:hover:not(:disabled) { background: var(--tint); }
-.sources { padding-left: 1rem; margin: .4rem 0 0; font-size: var(--text-small); }
-.result { display: inline-flex; align-items: center; min-height: 44px; font-weight: var(--weight-control); }
+.sources { padding-left: 1rem; margin: .4rem 0 0; font-size: var(--text-small); line-height: var(--leading-note, inherit); }
+.result {
+  display: inline-flex; align-items: center; min-height: 44px;
+  font-size: var(--text-control, inherit); font-weight: var(--weight-control);
+}
 .summaryAnswer { min-width: 0; max-width: 100%; }
 .summary { display: grid; gap: .7rem; overflow-wrap: anywhere; }
-.summary h3 { font-size: 1.04rem; }
+.summary h3 { font-size: var(--text-item, 1.04rem); }
 .summaryRating { display: flex; justify-content: space-between; flex-wrap: wrap; gap: .15rem .5rem; }
 .summaryRating strong { color: var(--accent); }
 .summaryGroup { border-top: 1px solid var(--border); padding-top: .5rem; }
-.summaryGroup h4 { margin: 0; font-size: .9rem; }
+.summaryGroup h4 {
+  margin: 0; font-size: var(--text-item, .9rem); font-weight: var(--weight-heading); line-height: var(--leading-item, inherit);
+}
 .summaryList { list-style: none; margin: .1rem 0 0; padding: 0; }
 .summaryList li + li { border-top: 1px solid var(--border); }
 .summaryDetails { display: flex; align-items: center; flex-wrap: wrap; gap: .25rem .5rem; }
-.summaryDetails, .summaryHint { color: var(--muted); font-size: var(--text-small); }
+.summaryDetails, .summaryHint { color: var(--muted); font-size: var(--text-small); line-height: var(--leading-note, inherit); }
 .summaryGroup > .summaryHint { margin-top: .3rem; }
 .deadlineLink, .ratingChange { display: grid; gap: .2rem; padding: .45rem 0; }
 .deadlineLink { min-height: 44px; text-decoration: none; }
 .deadlineLink strong { text-decoration: underline; text-underline-offset: .14em; }
-.ratingChange { font-size: .88rem; }
+.ratingChange { font-size: var(--text-note, .88rem); line-height: var(--leading-note, inherit); }
 .transfer {
   display: grid;
   gap: .6rem;
@@ -126,16 +134,17 @@
 }
 
 .transferHeader, .file { justify-content: space-between; }
-.transferHeader h3 { font-size: 1rem; }
+.transferHeader h3 { font-size: var(--text-item, 1rem); }
 .transferHeader .textButton { flex: none; }
-.transfer h4 { margin: .1rem 0 0; font-size: .92rem; }
+.transfer h4 { margin: .1rem 0 0; font-size: var(--text-item, .92rem); line-height: var(--leading-item, inherit); }
+.dialog:global([data-cabinet-role='STUDENT']) .transfer h4 { font-weight: var(--weight-heading); }
 .file { padding-left: .5rem; border-radius: var(--radius-control); background: var(--tint); color: var(--accent); }
 .file > span { flex: 1; font-size: var(--text-small); font-weight: var(--weight-control); }
 .file > svg { flex: none; width: 18px; }
 .file .iconButton svg { width: 17px; }
 .search { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: .5rem; align-items: end; }
-.search label, .assignmentForm label { display: grid; gap: .25rem; font-size: .88rem; min-width: 0; }
-.assignmentForm input, .assignmentForm textarea, .search input { font-size: .91rem; min-width: 0; }
+.search label, .assignmentForm label { display: grid; gap: .25rem; font-size: var(--text-control, .88rem); min-width: 0; }
+.assignmentForm input, .assignmentForm textarea, .search input { font-size: var(--text-body, .91rem); min-width: 0; }
 .choices { display: grid; gap: .35rem; max-height: 10rem; overflow: auto; margin: 0; padding: .2rem; list-style: none; }
 .choices:empty { display: none; }
 .choices button {
@@ -149,20 +158,20 @@
   color: var(--text);
   background: var(--paper);
   text-align: left;
-  font-size: .9rem;
+  font-size: var(--text-control, .9rem);
 }
 
 .choices button:hover:not(:disabled) { border-color: var(--accent); background: var(--tint); }
-.selected { flex-wrap: wrap; font-size: .9rem; }
+.selected { flex-wrap: wrap; font-size: var(--text-body, .9rem); }
 .selected strong { flex: 1 1 7rem; }
 .confirm, .assignmentForm { display: grid; gap: .6rem; padding-top: .55rem; border-top: 1px solid var(--border); }
 .dateFields { display: grid; grid-template-columns: 1fr 1fr; gap: .45rem; }
 .status, .scroll > :global(.error) { margin: .5rem 0 0; }
 .composer { padding: .65rem .8rem .55rem; border-top: 1px solid var(--border); }
-.composer textarea { min-height: 54px; max-height: 10rem; resize: vertical; font-size: .93rem; }
+.composer textarea { min-height: 54px; max-height: 10rem; resize: vertical; font-size: var(--text-body, .93rem); }
 .composer .fileInput[hidden] { display: none; }
 .composerActions { display: flex; align-items: center; gap: .3rem; margin-top: .3rem; }
-.sendMessage { margin-left: auto; gap: .35rem; padding-inline: .7rem; font-size: .9rem; }
+.sendMessage { margin-left: auto; gap: .35rem; padding-inline: .7rem; font-size: var(--text-control, .9rem); }
 .sendMessage svg { width: 18px; }
 .visuallyHidden {
   position: absolute;

@@ -323,6 +323,11 @@
 - Перенесли выбранный макет в общую ленту. Слева стоят дата и время начисления по МСК, в карточке — тип и название активности, ссылка на профиль студента и баллы. На узком экране дата переносится над карточкой. Для начислений прошлых лет показываем год.
 - Сборка фронтенда и сценарий Playwright для БУА и БОА прошли. В Edge под демо-студентом сверили два начисления с API. Отдельно проверили подгрузку истории, порядок при совпадающем времени, дробные баллы и переход через московскую полночь. Проверили обе темы и отсутствие горизонтальной прокрутки на ширинах 320, 375, 768, 1024 и 1440 px.
 
+### Типографика кабинета студента
+
+- Привели страницы студента и помощник к общей шкале Medeo Sans. Заголовки страниц — 32 px, разделов — 20 px, записи и основной текст — 16 px, подписи и кнопки — 14 px, ключевые показатели — 28 px. В персональной ленте заголовок стал компактнее, детали события и время используют один размер и начертание.
+- Сборка фронтенда и шесть сценариев Playwright прошли. В Edge под демо-студентом сверили вычисленные размеры и начертания и фактическую загрузку Medeo Sans на восьми страницах кабинета, в карточках задания и опроса, в открытом профиле и в помощнике. Обе темы проверили при 320, 375 и 1440 px. Отдельный сквозной сценарий проверил доступ студента-старосты к подтверждению группы.
+
 ### Промпт для вечернего фото страницы входа
 
 > Use case: lighting-weather. Asset: portrait photograph for the dark theme of the university login page. Edit Image 1, the daylight portrait of the BGTU alley. Use Image 2, the existing night hero, for lighting and color only. Convert Image 1 to photorealistic late evening with a deep navy sky, naturally dark foliage, warm amber light in a few existing windows, and subtle warm spill onto the brick facade and pavement. Keep the alley and the facade readable in the narrow center-right crop used on the site. Preserve Image 1’s portrait aspect ratio (957:1277), camera position, framing, perspective, building geometry, path, stairs, trees and railings. Change only time of day and lighting. No added objects, graphics, text, or watermark.

@@ -4,7 +4,7 @@
   color: var(--muted); font-size: var(--text-small); line-height: 1.3; font-weight: var(--weight-control);
 }
 .value {
-  margin: .375rem 0 0; font-size: clamp(1.625rem, 2.6vw, 2rem); line-height: 1.15;
+  margin: .375rem 0 0; font-size: var(--text-metric, clamp(1.625rem, 2.6vw, 2rem)); line-height: 1.15;
   font-weight: var(--weight-heading); font-variant-numeric: tabular-nums;
 }
 .number { white-space: nowrap; }
