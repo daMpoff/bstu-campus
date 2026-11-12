@@ -32,7 +32,7 @@ function AssignmentProgress({ total, accepted, waiting }: Pick<TeacherAssignment
 function AssignmentRow({ assignment }: { assignment: TeacherAssignment }) {
   return <li className={s.taskRow}>
     <div className={s.taskInfo}>
-      <h3><Link to={`/assignments/${assignment.id}`}>{assignment.title}</Link></h3>
+      <h2><Link to={`/assignments/${assignment.id}`}>{assignment.title}</Link></h2>
       <p className={s.description}>{assignment.description}</p>
       <div className={s.taskMeta}>
         <span className={s.groups}>
@@ -82,7 +82,7 @@ export function TeacherDashboard({ reviewOnly = false }: { reviewOnly?: boolean 
     {error && <p className="error" role="alert">{error}</p>}
     {!data && !error && <p className="muted" role="status">Загружаем задания…</p>}
     {reviewOnly ? <section className={panel} aria-labelledby="teacher-review-title">
-      <h2 id="teacher-review-title">Проверка работ</h2>
+      <h1 id="teacher-review-title">Проверка работ</h1>
       {waiting?.length === 0 && <p className={s.empty}>Работ на проверке нет.</p>}
       <ul className={s.list}>
         {waiting?.map(work => <li className={s.workRow} key={`${work.assignmentId}-${work.studentId}`}>
@@ -105,7 +105,7 @@ export function TeacherDashboard({ reviewOnly = false }: { reviewOnly?: boolean 
       <div className={cabinet.sections} data-cabinet-sections>
         <section className={`${panel} ${cabinet.widePanel}`} aria-labelledby="teacher-assignments-title">
           <div className={s.sectionHead}>
-            <h2 id="teacher-assignments-title">Задания</h2>
+            <h1 id="teacher-assignments-title">Задания</h1>
             <Link className="button primary" to="/assignments/new">Новое задание</Link>
           </div>
           {assignments?.length === 0 && <p className={s.empty}>Заданий пока нет.</p>}
@@ -129,7 +129,7 @@ export function TeacherRating() {
   const groupId = selected || groups?.[0]?.id;
   return <section className={panel} aria-labelledby="teacher-rating-title">
     <div className={s.sectionHead}>
-      <h2 id="teacher-rating-title">Рейтинг студентов</h2>
+      <h1 id="teacher-rating-title">Рейтинг студентов</h1>
       {groupId && <div className={s.groupFilter}>
         <label htmlFor="rating-group">Учебная группа</label>
         <select id="rating-group" value={groupId} onChange={event => setSelected(event.target.value)}>

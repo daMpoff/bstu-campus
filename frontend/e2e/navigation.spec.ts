@@ -14,6 +14,47 @@ async function login(page: Page, role: string, landing: string) {
   await expect(page).toHaveURL(landing);
 }
 
+test('аккаунт, тема и выход доступны в боковом меню, а ФИО остаётся в карточке профиля', async ({ page }) => {
+  await page.emulateMedia({ colorScheme: 'light' });
+  await page.setViewportSize({ width: 1440, height: 880 });
+  await login(page, 'Преподаватель', '/assignments');
+
+  const sidebar = page.locator('[data-cabinet-sidebar]');
+  const main = page.getByRole('main');
+  const avatar = sidebar.locator('[data-cabinet-avatar]');
+  const darkTheme = sidebar.getByRole('button', { name: 'Тёмная тема', exact: true });
+  const lightTheme = sidebar.getByRole('button', { name: 'Светлая тема', exact: true });
+  const logout = sidebar.getByRole('button', { name: 'Выйти', exact: true });
+  await expect(sidebar.getByText('Елена Крылова', { exact: true })).toBeVisible();
+  await expect(avatar).toBeVisible();
+  const centers = await Promise.all([avatar, darkTheme, logout].map(control => control.evaluate(element => {
+    const { top, height } = element.getBoundingClientRect();
+    return top + height / 2;
+  })));
+  expect(Math.max(...centers) - Math.min(...centers)).toBeLessThan(2);
+  await expect(main.getByRole('heading', { name: 'Задания', exact: true, level: 1 })).toBeVisible();
+  await expect(main.getByText('Елена Крылова', { exact: true })).toHaveCount(0);
+  await expect(main.getByRole('button', { name: /^(Светлая|Тёмная) тема$/ })).toHaveCount(0);
+  await darkTheme.click();
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+  await page.reload();
+  await expect(lightTheme).toBeVisible();
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+  await logout.click();
+  await expect(page).toHaveURL('/');
+
+  await page.setViewportSize({ width: 320, height: 850 });
+  await login(page, 'Студент', '/profile');
+  await expect(main.getByRole('region', { name: 'Алексей Смирнов', exact: true })
+    .getByRole('heading', { name: 'Алексей Смирнов', exact: true })).toBeVisible();
+  await expect(sidebar.getByText('Алексей Смирнов', { exact: true })).toBeVisible();
+  await expect(main.getByRole('button', { name: /^(Светлая|Тёмная) тема$/ })).toHaveCount(0);
+  await expect(logout).toBeVisible();
+  await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth)).toBe(320);
+  await lightTheme.click();
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+});
+
 test('гость и студент доходят до целевых разделов кабинета максимум за три перехода', async ({ page }) => {
   test.setTimeout(60_000);
   const link = (name: string) => () => page.getByRole('link', { name, exact: true });

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { ApiError, api, type ProfileAssignment, type StudentActivity, type StudentProfileData } from './api';
 import { canSubmitWork, DeadlineIndicator, useDeadlineClock } from './AssignmentDeadline';
@@ -120,28 +120,23 @@ function UpcomingEvents() {
   </section>;
 }
 
-export function StudentProfile({ user, themeToggle }: {
-  themeToggle: ReactNode;
+export function StudentProfile({ user }: {
   user: { id: number; groupVerified: boolean; groupLeader: boolean };
 }) {
   const { id } = useParams();
   const studentId = id ?? String(user.id);
   if (!/^\d+$/.test(studentId) || !Number.isSafeInteger(Number(studentId)) || Number(studentId) < 1) {
     return <main className={cabinet.page} data-cabinet-page>
-      <div className={s.profileTop}>
-        <h1>Профиль студента</h1>
-        <div className={s.profileTheme}>{themeToggle}</div>
-      </div>
+      <h1 className={s.profileTitle}>Профиль студента</h1>
       <p className="error" role="alert">Профиль студента не найден.</p>
     </main>;
   }
   return <ProfileScreen key={studentId} studentId={Number(studentId)} ownProfile={Number(studentId) === user.id}
     pendingGroup={Number(studentId) === user.id && !user.groupVerified}
-    groupLeader={Number(studentId) === user.id && user.groupLeader} themeToggle={themeToggle} />;
+    groupLeader={Number(studentId) === user.id && user.groupLeader} />;
 }
 
-function ProfileScreen({ studentId, ownProfile, pendingGroup, groupLeader, themeToggle }: {
-  themeToggle: ReactNode;
+function ProfileScreen({ studentId, ownProfile, pendingGroup, groupLeader }: {
   studentId: number; ownProfile: boolean; pendingGroup: boolean; groupLeader: boolean;
 }) {
   const [profile, setProfile] = useState<StudentProfileData>();
@@ -185,11 +180,9 @@ function ProfileScreen({ studentId, ownProfile, pendingGroup, groupLeader, theme
       Number(canSubmitWork(right.status)) - Number(canSubmitWork(left.status)) || byDeadline(left, right));
   }
 
-  return <main className={cabinet.page} data-cabinet-page>
-    <div className={s.profileTop}>
-      {student ? <ProfileSummary student={student} groupLeader={groupLeader} ownProfile={ownProfile} /> : <h1>Профиль студента</h1>}
-      <div className={s.profileTheme}>{themeToggle}</div>
-    </div>
+  return <main className={`${cabinet.page} ${s.profile}`} data-cabinet-page>
+    {student ? <ProfileSummary student={student} groupLeader={groupLeader} ownProfile={ownProfile} />
+      : <h1 className={s.profileTitle}>Профиль студента</h1>}
     {pendingGroup && <p className={`panel ${cabinet.section} ${s.pendingGroup}`} role="status">
       Группа ожидает подтверждения. После одобрения здесь появятся задания группы.
     </p>}

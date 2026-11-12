@@ -1,11 +1,7 @@
 .feedback { display: flex; flex-wrap: wrap; gap: .75rem; align-items: center; margin-bottom: 1rem; }
 .pendingGroup { margin-block-end: var(--column-gap); }
-.profileTop {
-  container-type: inline-size;
-  position: relative; display: grid; grid-template-columns: minmax(0, 1fr) auto;
-  gap: .75rem; align-items: start; margin-block-end: var(--cabinet-gap);
-}
-.profileTheme { grid-column: 2; }
+.profile { container-type: inline-size; }
+.summary, .profileTitle { margin-block-end: var(--cabinet-gap); }
 .summary:global(.panel) { padding: 0; }
 .identity {
   display: flex; align-items: center; gap: .875rem; padding: 1rem clamp(.875rem, 1.7vw, 1.375rem);
@@ -44,9 +40,6 @@
 }
 .ratingPlace span { text-decoration: none; }
 @container (max-width: 40rem) {
-  .profileTop > .summary { grid-column: 1 / -1; }
-  .summary + .profileTheme { position: absolute; inset-block-start: .75rem; inset-inline-end: .75rem; }
-  .profileTop:has(.profileTheme) .identity { padding-inline-end: 4rem; }
   .metric:not(.rating) { display: flex; flex-direction: column; justify-content: space-between; }
 }
 @container (min-width: 40.01rem) {

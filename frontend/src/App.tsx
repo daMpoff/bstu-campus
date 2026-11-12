@@ -4,7 +4,7 @@ import { api, ApiError, sessionExpiredEvent, type Account, type Role } from './a
 import { AssignmentDetail, AssignmentList, NewAssignment } from './Assignments';
 import { Registration } from './Registration';
 import { StudentProfile } from './StudentProfile';
-import { CabinetPage } from './Cabinet';
+import { CabinetAvatar, CabinetPage } from './Cabinet';
 import { TeacherDashboard, TeacherRating } from './TeacherCabinet';
 import { NewActivity, StudentActivities, TeacherActivities, TeacherActivityDetail } from './Activities';
 import { Rewards } from './Rewards';
@@ -113,8 +113,8 @@ export function App() {
     : account ? <Navigate to={afterLogin(account.role, state?.returnTo)} replace />
       : <AuthLayout dark={theme === 'dark'} />;
 
-  const themeToggle = <button className={s.theme} type="button"
-    aria-label={theme === 'dark' ? 'Светлая тема' : 'Тёмная тема'}
+  const themeLabel = theme === 'dark' ? 'Светлая тема' : 'Тёмная тема';
+  const themeToggle = <button className={s.theme} type="button" aria-label={themeLabel} title={themeLabel}
     onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
     <Glyph name={theme === 'dark' ? 'sun' : 'moon'} />
   </button>;
@@ -125,13 +125,8 @@ export function App() {
     if (account.role === 'ADMIN' && !sharedRoute.test(pathname) && !adminRoute.test(pathname)) {
       return <Navigate to="/admin" replace />;
     }
-    const teacherOverview = account.role === 'TEACHER' && /^\/(assignments|review|rating)\/?$/i.test(pathname);
-    const subtitle = account.role === 'TEACHER'
-      ? account.departmentName ? `Кафедра · ${account.departmentName}` : 'Преподаватель БГТУ'
-      : account.role === 'ADMIN' ? 'Администратор' : [account.facultyName, account.groupName].filter(Boolean).join(' · ');
-    return <Workspace user={account} onLogout={logout}>
-      {profile ? content(account) : <CabinetPage name={account.fullName} subtitle={subtitle} themeToggle={themeToggle}
-        nameHeading={teacherOverview}>{content(account)}</CabinetPage>}
+    return <Workspace user={account} onLogout={logout} themeToggle={themeToggle}>
+      {profile ? content(account) : <CabinetPage>{content(account)}</CabinetPage>}
     </Workspace>;
   }
 
@@ -175,9 +170,9 @@ export function App() {
       <Route path="/analytics" element={requireAccount(user => user.role === 'TEACHER' ? <Analytics /> : <Navigate to={cabinet} replace />)} />
       <Route path="/admin" element={requireAccount(user => user.role === 'ADMIN' ? <Admin /> : <Navigate to={cabinet} replace />)} />
       <Route path="/profile" element={requireAccount(user => user.role === 'STUDENT'
-        ? <StudentProfile user={user} themeToggle={themeToggle} />
+        ? <StudentProfile user={user} />
         : <Navigate to={cabinet} replace />, true)} />
-      <Route path="/profiles/:id" element={requireAccount(user => <StudentProfile user={user} themeToggle={themeToggle} />, true)} />
+      <Route path="/profiles/:id" element={requireAccount(user => <StudentProfile user={user} />, true)} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
     {account && inCabinet && <CampusAssistant key={account.id} user={account} />}
@@ -315,10 +310,12 @@ function Login({ onLogin }: { onLogin: (user: Account) => void }) {
   </>;
 }
 
-function Workspace({ user, children, onLogout }: {
-  user: Account; children: ReactNode; onLogout: () => Promise<void>;
+function Workspace({ user, children, onLogout, themeToggle }: {
+  user: Account; children: ReactNode; onLogout: () => Promise<void>; themeToggle: ReactNode;
 }) {
   const [error, setError] = useState('');
+  const roleLabels = { STUDENT: 'Студент', TEACHER: 'Преподаватель', ADMIN: 'Администратор' };
+  const accountLabel = [roleLabels[user.role], user.role === 'STUDENT' && user.groupName].filter(Boolean).join(' · ');
   return <div className={s.cabinet}>
     <aside className={s.cabinetSidebar} data-cabinet-sidebar>
       <Brand />
@@ -342,11 +339,21 @@ function Workspace({ user, children, onLogout }: {
         <NavLink to="/rewards"><Glyph name="rewards" /> Лента наград</NavLink>
         <NavLink to="/settings"><Glyph name="settings" /> Настройки профиля</NavLink>
       </nav>
-      <button type="button" className={s.logout} aria-label="Выйти"
-        onClick={() => onLogout().catch(() => setError('Не удалось выйти. Попробуйте ещё раз.'))}>
-        <Glyph name="logout" /> <span>Выйти</span>
-      </button>
-      {error && <p role="alert">{error}</p>}
+      <div className={s.sidebarAccount} data-cabinet-account>
+        <CabinetAvatar name={user.fullName} className={s.sidebarAvatar} />
+        <div className={s.sidebarIdentity}>
+          <p className={s.sidebarName}>{user.fullName}</p>
+          <p className={s.sidebarRole}>{accountLabel}</p>
+        </div>
+        <div className={s.sidebarActions}>
+          {themeToggle}
+          <button type="button" className={s.logout} aria-label="Выйти" title="Выйти"
+            onClick={() => onLogout().catch(() => setError('Не удалось выйти. Попробуйте ещё раз.'))}>
+            <Glyph name="logout" />
+          </button>
+        </div>
+        {error && <p className={s.sidebarError} role="alert">{error}</p>}
+      </div>
     </aside>
     {children}
   </div>;
