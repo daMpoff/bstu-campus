@@ -6,6 +6,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.simple.JdbcClient;
@@ -25,7 +26,7 @@ class StudentProfileService {
     }
 
     record Student(long id, String fullName, String facultyName, String groupName, int rating, Long arPlace,
-                   BigDecimal academicActivityPoints, BigDecimal publicActivityPoints) {}
+                   BigDecimal academicActivityPoints, BigDecimal publicActivityPoints, String avatarUrl) {}
     record Assignment(long id, String title, Instant deadline, String status, Integer penaltyLimit, Integer deducted) {}
     record RatingEntry(long id, String currency, String assignmentTitle, LocalDate semesterStart,
                        String activityTitle, String teacherName, BigDecimal amount, Instant recordedAt) {}
@@ -36,6 +37,7 @@ class StudentProfileService {
     Profile profile(long studentId, String viewer) {
         Student student = db.sql("""
             SELECT u.id, u.full_name, f.name AS faculty_name, g.name AS group_name, u.rating, points.*,
+                   avatar.revision AS avatar_revision,
                    CASE WHEN u.email = :viewer AND u.group_verified AND u.email_verified THEN (
                        SELECT 1 + count(DISTINCT participant.rating)
                        FROM campus_user participant JOIN study_group participant_group ON participant_group.id = participant.group_id
@@ -45,6 +47,7 @@ class StudentProfileService {
             FROM campus_user u
             JOIN study_group g ON g.id = u.group_id
             LEFT JOIN faculty f ON f.id = COALESCE(g.faculty_id, u.faculty_id)
+            LEFT JOIN user_avatar avatar ON avatar.user_id = u.id
             CROSS JOIN LATERAL (
                 SELECT COALESCE(sum(award.points) FILTER (WHERE a.kind = 'ACADEMIC'), 0) AS academic_activity_points,
                        COALESCE(sum(award.points) FILTER (WHERE a.kind = 'PUBLIC'), 0) AS public_activity_points
@@ -52,7 +55,11 @@ class StudentProfileService {
                 WHERE award.student_id = u.id
             ) points
             WHERE u.id = :id AND u.role = 'STUDENT'
-            """).param("id", studentId).param("viewer", viewer).query(Student.class).optional()
+            """).param("id", studentId).param("viewer", viewer).query((row, index) -> new Student(
+                row.getLong("id"), row.getString("full_name"), row.getString("faculty_name"), row.getString("group_name"),
+                row.getInt("rating"), row.getObject("ar_place", Long.class), row.getBigDecimal("academic_activity_points"),
+                row.getBigDecimal("public_activity_points"),
+                AvatarService.url(row.getLong("id"), row.getObject("avatar_revision", UUID.class)))).optional()
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Профиль студента не найден."));
 
         var now = clock.instant();

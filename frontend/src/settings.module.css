@@ -1,6 +1,19 @@
 .heading { margin-bottom: 20px; }
 .panel { max-width: 680px; }
+.panel + .panel { margin-top: 16px; }
 .panel > * + * { margin-top: 14px; }
+.photoForm { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: start; gap: 12px 16px; }
+.photoForm .photoAvatar { width: 68px; }
+.photoControls { display: grid; min-width: 0; gap: 8px; }
+.photoControls label { font-size: .875rem; }
+.photoControls input[type='file'] { min-width: 0; font-size: .875rem; padding: 5px; }
+.photoControls input::file-selector-button {
+  margin-inline-end: 8px; padding: .45rem .65rem; border: 0; border-radius: var(--radius-control);
+  background: var(--tint); color: var(--accent); font: inherit; cursor: pointer;
+}
+@media (max-width: 400px) {
+  .photoForm { grid-template-columns: minmax(0, 1fr); }
+}
 .header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; }
 .status { padding: 4px 10px; border-radius: 999px; background: var(--paper); color: var(--muted); font-size: var(--text-small); font-weight: var(--weight-control); }
 .status[data-connected='true'] { background: var(--accepted-bg); color: var(--accepted-text); }

@@ -8,6 +8,7 @@ import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.simple.JdbcClient;
@@ -31,7 +32,7 @@ class AssignmentService {
     }
 
     record Account(long id, String fullName, String role, String groupName, int rating,
-                   String facultyName, String departmentName, boolean groupVerified, boolean groupLeader) {}
+                   String facultyName, String departmentName, boolean groupVerified, boolean groupLeader, String avatarUrl) {}
     record Group(long id, String name) {}
     record Assignment(long id, String title, String description, Instant deadline, int penaltyLimit,
                       List<String> groups, int total, int accepted, int waiting, boolean individual) {}
@@ -49,15 +50,18 @@ class AssignmentService {
     Account account(String email) {
         return db.sql("""
             SELECT u.id, u.full_name, u.role, g.name, u.rating, f.name, d.name, u.group_verified,
-                   COALESCE(g.leader_student_id = u.id AND u.role = 'STUDENT' AND u.email_verified AND u.group_verified, false)
+                   COALESCE(g.leader_student_id = u.id AND u.role = 'STUDENT' AND u.email_verified AND u.group_verified, false),
+                   avatar.revision AS avatar_revision
             FROM campus_user u
             LEFT JOIN study_group g ON g.id = u.group_id
             LEFT JOIN department d ON d.id = u.department_id
             LEFT JOIN faculty f ON f.id = COALESCE(g.faculty_id, u.faculty_id, d.faculty_id)
+            LEFT JOIN user_avatar avatar ON avatar.user_id = u.id
             WHERE u.email = :email
             """).param("email", email).query((row, index) -> new Account(row.getLong(1), row.getString(2),
                 row.getString(3), row.getString(4), row.getInt(5), row.getString(6), row.getString(7),
-                row.getBoolean(8), row.getBoolean(9))).optional()
+                row.getBoolean(8), row.getBoolean(9),
+                AvatarService.url(row.getLong("id"), row.getObject("avatar_revision", UUID.class)))).optional()
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
     }
 

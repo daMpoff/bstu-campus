@@ -48,7 +48,7 @@ function ProfileSummary({ student, groupLeader, ownProfile }: {
 }) {
   return <section className={`panel ${s.summary}`} aria-labelledby="profile-name">
     <header className={s.identity} data-cabinet-header>
-      <CabinetAvatar name={student.fullName} className={s.avatar} />
+      <CabinetAvatar name={student.fullName} avatarUrl={student.avatarUrl} className={s.avatar} />
       <div>
         <h1 id="profile-name">{student.fullName}</h1>
         {student.facultyName && <p>{student.facultyName}</p>}

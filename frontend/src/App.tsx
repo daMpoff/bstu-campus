@@ -108,6 +108,10 @@ export function App() {
     window.location.replace('/');
   }
 
+  function updateAvatar(updated: Account) {
+    setAccount(current => current?.id === updated.id ? { ...current, avatarUrl: updated.avatarUrl } : current);
+  }
+
   const loadingCabinet = <p className={s.loading} role="status">Загружаем кабинет…</p>;
   const authPage = account === undefined ? loadingCabinet
     : account ? <Navigate to={afterLogin(account.role, state?.returnTo)} replace />
@@ -160,7 +164,7 @@ export function App() {
       <Route path="/activities/new" element={requireAccount(user => user.role === 'TEACHER' ? <NewActivity /> : <Navigate to="/activities" replace />)} />
       <Route path="/activities/:id" element={requireAccount(user => user.role === 'TEACHER' ? <TeacherActivityDetail /> : <Navigate to="/activities" replace />)} />
       <Route path="/rewards" element={requireAccount(() => <Rewards />)} />
-      <Route path="/settings" element={requireAccount(() => <ProfileSettings />)} />
+      <Route path="/settings" element={requireAccount(user => <ProfileSettings account={user} onAvatarChange={updateAvatar} />)} />
       <Route path="/feed" element={requireAccount(() => <PersonalFeed />)} />
       <Route path="/polls" element={requireAccount(user => <Polls teacher={user.role === 'TEACHER'} />)} />
       <Route path="/polls/new" element={requireAccount(user => user.role === 'TEACHER' ? <NewPoll /> : <Navigate to="/polls" replace />)} />
@@ -340,7 +344,7 @@ function Workspace({ user, children, onLogout, themeToggle }: {
         <NavLink to="/settings"><Glyph name="settings" /> Настройки профиля</NavLink>
       </nav>
       <div className={s.sidebarAccount} data-cabinet-account>
-        <CabinetAvatar name={user.fullName} className={s.sidebarAvatar} />
+        <CabinetAvatar name={user.fullName} avatarUrl={user.avatarUrl} className={s.sidebarAvatar} />
         <div className={s.sidebarIdentity}>
           <p className={s.sidebarName}>{user.fullName}</p>
           <p className={s.sidebarRole}>{accountLabel}</p>

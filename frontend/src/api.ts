@@ -2,6 +2,7 @@ export type Role = 'TEACHER' | 'STUDENT' | 'ADMIN';
 export type Account = {
   id: number; fullName: string; role: Role; groupName: string | null; rating: number;
   facultyName: string | null; departmentName: string | null; groupVerified: boolean; groupLeader: boolean;
+  avatarUrl: string | null;
 };
 export type Group = { id: number; name: string };
 export type RegistrationCatalog = {
@@ -45,6 +46,7 @@ export type StudentProfileData = {
   student: {
     id: number; fullName: string; facultyName: string | null; groupName: string; rating: number;
     academicActivityPoints: number; publicActivityPoints: number; arPlace: number | null;
+    avatarUrl: string | null;
   };
   personal: {
     assignments: ProfileAssignment[];
