@@ -380,6 +380,11 @@
 - На локальном Docker-стенде прошли 55 тестов Maven и 10 сценариев Playwright. В Edge под обеими ролями проверили закрытие по выбору раздела, Escape, крестику и касанию вне панели, возврат фокуса, смену темы, выход и переход к настольному меню при ширине 860 px. При ширине 320 px и высоте 480 px список прокручивается, кнопки аккаунта видны. Отдельно проверили переход к предпросмотру работы за три действия.
 - Выложили `1c5c0f4` из `origin/main` после проверки резервной копии PostgreSQL. На точном образе прошли три сценария навигации Playwright. В Edge на проде с эмуляцией касаний проверили обе демо-роли и обе темы при 375×760 и 320×480 px. Студент открыл «Задания», преподаватель — «Проверку работ», обе роли — «Настройки профиля». Проверили способы закрытия панели, возврат фокуса и прокрутку списка. Кампус и расписание ответили HTTP 200 по HTTPS.
 
+### README для сдачи
+
+- Обновили быстрый старт, добавили сценарий проверки заданий и собрали ссылки на спецификацию, журнал, скилл и тесты. Настройки VPS, почты и интеграций вынесли в отдельный документ.
+- Сняли четыре скриншота на публичном демо под тестовыми ролями. Проверили локальные ссылки, целостность WebP и отображение галереи в локальном предпросмотре Edge на ширинах 375 и 1024 px.
+
 ### Промпт для вечернего фото страницы входа
 
 > Use case: lighting-weather. Asset: portrait photograph for the dark theme of the university login page. Edit Image 1, the daylight portrait of the BGTU alley. Use Image 2, the existing night hero, for lighting and color only. Convert Image 1 to photorealistic late evening with a deep navy sky, naturally dark foliage, warm amber light in a few existing windows, and subtle warm spill onto the brick facade and pavement. Keep the alley and the facade readable in the narrow center-right crop used on the site. Preserve Image 1’s portrait aspect ratio (957:1277), camera position, framing, perspective, building geometry, path, stairs, trees and railings. Change only time of day and lighting. No added objects, graphics, text, or watermark.
