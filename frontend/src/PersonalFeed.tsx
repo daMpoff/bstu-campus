@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from './api';
 import { dateTime } from './Assignments';
@@ -23,49 +23,79 @@ type Event = {
   id: number; eventType: keyof typeof icons; occurredAt: string; title: string; details: string; linkPath: string;
 };
 type FeedPage = { entries: Event[]; nextBeforeId: number | null };
+type FeedAction = { type: 'older'; beforeId: number } | { type: 'newer'; latest: FeedPage };
+
+async function mergeRecent(current: FeedPage, latest: FeedPage, signal: AbortSignal): Promise<FeedPage> {
+  const known = new Set(current.entries.map(event => event.id));
+  const recent: Event[] = [];
+  let page = latest;
+  for (;;) {
+    recent.push(...page.entries);
+    if (page.nextBeforeId === null || page.entries.some(event => known.has(event.id))) break;
+    // The newest page may have moved beyond all the loaded rows during a burst of events.
+    page = await api<FeedPage>(`/feed?beforeId=${page.nextBeforeId}`, { signal });
+  }
+  const entries = new Map(recent.map(event => [event.id, event]));
+  for (const event of current.entries) {
+    if (!entries.has(event.id)) entries.set(event.id, event);
+  }
+  return { entries: [...entries.values()], nextBeforeId: current.nextBeforeId };
+}
 
 export function PersonalFeed() {
-  const [firstPage, setFirstPage] = useState<FeedPage>();
-  const [older, setOlder] = useState<FeedPage>();
-  const { data, error, reload } = useCabinetResource<FeedPage>('/feed', firstPage ? 0 : 6000);
-  const [busy, setBusy] = useState(false);
-  const [olderError, setOlderError] = useState('');
-  const current = firstPage ?? data;
-  const next = older ? older.nextBeforeId : current?.nextBeforeId;
-  const entries = [...(current?.entries ?? []), ...(older?.entries ?? [])];
+  const [snapshot, setSnapshot] = useState<FeedPage>();
+  const { data, error, reload } = useCabinetResource<FeedPage>('/feed', 6000);
+  const [busy, setBusy] = useState<FeedAction['type']>();
+  const [loadError, setLoadError] = useState<{ type: FeedAction['type']; message: string }>();
+  const activeRequest = useRef<AbortController>(null);
+  const heading = useRef<HTMLHeadingElement>(null);
+  const current = snapshot ?? data;
+  const knownIds = snapshot && new Set(snapshot.entries.map(event => event.id));
+  const hasNew = !!knownIds && !!data?.entries.some(event => !knownIds.has(event.id));
 
-  async function loadMore() {
-    if (!next || busy || !current) return;
-    setFirstPage(current);
-    setBusy(true);
-    setOlderError('');
+  useEffect(() => () => activeRequest.current?.abort(), []);
+
+  async function load(action: FeedAction) {
+    if (!current || activeRequest.current) return;
+    const request = new AbortController();
+    activeRequest.current = request;
+    setSnapshot(current);
+    setBusy(action.type);
+    setLoadError(undefined);
     try {
-      const page = await api<FeedPage>(`/feed?beforeId=${next}`);
-      setOlder(previous => ({ entries: [...(previous?.entries ?? []), ...page.entries], nextBeforeId: page.nextBeforeId }));
+      if (action.type === 'older') {
+        const page = await api<FeedPage>(`/feed?beforeId=${action.beforeId}`, { signal: request.signal });
+        if (request.signal.aborted) return;
+        setSnapshot({ entries: [...current.entries, ...page.entries], nextBeforeId: page.nextBeforeId });
+      } else {
+        const updated = await mergeRecent(current, action.latest, request.signal);
+        if (request.signal.aborted) return;
+        setSnapshot(updated);
+        heading.current?.focus({ preventScroll: true });
+        heading.current?.scrollIntoView({ block: 'start' });
+      }
     } catch (failure) {
-      setOlderError(failure instanceof Error ? failure.message : 'Не удалось загрузить события.');
+      if (!request.signal.aborted) {
+        setSnapshot(snapshot);
+        setLoadError({ type: action.type, message: failure instanceof Error ? failure.message : 'Не удалось загрузить события.' });
+      }
     } finally {
-      setBusy(false);
+      activeRequest.current = null;
+      if (!request.signal.aborted) setBusy(undefined);
     }
   }
 
-  function refresh() {
-    setFirstPage(undefined);
-    setOlder(undefined);
-    setOlderError('');
-    reload();
-  }
-
   return <>
-    <div className={s.heading}>
-      <h1>Персональная лента</h1>
-      <button className="button outline" type="button" disabled={busy} onClick={refresh}>Обновить</button>
-    </div>
-    {error && <p className="error" role="alert">{error}</p>}
+    <h1 className={s.heading} ref={heading} tabIndex={-1}>Персональная лента</h1>
+    {!current && error && <div className={s.loadFailure}>
+      <p className="error" role="alert">{error}</p>
+      <button className="button outline" type="button" onClick={reload}>Повторить</button>
+    </div>}
     {!current && !error && <p className="muted" role="status">Загружаем события…</p>}
+    <span className={s.announcement} role="status">{hasNew ? 'Появились новые события.' : ''}</span>
     {current && <section className={`panel ${cabinet.section}`} aria-label="События в ленте">
-      {entries.length === 0 ? <p className="muted">Событий пока нет.</p> : <ul className={s.events}>
-        {entries.map(event => <li className={s.event} key={event.id}>
+      {current.entries.length === 0 ? <p className="muted">Событий пока нет.</p> : <ul className={s.events}>
+        {current.entries.map(event => <li className={s.event} key={event.id}>
           <span className={s.icon} aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
             strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d={icons[event.eventType]} /></svg></span>
           <div>
@@ -75,9 +105,18 @@ export function PersonalFeed() {
           <time dateTime={event.occurredAt}>{dateTime(event.occurredAt)} МСК</time>
         </li>)}
       </ul>}
-      {olderError && <p className="error" role="alert">{olderError}</p>}
-      {next && <button className={`button outline ${s.more}`} type="button" disabled={busy}
-        onClick={() => void loadMore()}>{busy ? 'Загружаем…' : 'Показать ещё'}</button>}
+      {loadError?.type === 'older' && <p className="error" role="alert">{loadError.message}</p>}
+      {current.nextBeforeId !== null && <button className={`button outline ${s.more}`} type="button" disabled={!!busy}
+        onClick={() => {
+          if (current.nextBeforeId !== null) void load({ type: 'older', beforeId: current.nextBeforeId });
+        }}>{busy === 'older' ? 'Загружаем…' : 'Показать ещё'}</button>}
+      {hasNew && data && <div className={s.newEvents}>
+        {loadError?.type === 'newer' && <p className="error" role="alert">{loadError.message}</p>}
+        <button className="button primary" type="button" disabled={!!busy}
+          onClick={() => void load({ type: 'newer', latest: data })}>
+          {busy === 'newer' ? 'Загружаем новые события…' : 'Показать новые события'}
+        </button>
+      </div>}
     </section>}
   </>;
 }

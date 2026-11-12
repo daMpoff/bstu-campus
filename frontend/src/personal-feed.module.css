@@ -1,12 +1,13 @@
 .heading {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: .75rem;
   margin-bottom: 1.25rem;
+  overflow-wrap: anywhere;
+  scroll-margin-block-start: 1rem;
 }
-.heading h1 { margin: 0; overflow-wrap: anywhere; }
+.loadFailure { display: grid; gap: .75rem; justify-items: start; }
+.announcement {
+  position: absolute; inline-size: 1px; block-size: 1px;
+  clip-path: inset(50%); overflow: hidden; white-space: nowrap;
+}
 .events { list-style: none; padding: 0; margin: 0; }
 .event {
   display: grid;
@@ -34,7 +35,15 @@
 }
 .icon svg { width: 1.25rem; height: 1.25rem; }
 .more { margin-top: 1rem; }
+.newEvents {
+  position: sticky; inset-block-end: 1rem; z-index: 1; block-size: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: end; gap: .4rem;
+  pointer-events: none;
+}
+.newEvents > * { pointer-events: auto; }
+.newEvents > :global(.button) { box-shadow: 0 0 0 3px var(--panel); }
 @media (max-width: 620px) {
   .event { grid-template-columns: 2.65rem minmax(0, 1fr); row-gap: .3rem; }
   .event time { grid-column: 2; }
+  .newEvents { align-items: flex-start; padding-inline-end: 3.5rem; }
 }

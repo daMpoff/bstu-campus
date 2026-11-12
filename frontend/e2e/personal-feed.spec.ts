@@ -14,6 +14,80 @@ async function login(page: Page, account: string) {
 
 type FeedEntry = { id: number; eventType: string; details: string; occurredAt: string };
 
+test('лента автообновляется и сохраняет открытые старые события', async ({ page }) => {
+  await login(page, 'student');
+  await page.clock.install({ time: new Date('2026-11-12T12:00:00Z') });
+  const event = (id: number, minute = id) => ({
+    id,
+    eventType: 'ACTIVITY_CREATED',
+    occurredAt: new Date(Date.UTC(2026, 10, 12, 10, minute)).toISOString(),
+    title: `Событие ${id}`,
+    details: 'Активность учебной группы',
+    linkPath: '/activities',
+  });
+  let feed = [5, 4, 3, 2, 1].map(id => event(id));
+  let unavailable = false;
+  const isFeed = (url: URL) => url.pathname === '/api/feed';
+  await page.route(isFeed, route => {
+    const query = new URL(route.request().url()).searchParams;
+    const before = query.get('beforeId');
+    if (unavailable && before === null) return route.fulfill({ status: 503 });
+    const offset = before === null ? 0 : feed.findIndex(entry => entry.id === Number(before)) + 1;
+    const entries = feed.slice(offset, offset + 2);
+    return route.fulfill({ json: { entries, nextBeforeId: offset + entries.length < feed.length ? entries.at(-1)?.id : null } });
+  });
+  const poll = async (status = 200) => {
+    const request = page.waitForResponse(response => {
+      const url = new URL(response.url());
+      return isFeed(url) && !url.searchParams.has('beforeId');
+    });
+    await page.clock.fastForward(6500);
+    expect((await request).status()).toBe(status);
+  };
+  await page.goto('/feed');
+
+  const region = page.getByRole('region', { name: 'События в ленте' });
+  const rows = region.getByRole('link');
+  const titles = (...ids: number[]) => ids.map(id => `Событие ${id}`);
+  const more = page.getByRole('button', { name: 'Показать ещё', exact: true });
+  const showNew = page.getByRole('button', { name: 'Показать новые события', exact: true });
+  await expect(page.getByRole('button', { name: 'Обновить', exact: true })).toHaveCount(0);
+  await expect(rows).toHaveText(titles(5, 4));
+
+  feed = [event(6), ...feed];
+  await poll();
+  await expect(rows).toHaveText(titles(6, 5));
+  await expect(showNew).toHaveCount(0);
+
+  await more.click();
+  await expect(rows).toHaveText(titles(6, 5, 4, 3));
+  await poll();
+  await expect(showNew).toHaveCount(0);
+
+  feed = [event(9), event(8, 7), event(7), ...feed];
+  await poll();
+  await expect(showNew).toBeVisible();
+  await expect(rows).toHaveText(titles(6, 5, 4, 3));
+  unavailable = true;
+  await poll(503);
+  await expect(showNew).toBeVisible();
+  await expect(rows).toHaveText(titles(6, 5, 4, 3));
+  unavailable = false;
+  await poll();
+  await expect(showNew).toBeVisible();
+  await expect(rows).toHaveText(titles(6, 5, 4, 3));
+
+  await showNew.click();
+  await expect(rows).toHaveText(titles(9, 8, 7, 6, 5, 4, 3));
+  await expect(showNew).toHaveCount(0);
+  await poll();
+  await expect(showNew).toHaveCount(0);
+
+  await more.click();
+  await expect(rows).toHaveText(titles(9, 8, 7, 6, 5, 4, 3, 2, 1));
+  await expect(more).toHaveCount(0);
+});
+
 test('лента доставляет события нужной роли и группе в порядке от новых к старым', async ({ browser }) => {
   test.setTimeout(60_000);
   const teacher = await browser.newPage();
@@ -42,6 +116,9 @@ test('лента доставляет события нужной роли и г
       return (await response.json()).entries as FeedEntry[];
     }
 
+    await student.goto('/feed');
+    const studentFeed = student.getByRole('region', { name: 'События в ленте' });
+    await expect(studentFeed).toBeVisible();
     const assignment = await create('assignments', { title: task, description: 'Сдайте отчёт.', groupIds,
       deadline: new Date(Date.now() + 20 * 60_000).toISOString(), penaltyLimit: 0 });
     const practice = await create('activities', { title: activity, description: 'Работа в группе.', groupIds,
@@ -52,6 +129,8 @@ test('лента доставляет события нужной роли и г
     await expect.poll(async () => (await entries(student)).filter(entry => entry.details.includes(suffix))
       .map(entry => entry.eventType), { timeout: 12_000 })
       .toEqual(expect.arrayContaining(['ASSIGNMENT_CREATED', 'ASSIGNMENT_DUE', 'ACTIVITY_CREATED', 'POLL_CREATED']));
+    const activityEvent = studentFeed.getByRole('listitem').filter({ hasText: activity });
+    await expect(activityEvent.getByRole('link', { name: 'Новая активность' })).toBeVisible({ timeout: 12_000 });
 
     const submit = () => student.request.post(`/api/student/assignments/${assignment}/submit`, {
       headers: studentHeaders, multipart: { link: 'https://example.org/report' },
@@ -86,10 +165,9 @@ test('лента доставляет события нужной роли и г
     const foreignCursor = await outsider.request.get(`/api/feed?beforeId=${personal[0].id}`);
     expect(await foreignCursor.json()).toMatchObject({ entries: [] });
 
-    await student.goto('/feed');
     await expect(student.getByRole('heading', { name: 'Персональная лента' })).toBeVisible();
     const awarded = student.getByRole('listitem').filter({ hasText: activity }).filter({ hasText: '+30 БУА' });
-    await expect(awarded.getByRole('link', { name: 'Начислены баллы активности' })).toHaveAttribute('href', '/profile');
+    await expect(awarded.getByRole('link', { name: 'Начислены баллы активности' })).toHaveAttribute('href', '/profile', { timeout: 12_000 });
     await expect(awarded.locator('time')).toContainText('МСК');
     expect(await student.evaluate(() => document.documentElement.scrollWidth)).toBe(320);
   } finally {
