@@ -26,6 +26,7 @@ test('аккаунт, тема и выход доступны в боковом 
   const lightTheme = sidebar.getByRole('button', { name: 'Светлая тема', exact: true });
   const logout = sidebar.getByRole('button', { name: 'Выйти', exact: true });
   await expect(sidebar.getByText('Елена Крылова', { exact: true })).toBeVisible();
+  await expect(sidebar.locator('[data-cabinet-account]').getByText('Преподаватель', { exact: true })).toHaveCount(0);
   await expect(avatar).toBeVisible();
   const centers = await Promise.all([avatar, darkTheme, logout].map(control => control.evaluate(element => {
     const { top, height } = element.getBoundingClientRect();
@@ -33,6 +34,7 @@ test('аккаунт, тема и выход доступны в боковом 
   })));
   expect(Math.max(...centers) - Math.min(...centers)).toBeLessThan(2);
   await expect(main.getByRole('heading', { name: 'Задания', exact: true, level: 1 })).toBeVisible();
+  await expect(main).toHaveCSS('padding-top', '24px');
   await expect(main.getByText('Елена Крылова', { exact: true })).toHaveCount(0);
   await expect(main.getByRole('button', { name: /^(Светлая|Тёмная) тема$/ })).toHaveCount(0);
   await darkTheme.click();
@@ -40,6 +42,10 @@ test('аккаунт, тема и выход доступны в боковом 
   await page.reload();
   await expect(lightTheme).toBeVisible();
   await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+  await page.setViewportSize({ width: 375, height: 850 });
+  await sidebar.getByRole('link', { name: 'Настройки профиля', exact: true }).click();
+  await expect(main.getByRole('heading', { name: 'Настройки профиля', exact: true })).toBeVisible();
+  await expect(main).toHaveCSS('padding-top', '16px');
   await logout.click();
   await expect(page).toHaveURL('/');
 
@@ -48,6 +54,7 @@ test('аккаунт, тема и выход доступны в боковом 
   await expect(main.getByRole('region', { name: 'Алексей Смирнов', exact: true })
     .getByRole('heading', { name: 'Алексей Смирнов', exact: true })).toBeVisible();
   await expect(sidebar.getByText('Алексей Смирнов', { exact: true })).toBeVisible();
+  await expect(sidebar.getByText('Студент · ИВТ-24', { exact: true })).toBeVisible();
   await expect(main.getByRole('button', { name: /^(Светлая|Тёмная) тема$/ })).toHaveCount(0);
   await expect(logout).toBeVisible();
   await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth)).toBe(320);

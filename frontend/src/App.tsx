@@ -318,7 +318,7 @@ function Workspace({ user, children, onLogout, themeToggle }: {
   user: Account; children: ReactNode; onLogout: () => Promise<void>; themeToggle: ReactNode;
 }) {
   const [error, setError] = useState('');
-  const roleLabels = { STUDENT: 'Студент', TEACHER: 'Преподаватель', ADMIN: 'Администратор' };
+  const roleLabels = { STUDENT: 'Студент', TEACHER: null, ADMIN: 'Администратор' };
   const accountLabel = [roleLabels[user.role], user.role === 'STUDENT' && user.groupName].filter(Boolean).join(' · ');
   return <div className={s.cabinet} data-cabinet-role={user.role}>
     <aside className={s.cabinetSidebar} data-cabinet-sidebar>
@@ -347,7 +347,7 @@ function Workspace({ user, children, onLogout, themeToggle }: {
         <CabinetAvatar name={user.fullName} avatarUrl={user.avatarUrl} className={s.sidebarAvatar} />
         <div className={s.sidebarIdentity}>
           <p className={s.sidebarName}>{user.fullName}</p>
-          <p className={s.sidebarRole}>{accountLabel}</p>
+          {accountLabel && <p className={s.sidebarRole}>{accountLabel}</p>}
         </div>
         <div className={s.sidebarActions}>
           {themeToggle}

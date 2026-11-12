@@ -137,6 +137,7 @@
   --radius-panel: 17px;
   display: grid; grid-template-rows: auto 1fr; min-height: 100svh; background: var(--paper); color: var(--text);
 }
+.cabinet:global([data-cabinet-role='TEACHER']) { --cabinet-top: 16px; }
 :global([data-theme='light']) .cabinet {
   --paper: #f1f1fb;
   --text: #0d1026;
@@ -188,6 +189,7 @@
     --cabinet-top: clamp(26px, 2.7vw, 45px);
     grid-template: 1fr / clamp(232px, 18.15vw, 304px) minmax(0, 1fr);
   }
+  .cabinet:global([data-cabinet-role='TEACHER']) { --cabinet-top: 24px; }
   .cabinetSidebar {
     display: flex; flex-direction: column; gap: var(--cabinet-gap);
     position: sticky; top: 0; align-self: start; height: 100svh;

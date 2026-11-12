@@ -340,6 +340,11 @@
 - Расширили шкалу на преподавателя и привели к ней карточки, подписи таблиц, формы, показатели аналитики и помощник. В Edge на отдельном Docker-стенде проверили 10 разделов и 7 форм и карточек. В обеих темах на ширинах 320, 375 и 1440 px проверили вычисленные размеры, начертания, фактическую отрисовку Medeo Sans и отсутствие горизонтальной прокрутки. Для обеих лент сверили размеры со страницами студента.
 - Сборка фронтенда и 11 сценариев Playwright прошли. В сценарии с реальными начислениями и событиями добавили проверки размеров названий и подписей обеих лент под преподавателем.
 
+### Отступ и подпись в кабинете преподавателя
+
+- Убрали подпись «Преподаватель» под именем внизу бокового меню. Сценарий Playwright в Edge проверил отсутствие подписи у преподавателя, наличие группы у студента, выравнивание аватара с кнопками, переключение темы и выход.
+- Уменьшили верхний отступ в кабинете преподавателя до 24 px на широком экране и 16 px под меню на мобильном. Верх логотипа и заголовка на широком экране используют общий отступ.
+
 ### Промпт для вечернего фото страницы входа
 
 > Use case: lighting-weather. Asset: portrait photograph for the dark theme of the university login page. Edit Image 1, the daylight portrait of the BGTU alley. Use Image 2, the existing night hero, for lighting and color only. Convert Image 1 to photorealistic late evening with a deep navy sky, naturally dark foliage, warm amber light in a few existing windows, and subtle warm spill onto the brick facade and pavement. Keep the alley and the facade readable in the narrow center-right crop used on the site. Preserve Image 1’s portrait aspect ratio (957:1277), camera position, framing, perspective, building geometry, path, stairs, trees and railings. Change only time of day and lighting. No added objects, graphics, text, or watermark.
