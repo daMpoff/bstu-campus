@@ -10,13 +10,13 @@ test('студент видит пьедестал, фильтрует рейт�
   await expect(ratingResponse).toBeOK();
   const { viewer } = await ratingResponse.json();
   expect(viewer.place).toBeGreaterThan(0);
-  const scale = page.locator('[data-rating-scale]');
-  await expect(scale).toHaveAttribute('aria-hidden', 'true');
-  for (const label of ['0', '500', '1000']) {
-    await expect(scale.getByText(label, { exact: true })).toBeVisible();
-  }
+  const scale = page.getByRole('meter', { name: 'Академический рейтинг' });
+  await expect(scale).toBeVisible();
+  await expect(scale).toHaveAttribute('min', '0');
+  await expect(scale).toHaveAttribute('max', '1000');
+  await expect(scale).toHaveAttribute('value', String(viewer.points));
   await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(375);
-  const placeLink = page.getByRole('link', { name: `Вы на ${viewer.place}-м месте в рейтинге`, exact: true });
+  const placeLink = page.getByRole('link', { name: `${viewer.place.toLocaleString('ru-RU')}-е место в рейтинге`, exact: true });
   await expect(placeLink).toHaveAttribute('href', '/rating');
   await placeLink.click();
   await expect(page).toHaveURL('/rating');
@@ -42,7 +42,7 @@ test('студент видит пьедестал, фильтрует рейт�
 
   await table.getByRole('link', { name: 'Мария Волкова' }).click();
   await expect(page.getByRole('heading', { name: 'Мария Волкова' })).toBeVisible();
-  await expect(page.getByRole('link', { name: /Вы на \d+-м месте в рейтинге/ })).toHaveCount(0);
+  await expect(page.getByRole('link', { name: /-е место в рейтинге$/ })).toHaveCount(0);
   await page.goBack();
   await expect(page.getByLabel('Показатель')).toHaveValue('BOA');
   await expect(table.getByRole('link', { name: 'Даниил Петров' })).toHaveCount(0);

@@ -1,17 +1,16 @@
-import { useEffect, useMemo, useState, type CSSProperties, type ReactNode } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { ApiError, api, type ProfileAssignment, type StudentActivity, type StudentProfileData } from './api';
 import { canSubmitWork, DeadlineIndicator, useDeadlineClock } from './AssignmentDeadline';
 import { dateTime, StatusBadge } from './Assignments';
 import { activityFormatLabels } from './Activities';
-import { CabinetMetric, CabinetPage } from './Cabinet';
+import { CabinetAvatar } from './Cabinet';
 import { activityPointLabel, formatPoints, pointLabels } from './points';
 import { useCabinetResource } from './useCabinetResource';
 import cabinet from './cabinet.module.css';
 import s from './profile.module.css';
 
 const maxRating = 1000;
-const ratingTicks = [0, maxRating / 2, maxRating];
 const day = 24 * 60 * 60 * 1000;
 const byDeadline = (left: ProfileAssignment, right: ProfileAssignment) => Date.parse(left.deadline) - Date.parse(right.deadline);
 
@@ -21,22 +20,47 @@ function assignmentPenalty(item: ProfileAssignment, rating: number | undefined) 
 }
 
 function AcademicRating({ rating, place, ownProfile }: { rating: number; place: number | null; ownProfile: boolean }) {
-  const position = { '--rating-position': `${rating / maxRating * 100}%` } as CSSProperties;
-  return <CabinetMetric label="Академический рейтинг" valueClassName={s.ratingValue}>
-    <div className={s.ratingNumber}><strong>{rating}</strong> <small>/ {maxRating}</small></div>
-    <div className={s.ratingScale} style={position} aria-hidden="true" data-rating-scale>
-      <div className={s.ratingTrack}>
-        {ratingTicks.map(tick => <span key={tick} className={s.ratingTick} />)}
-        <span className={s.ratingMarker} />
+  return <div className={`${s.metric} ${s.rating}`}>
+    <dt className={s.ratingHeading}>
+      <span>Академический рейтинг</span>
+      {ownProfile && <Link to="/rating" className={s.ratingPlace}
+        aria-label={place == null ? undefined : `${formatPoints(place)}-е место в рейтинге`}>
+        {place == null ? 'Открыть рейтинг' : `${formatPoints(place)}-е место`}
+        <span aria-hidden="true">→</span>
+      </Link>}
+    </dt>
+    <dd>
+      <div className={s.ratingNumber}><strong>{rating}</strong> <small>/ {maxRating}</small></div>
+      <meter className={s.ratingMeter} min={0} max={maxRating} value={rating} aria-label="Академический рейтинг" data-rating-scale />
+    </dd>
+  </div>;
+}
+
+function ActivityBalance({ label, points, unit }: { label: string; points: number; unit: string }) {
+  return <div className={s.metric}>
+    <dt>{label}</dt>
+    <dd>{formatPoints(points)} <small>{unit}</small></dd>
+  </div>;
+}
+
+function ProfileSummary({ student, groupLeader, ownProfile }: {
+  student: StudentProfileData['student']; groupLeader: boolean; ownProfile: boolean;
+}) {
+  return <section className={`panel ${s.summary}`} aria-labelledby="profile-name">
+    <header className={s.identity} data-cabinet-header>
+      <CabinetAvatar name={student.fullName} className={s.avatar} />
+      <div>
+        <h1 id="profile-name">{student.fullName}</h1>
+        {student.facultyName && <p>{student.facultyName}</p>}
+        <p>{student.groupName}{groupLeader && ' · Староста'}</p>
       </div>
-      <div className={s.ratingAxis}>
-        {ratingTicks.map(tick => <span key={tick} data-current={rating === tick}>{tick}</span>)}
-      </div>
-    </div>
-    {ownProfile && <Link to="/rating" className={s.ratingPlace}>
-      {place == null ? 'Открыть рейтинг' : `Вы на ${formatPoints(place)}-м месте в рейтинге`}
-    </Link>}
-  </CabinetMetric>;
+    </header>
+    <dl className={s.metrics} data-cabinet-metrics>
+      <AcademicRating rating={student.rating} place={student.arPlace} ownProfile={ownProfile} />
+      <ActivityBalance label="Учебная активность" points={student.academicActivityPoints} unit="БУА" />
+      <ActivityBalance label="Общественная активность" points={student.publicActivityPoints} unit="БОА" />
+    </dl>
+  </section>;
 }
 
 function SubmissionOverview({ assignments }: { assignments: ProfileAssignment[] }) {
@@ -97,21 +121,28 @@ function UpcomingEvents() {
 }
 
 export function StudentProfile({ user, themeToggle }: {
-  user: { id: number; groupVerified: boolean; groupLeader: boolean }; themeToggle: ReactNode;
+  themeToggle: ReactNode;
+  user: { id: number; groupVerified: boolean; groupLeader: boolean };
 }) {
   const { id } = useParams();
   const studentId = id ?? String(user.id);
   if (!/^\d+$/.test(studentId) || !Number.isSafeInteger(Number(studentId)) || Number(studentId) < 1) {
-    return <CabinetPage themeToggle={themeToggle}><p className="error" role="alert">Профиль студента не найден.</p></CabinetPage>;
+    return <main className={cabinet.page} data-cabinet-page>
+      <div className={s.profileTop}>
+        <h1>Профиль студента</h1>
+        <div className={s.profileTheme}>{themeToggle}</div>
+      </div>
+      <p className="error" role="alert">Профиль студента не найден.</p>
+    </main>;
   }
   return <ProfileScreen key={studentId} studentId={Number(studentId)} ownProfile={Number(studentId) === user.id}
     pendingGroup={Number(studentId) === user.id && !user.groupVerified}
-    groupLeader={Number(studentId) === user.id && user.groupLeader}
-    themeToggle={themeToggle} />;
+    groupLeader={Number(studentId) === user.id && user.groupLeader} themeToggle={themeToggle} />;
 }
 
 function ProfileScreen({ studentId, ownProfile, pendingGroup, groupLeader, themeToggle }: {
-  studentId: number; ownProfile: boolean; pendingGroup: boolean; groupLeader: boolean; themeToggle: ReactNode;
+  themeToggle: ReactNode;
+  studentId: number; ownProfile: boolean; pendingGroup: boolean; groupLeader: boolean;
 }) {
   const [profile, setProfile] = useState<StudentProfileData>();
   const [error, setError] = useState('');
@@ -148,14 +179,17 @@ function ProfileScreen({ studentId, ownProfile, pendingGroup, groupLeader, theme
   }, [studentId, ownProfile, retry]);
 
   const { student, personal } = profile ?? {};
-  const subtitle = student && [student.facultyName, student.groupName, groupLeader && 'Староста'].filter(Boolean).join(' · ');
   const visibleAssignments = personal?.assignments.filter(item => (item.status === 'ACCEPTED') === completed);
   if (ownProfile && !completed) {
     visibleAssignments?.sort((left, right) =>
       Number(canSubmitWork(right.status)) - Number(canSubmitWork(left.status)) || byDeadline(left, right));
   }
 
-  return <CabinetPage name={student?.fullName} subtitle={subtitle} themeToggle={themeToggle}>
+  return <main className={cabinet.page} data-cabinet-page>
+    <div className={s.profileTop}>
+      {student ? <ProfileSummary student={student} groupLeader={groupLeader} ownProfile={ownProfile} /> : <h1>Профиль студента</h1>}
+      <div className={s.profileTheme}>{themeToggle}</div>
+    </div>
     {pendingGroup && <p className={`panel ${cabinet.section} ${s.pendingGroup}`} role="status">
       Группа ожидает подтверждения. После одобрения здесь появятся задания группы.
     </p>}
@@ -166,11 +200,6 @@ function ProfileScreen({ studentId, ownProfile, pendingGroup, groupLeader, theme
       </button>
     </div>}
     {!student && !error && <p className="muted" role="status">Загружаем профиль…</p>}
-    {student && <dl className={`${cabinet.metrics} ${s.metrics}`} data-cabinet-metrics>
-      <AcademicRating rating={student.rating} place={student.arPlace} ownProfile={ownProfile} />
-      <CabinetMetric label="Учебная активность">{formatPoints(student.academicActivityPoints)} <small>БУА</small></CabinetMetric>
-      <CabinetMetric label="Общественная активность">{formatPoints(student.publicActivityPoints)} <small>БОА</small></CabinetMetric>
-    </dl>}
     {ownProfile && !pendingGroup && personal && <div className={`${cabinet.sections} ${s.overview}`}>
       <SubmissionOverview assignments={personal.assignments} />
       <UpcomingEvents />
@@ -212,5 +241,5 @@ function ProfileScreen({ studentId, ownProfile, pendingGroup, groupLeader, theme
         </ul> : <p className={s.empty}>Изменений баллов пока нет.</p>}
       </section>
     </div>}
-  </CabinetPage>;
+  </main>;
 }
