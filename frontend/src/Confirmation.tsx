@@ -1,7 +1,7 @@
-import { useState, type FormEvent } from 'react';
+import { useLayoutEffect, useRef, useState, type FormEvent } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { post, type Group, type Role } from './api';
-import { GroupPicker, studyForms } from './GroupPicker';
+import { normalizeGroupSearch, studyForms } from './GroupPicker';
 import { GroupLeadership, type LeadershipData } from './GroupLeadership';
 import { useCabinetResource } from './useCabinetResource';
 import cabinet from './cabinet.module.css';
@@ -80,13 +80,23 @@ function requestCount(group: ApprovalGroup) {
   return `${group.pendingCount} ${noun[requestPlural.select(group.pendingCount)]}`;
 }
 
+function revealGroupHeading(heading: HTMLHeadingElement | null) {
+  heading?.focus({ preventScroll: true });
+  heading?.scrollIntoView({ block: 'start' });
+}
+
 export function GroupApproval({ role }: { role: Role }) {
   const scope = '/' + role.toLowerCase();
   const { data: groups, error, reload } = useCabinetResource<ApprovalGroup[]>(`${scope}/group-approval/groups`);
   const [groupId, setGroupId] = useState<number>();
+  const [search, setSearch] = useState('');
   const [filters, setFilters] = useState(defaultFilters);
+  const groupHeading = useRef<HTMLHeadingElement>(null);
+  const focusAfterSelection = useRef(false);
   const group = (role === 'STUDENT' ? groups?.[0] : groups?.find(item => item.id === groupId)) ?? null;
-  const visibleGroups = groups?.filter(item => matchesFilters(item, filters)) ?? [];
+  const query = normalizeGroupSearch(search);
+  const visibleGroups = groups?.filter(item => matchesFilters(item, filters)
+    && normalizeGroupSearch(item.name).includes(query)) ?? [];
   const faculties = new Map<number, string>();
   for (const item of groups ?? []) {
     if (item.facultyId !== null && item.facultyName) faculties.set(item.facultyId, item.facultyName);
@@ -95,6 +105,25 @@ export function GroupApproval({ role }: { role: Role }) {
   const groupPath = group ? `${scope}/groups/${group.id}` : '';
   const noGroups = role === 'TEACHER' ? 'Администратор пока не назначил вам группы.'
     : role === 'STUDENT' ? 'У вас нет активного назначения старостой.' : 'В справочнике пока нет групп.';
+
+  useLayoutEffect(() => {
+    if (!focusAfterSelection.current) return;
+    focusAfterSelection.current = false;
+    revealGroupHeading(groupHeading.current);
+  }, [group?.id]);
+
+  function updateSearch(next: string) {
+    setSearch(next);
+    if (group && !normalizeGroupSearch(group.name).includes(normalizeGroupSearch(next))) setGroupId(undefined);
+  }
+
+  function chooseGroup(id: number) {
+    if (!matchMedia('(min-width: 1000px)').matches) {
+      if (group?.id === id) revealGroupHeading(groupHeading.current);
+      else focusAfterSelection.current = true;
+    }
+    setGroupId(id);
+  }
 
   function updateFilters(next: typeof defaultFilters) {
     setFilters(next);
@@ -109,57 +138,83 @@ export function GroupApproval({ role }: { role: Role }) {
     </div>}
     {!error && !groups && <p role="status" className="muted">Загружаем группы…</p>}
     {groups?.length === 0 && <p className={`panel ${cabinet.section} muted`}>{noGroups}</p>}
-    {role !== 'STUDENT' && Boolean(groups?.length) &&
-    <section className={`panel ${cabinet.section} ${approval.panel}`} aria-label="Поиск и фильтры групп">
-      <div className={approval.filters}>
-        <GroupPicker groups={visibleGroups} value={group} onChange={item => setGroupId(item?.id)}
-          disabled={!groups} required={false} placeholder="Введите часть шифра группы" className={approval.picker}
-          optionDetail={requestCount} />
-        <label>Факультет или институт
-          <select value={filters.faculty} disabled={!groups}
-            onChange={event => updateFilters({ ...filters, faculty: event.target.value })}>
-            <option value="">Все подразделения</option>
-            {facultyOptions.map(([id, name]) => <option key={id} value={id}>{name}</option>)}
-          </select>
+    {Boolean(groups?.length) && <div className={role === 'STUDENT' ? approval.details : approval.workspace}>
+      {role !== 'STUDENT' && <section className={`panel ${cabinet.section} ${approval.directory}`} aria-labelledby="approval-groups-title">
+        <h2 id="approval-groups-title">Учебные группы</h2>
+        <label className={approval.search}>Поиск группы
+          <input type="search" value={search} placeholder="Например, ИВТ-24" onChange={event => updateSearch(event.target.value)} />
         </label>
-        <label>Форма обучения
-          <select value={filters.form} disabled={!groups}
-            onChange={event => updateFilters({ ...filters, form: event.target.value })}>
-            <option value="">Все формы</option>
-            {studyForms.map(item => <option key={item.value} value={item.value}>{item.label}</option>)}
-            {groups?.some(item => item.studyForm === null) && <option value="unspecified">Не указана</option>}
-          </select>
-        </label>
-      </div>
-      <div className={approval.filterActions}>
         <label className={approval.pendingFilter}>
-          <input type="checkbox" checked={filters.pendingOnly} disabled={!groups}
+          <input type="checkbox" checked={filters.pendingOnly}
             onChange={event => updateFilters({ ...filters, pendingOnly: event.target.checked })} />
           Только с заявками
         </label>
-        {(filters.faculty || filters.form || filters.pendingOnly) && <button type="button" className="button outline"
-          onClick={() => updateFilters(defaultFilters)}>Сбросить фильтры</button>}
+        <details className={approval.filterDisclosure}>
+          <summary>Фильтры</summary>
+          <div className={approval.filters}>
+            <label>Факультет или институт
+              <select value={filters.faculty} onChange={event => updateFilters({ ...filters, faculty: event.target.value })}>
+                <option value="">Все подразделения</option>
+                {facultyOptions.map(([id, name]) => <option key={id} value={id}>{name}</option>)}
+              </select>
+            </label>
+            <label>Форма обучения
+              <select value={filters.form} onChange={event => updateFilters({ ...filters, form: event.target.value })}>
+                <option value="">Все формы</option>
+                {studyForms.map(item => <option key={item.value} value={item.value}>{item.label}</option>)}
+                {groups?.some(item => item.studyForm === null) && <option value="unspecified">Не указана</option>}
+              </select>
+            </label>
+            <button type="button" className="button outline"
+              disabled={!filters.faculty && !filters.form && !filters.pendingOnly}
+              onClick={() => updateFilters(defaultFilters)}>Сбросить фильтры</button>
+          </div>
+        </details>
+        {visibleGroups.length ? <ul className={approval.groupList} aria-label="Группы">
+          {visibleGroups.map(item => {
+            const count = requestCount(item);
+            const countId = `approval-count-${item.id}`;
+            return <li key={item.id}>
+              <button type="button" className={approval.groupRow} aria-pressed={group?.id === item.id}
+                aria-label={item.name} aria-describedby={count ? countId : undefined} onClick={() => chooseGroup(item.id)}>
+                <span>{item.name}</span>
+                {count && <span id={countId} className={approval.count}>{count}</span>}
+              </button>
+            </li>;
+          })}
+        </ul> : <p className={`muted ${approval.emptyList}`}>{query || filters.faculty || filters.form
+          ? 'Группы не найдены. Измените поиск или фильтры.' : 'В доступных группах нет заявок.'}</p>}
+      </section>}
+      <div className={approval.details}>
+        {group ? <>
+          <header className={approval.groupHeading}>
+            <h2 ref={groupHeading} tabIndex={-1}>{group.name}</h2>
+            {group.facultyName && <p className="muted">{group.facultyName}</p>}
+          </header>
+          {role === 'STUDENT'
+            ? <PendingStudents key={group.id} path={`${groupPath}/pending-students`} reloadGroups={reload} />
+            : <ManagedGroup key={group.id} path={groupPath} admin={role === 'ADMIN'} reloadGroups={reload} />}
+        </> : <section className={`panel ${cabinet.section} ${approval.prompt}`}>
+          <h2>Выберите группу</h2>
+          <p className="muted">Откройте группу из списка, чтобы увидеть заявки и назначить старосту.</p>
+        </section>}
       </div>
-      {visibleGroups.length === 0 && <p className="muted">По этим фильтрам групп нет.</p>}
-    </section>}
-    {group && (role === 'STUDENT'
-      ? <PendingStudents key={group.id} group={group} path={`${groupPath}/pending-students`} reloadGroups={reload} />
-      : <ManagedGroup key={group.id} group={group} path={groupPath} admin={role === 'ADMIN'} reloadGroups={reload} />)}
+    </div>}
   </div>;
 }
 
-function ManagedGroup({ group, path, admin, reloadGroups }: {
-  group: ApprovalGroup; path: string; admin: boolean; reloadGroups: () => void;
+function ManagedGroup({ path, admin, reloadGroups }: {
+  path: string; admin: boolean; reloadGroups: () => void;
 }) {
   const leadership = useCabinetResource<LeadershipData>(`${path}/leadership`);
   return <>
-    <PendingStudents group={group} path={`${path}/pending-students`}
+    <PendingStudents path={`${path}/pending-students`}
       reloadGroups={() => { reloadGroups(); leadership.reload(); }} />
     <GroupLeadership path={path} admin={admin} {...leadership} />
   </>;
 }
 
-function PendingStudents({ group, path, reloadGroups }: { group: ApprovalGroup; path: string; reloadGroups: () => void }) {
+function PendingStudents({ path, reloadGroups }: { path: string; reloadGroups: () => void }) {
   const { data: students, error, reload } = useCabinetResource<PendingStudent[]>(path);
   const [busy, setBusy] = useState(false);
   const [feedback, setFeedback] = useState('');
@@ -182,7 +237,7 @@ function PendingStudents({ group, path, reloadGroups }: { group: ApprovalGroup; 
   }
 
   return <section className={`panel ${cabinet.section} ${approval.panel}`} aria-labelledby="pending-students-title">
-    <h2 id="pending-students-title">Заявки · {group.name}</h2>
+    <h2 id="pending-students-title">Заявки</h2>
     {!students && !error && <p role="status" className="muted">Загружаем заявки…</p>}
     {(failure || error) && <p role="alert" className="error">{failure || error}</p>}
     {feedback && <p role="status">{feedback}</p>}
@@ -190,7 +245,7 @@ function PendingStudents({ group, path, reloadGroups }: { group: ApprovalGroup; 
     {Boolean(students?.length) && <ul className={approval.requests}>
       {students?.map(student => <li key={student.id}>
         <strong>{student.fullName}</strong>
-        <button className="button outline" type="button" disabled={busy}
+        <button className="button primary" type="button" disabled={busy}
           aria-label={`Подтвердить группу · ${student.fullName}`} onClick={() => void approve(student)}>Подтвердить</button>
       </li>)}
     </ul>}

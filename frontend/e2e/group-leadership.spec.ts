@@ -26,9 +26,10 @@ async function registerStudent(request: APIRequestContext, student: { email: str
 }
 
 async function chooseGroup(page: Page, name: string) {
-  await page.getByRole('link', { name: 'Подтверждение группы', exact: true }).click();
-  await page.getByRole('combobox', { name: 'Учебная группа' }).fill(name);
-  await page.getByRole('option', { name, exact: true }).click();
+  await page.getByRole('searchbox', { name: 'Поиск группы' }).fill(name);
+  const group = page.getByRole('button', { name, exact: true });
+  await group.click();
+  await expect(group).toHaveAttribute('aria-pressed', 'true');
 }
 
 test('преподаватель назначает старосту своей группы, староста одобряет только заявки одногруппников', async ({ browser }) => {
@@ -72,6 +73,7 @@ test('преподаватель назначает старосту своей 
     expect((await leader.request.get(`${studentGroup}/pending-students`)).status()).toBe(403);
 
     await admin.goto('/admin');
+    await admin.getByRole('link', { name: 'Подтверждение группы', exact: true }).click();
     await chooseGroup(admin, own.name);
     await admin.getByRole('group', { name: 'Ответственные преподаватели' })
       .getByRole('checkbox', { name: instructor.fullName, exact: true }).check();
@@ -96,7 +98,18 @@ test('преподаватель назначает старосту своей 
       headers: teacherHeaders, data: { studentId: foreignPending.id },
     })).status()).toBe(400);
 
+    await teacher.setViewportSize({ width: 375, height: 760 });
     await teacher.goto('/assignments');
+    await teacher.getByRole('button', { name: 'Меню', exact: true }).click();
+    await teacher.getByRole('link', { name: 'Подтверждение группы', exact: true }).click();
+    await chooseGroup(teacher, own.name);
+    const groupHeading = teacher.getByRole('heading', { name: own.name, exact: true });
+    await expect(groupHeading).toBeFocused();
+    const groupSearch = teacher.getByRole('searchbox', { name: 'Поиск группы' });
+    await groupSearch.fill(foreign.name);
+    await expect(groupHeading).toHaveCount(0);
+    await groupSearch.clear();
+    await expect(groupHeading).toHaveCount(0);
     await chooseGroup(teacher, own.name);
     const selector = teacher.getByRole('combobox', { name: 'Староста группы', exact: true });
     await expect(selector.getByRole('option', { name: candidate.fullName, exact: true })).toBeAttached();
@@ -124,8 +137,7 @@ test('преподаватель назначает старосту своей 
     expect((await classmate.request.get(`${studentGroup}/pending-students`)).status()).toBe(403);
 
     await teacher.reload();
-    await teacher.getByRole('combobox', { name: 'Учебная группа' }).fill(own.name);
-    await teacher.getByRole('option', { name: own.name, exact: true }).click();
+    await chooseGroup(teacher, own.name);
     await selector.selectOption(String(pending.id));
     await teacher.getByRole('button', { name: 'Назначить старосту', exact: true }).click();
     await expect.poll(async () => (await (await leader.request.get('/api/me')).json()).groupLeader).toBe(false);

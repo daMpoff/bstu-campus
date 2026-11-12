@@ -182,29 +182,31 @@ test('обе роли регистрируются со справочникам
 
     await admin.goto('/admin');
     await admin.getByRole('link', { name: 'Подтверждение группы', exact: true }).click();
-    const approvalGroup = admin.getByRole('combobox', { name: 'Учебная группа' });
-    const approvalResults = admin.getByRole('listbox', { name: 'Учебная группа' });
+    const groupSearch = admin.getByRole('searchbox', { name: 'Поиск группы' });
+    const legacyChoice = admin.getByRole('button', { name: legacyGroup.name, exact: true });
+    const groupChoice = admin.getByRole('button', { name: groupName, exact: true });
     const approvalFaculty = admin.getByLabel('Факультет или институт');
     const studyForm = admin.getByLabel('Форма обучения');
     const pendingOnly = admin.getByRole('checkbox', { name: 'Только с заявками' });
+    await admin.getByText('Фильтры', { exact: true }).click();
     await studyForm.selectOption({ label: 'Не указана' });
-    await approvalGroup.fill(legacyGroup.name.toLowerCase());
-    await expect(approvalResults.getByRole('option', { name: legacyGroup.name })).toBeVisible();
+    await groupSearch.fill(legacyGroup.name.toLowerCase());
+    await expect(legacyChoice).toBeVisible();
     await admin.getByRole('button', { name: 'Сбросить фильтры' }).click();
     await expect(studyForm.getByRole('option', { name: 'Все формы', selected: true })).toBeAttached();
     await pendingOnly.check();
-    await approvalGroup.fill(legacyGroup.name);
-    await expect(approvalResults.getByRole('option', { name: legacyGroup.name })).toHaveCount(0);
+    await groupSearch.fill(legacyGroup.name);
+    await expect(legacyChoice).toHaveCount(0);
     await approvalFaculty.selectOption({ label: instituteName });
-    await approvalGroup.fill(groupName);
-    await expect(approvalResults.getByRole('option', { name: groupName })).toHaveCount(0);
+    await groupSearch.fill(groupName);
+    await expect(groupChoice).toHaveCount(0);
     await approvalFaculty.selectOption({ label: facultyName });
     await studyForm.selectOption({ label: 'Очная форма' });
-    await approvalGroup.fill(groupName.toLowerCase());
-    await expect(approvalResults.getByRole('option', { name: groupName })).toBeVisible();
-    await approvalGroup.press('ArrowDown');
-    await approvalGroup.press('Enter');
-    await expect(approvalGroup).toHaveValue(groupName);
+    await groupSearch.fill(groupName.toLowerCase());
+    await expect(groupChoice).toBeVisible();
+    await groupChoice.focus();
+    await admin.keyboard.press('Enter');
+    await expect(groupChoice).toHaveAttribute('aria-pressed', 'true');
 
     await admin.getByRole('button', { name: `Подтвердить группу · ${studentName}` }).click();
     await expect(admin.getByText(`Группа подтверждена · ${studentName}`, { exact: true })).toBeVisible();
@@ -214,8 +216,7 @@ test('обе роли регистрируются со справочникам
     }).toBe(pendingGroup.pendingCount - 1);
     await expect(admin.getByRole('button', { name: `Подтвердить группу · ${studentName}` })).toHaveCount(0);
     if (pendingGroup.pendingCount === 1) {
-      await approvalGroup.fill(groupName.toLowerCase());
-      await expect(approvalResults.getByRole('option', { name: groupName })).toHaveCount(0);
+      await expect(groupChoice).toHaveCount(0);
     }
     await expect(student.getByText(/Группа ожидает подтверждения/)).toHaveCount(0, { timeout: 10_000 });
     await expect(student.getByRole('link', { name: new RegExp(title) })).toBeVisible();

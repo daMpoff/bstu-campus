@@ -23,7 +23,7 @@ type Props<T extends GroupOption> = {
   optionDetail?: (group: T) => string | undefined;
 };
 
-function searchableName(value: string) {
+export function normalizeGroupSearch(value: string) {
   return value.toLocaleLowerCase('ru-RU').replace(/[\s‐‑‒–—−-]+/g, '');
 }
 
@@ -37,8 +37,8 @@ export function GroupPicker<T extends GroupOption>({ groups, value, onChange, di
   const [query, setQuery] = useState('');
   const [open, setOpen] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
-  const search = searchableName(query);
-  const matchingGroups = groups.filter(group => searchableName(group.name).includes(search));
+  const search = normalizeGroupSearch(query);
+  const matchingGroups = groups.filter(group => normalizeGroupSearch(group.name).includes(search));
   const sections = [...studyForms, { value: null, label: 'Форма обучения не указана' }].map(form => ({
     label: form.label,
     groups: matchingGroups.filter(group => group.studyForm === form.value),
