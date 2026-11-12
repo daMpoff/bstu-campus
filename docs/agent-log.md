@@ -318,6 +318,11 @@
 - Убрали «Обновить» из шапки. Опрос API продолжается после «Показать ещё», а новые записи появляются по отдельной кнопке. При показе новых записей сохраняем открытую историю и дочитываем промежуточные страницы, если свежих событий пришло больше одной страницы.
 - Сборка фронтенда и два сценария Playwright прошли. Проверили восстановление после ответа HTTP 503, всплеск событий, их порядок и отсутствие дублей. На отдельной базе в Edge под демо-студентом получили реальные события от демо-преподавателя. На ширине 375 px кнопка появилась при чтении истории, позиция прокрутки сохранилась, а после нажатия остались все 43 ранее загруженные записи.
 
+### Хронология ленты наград
+
+- Перенесли выбранный макет в общую ленту. Слева стоят дата и время начисления по МСК, в карточке — тип и название активности, ссылка на профиль студента и баллы. На узком экране дата переносится над карточкой. Для начислений прошлых лет показываем год.
+- Сборка фронтенда и сценарий Playwright для БУА и БОА прошли. В Edge под демо-студентом сверили два начисления с API. Отдельно проверили подгрузку истории, порядок при совпадающем времени, дробные баллы и переход через московскую полночь. Проверили обе темы и отсутствие горизонтальной прокрутки на ширинах 320, 375, 768, 1024 и 1440 px.
+
 ### Промпт для вечернего фото страницы входа
 
 > Use case: lighting-weather. Asset: portrait photograph for the dark theme of the university login page. Edit Image 1, the daylight portrait of the BGTU alley. Use Image 2, the existing night hero, for lighting and color only. Convert Image 1 to photorealistic late evening with a deep navy sky, naturally dark foliage, warm amber light in a few existing windows, and subtle warm spill onto the brick facade and pavement. Keep the alley and the facade readable in the narrow center-right crop used on the site. Preserve Image 1’s portrait aspect ratio (957:1277), camera position, framing, perspective, building geometry, path, stairs, trees and railings. Change only time of day and lighting. No added objects, graphics, text, or watermark.
