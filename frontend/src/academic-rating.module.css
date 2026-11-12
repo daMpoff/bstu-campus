@@ -1,0 +1,24 @@
+.rating { min-width: 0; }
+.heading {
+  display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: .125rem .5rem;
+  color: var(--muted); font-size: var(--text-small); line-height: 1.3; font-weight: var(--weight-control);
+}
+.value {
+  margin: .375rem 0 0; font-size: clamp(1.625rem, 2.6vw, 2rem); line-height: 1.15;
+  font-weight: var(--weight-heading); font-variant-numeric: tabular-nums;
+}
+.number { white-space: nowrap; }
+.number strong { color: var(--accent); }
+.number small { color: var(--muted); font-size: var(--text-small); font-weight: var(--weight-control); }
+.meter {
+  appearance: none; display: block; width: 100%; height: 4px; margin-top: .75rem;
+  border: 0; border-radius: 4px; background: var(--tint);
+}
+.meter::-webkit-meter-bar { height: 100%; border: 0; border-radius: 4px; background: var(--tint); }
+.meter::-webkit-meter-optimum-value { border-radius: inherit; background: var(--accent); }
+.meter::-moz-meter-bar { border-radius: 4px; background: var(--accent); }
+.place {
+  display: inline-flex; align-items: center; gap: .35em; min-height: 44px; margin-block: -13px;
+  white-space: nowrap; line-height: 1.3; text-underline-offset: .2em;
+}
+.place span { text-decoration: none; }

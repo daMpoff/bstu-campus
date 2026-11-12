@@ -4,13 +4,13 @@ import { ApiError, api, type ProfileAssignment, type StudentActivity, type Stude
 import { canSubmitWork, DeadlineIndicator, useDeadlineClock } from './AssignmentDeadline';
 import { dateTime, StatusBadge } from './Assignments';
 import { activityFormatLabels } from './Activities';
+import { AcademicRating } from './AcademicRating';
 import { CabinetAvatar } from './Cabinet';
 import { activityPointLabel, formatPoints, pointLabels } from './points';
 import { useCabinetResource } from './useCabinetResource';
 import cabinet from './cabinet.module.css';
 import s from './profile.module.css';
 
-const maxRating = 1000;
 const day = 24 * 60 * 60 * 1000;
 const byDeadline = (left: ProfileAssignment, right: ProfileAssignment) => Date.parse(left.deadline) - Date.parse(right.deadline);
 
@@ -19,25 +19,8 @@ function assignmentPenalty(item: ProfileAssignment, rating: number | undefined) 
   return { limit: item.penaltyLimit, deducted: item.deducted, rating };
 }
 
-function AcademicRating({ rating, place, ownProfile }: { rating: number; place: number | null; ownProfile: boolean }) {
-  return <div className={`${s.metric} ${s.rating}`}>
-    <dt className={s.ratingHeading}>
-      <span>Академический рейтинг</span>
-      {ownProfile && <Link to="/rating" className={s.ratingPlace}
-        aria-label={place == null ? undefined : `${formatPoints(place)}-е место в рейтинге`}>
-        {place == null ? 'Открыть рейтинг' : `${formatPoints(place)}-е место`}
-        <span aria-hidden="true">→</span>
-      </Link>}
-    </dt>
-    <dd>
-      <div className={s.ratingNumber}><strong>{rating}</strong> <small>/ {maxRating}</small></div>
-      <meter className={s.ratingMeter} min={0} max={maxRating} value={rating} aria-label="Академический рейтинг" data-rating-scale />
-    </dd>
-  </div>;
-}
-
 function ActivityBalance({ label, points, unit }: { label: string; points: number; unit: string }) {
-  return <div className={s.metric}>
+  return <div className={`${s.metric} ${s.activity}`}>
     <dt>{label}</dt>
     <dd>{formatPoints(points)} <small>{unit}</small></dd>
   </div>;
@@ -56,7 +39,7 @@ function ProfileSummary({ student, groupLeader, ownProfile }: {
       </div>
     </header>
     <dl className={s.metrics} data-cabinet-metrics>
-      <AcademicRating rating={student.rating} place={student.arPlace} ownProfile={ownProfile} />
+      <AcademicRating rating={student.rating} place={student.arPlace} ownProfile={ownProfile} className={`${s.metric} ${s.rating}`} />
       <ActivityBalance label="Учебная активность" points={student.academicActivityPoints} unit="БУА" />
       <ActivityBalance label="Общественная активность" points={student.publicActivityPoints} unit="БОА" />
     </dl>

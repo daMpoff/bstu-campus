@@ -74,8 +74,10 @@ test('группа получает задание, студент сдаёт р
     const me = await (await student.request.get('/api/me')).json();
     expect((await outsider.request.get(`/api/profiles/${me.id}`)).status()).toBe(401);
     await student.getByRole('link', { name: 'Профиль' }).click();
-    await expect(student.getByRole('heading', { name: 'Алексей Смирнов' })).toBeVisible();
-    await expect(student.getByText('Факультет информационных технологий (ФИТ) · ИВТ-24')).toBeVisible();
+    const identity = student.getByRole('region', { name: 'Алексей Смирнов' });
+    await expect(identity.getByRole('heading', { name: 'Алексей Смирнов' })).toBeVisible();
+    await expect(identity.getByText('Факультет информационных технологий (ФИТ)', { exact: true })).toBeVisible();
+    await expect(identity.getByText('ИВТ-24', { exact: true })).toBeVisible();
     const history = student.getByRole('region', { name: 'История баллов' });
     await expect(history.getByRole('listitem').filter({ hasText: title })).toContainText('−20 АР');
     await student.setViewportSize({ width: 320, height: 800 });
@@ -311,6 +313,7 @@ test('таймер переходит в просрочку без запрос�
   const poll = { id: 27182, title: 'Тема консультации', endsAt: eventAt, closed: false, voted: false };
   let assignmentReads = 0;
   await page.route('**/api/me', route => route.fulfill({ json: { ...account, rating: 15 } }));
+  await page.route('**/api/student/ranking/summary', route => route.fulfill({ json: { rating: 15, arPlace: 2 } }));
   await page.route('**/api/student/assignments', route => {
     assignmentReads++;
     return route.fulfill({ json: [item] });

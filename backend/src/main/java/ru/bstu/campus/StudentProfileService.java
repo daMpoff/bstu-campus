@@ -17,6 +17,15 @@ import org.springframework.web.server.ResponseStatusException;
 
 @Service
 class StudentProfileService {
+    private static final String ACADEMIC_PLACE = """
+        CASE WHEN u.email = :viewer AND u.group_id IS NOT NULL AND u.group_verified AND u.email_verified THEN (
+            SELECT 1 + count(DISTINCT participant.rating)
+            FROM campus_user participant JOIN study_group participant_group ON participant_group.id = participant.group_id
+            WHERE participant.role = 'STUDENT' AND participant.group_verified AND participant.email_verified
+              AND participant.rating > u.rating
+        ) END
+        """;
+
     private final JdbcClient db;
     private final Clock clock;
 
@@ -32,18 +41,23 @@ class StudentProfileService {
                        String activityTitle, String teacherName, BigDecimal amount, Instant recordedAt) {}
     record PersonalDetails(List<Assignment> assignments, List<RatingEntry> ratingHistory) {}
     record Profile(Student student, PersonalDetails personal) {}
+    record RatingSummary(int rating, Long arPlace) {}
+
+    RatingSummary ratingSummary(String viewer) {
+        return db.sql("""
+            SELECT u.rating, %s AS ar_place
+            FROM campus_user u
+            WHERE u.email = :viewer AND u.role = 'STUDENT'
+            """.formatted(ACADEMIC_PLACE)).param("viewer", viewer).query((row, index) -> new RatingSummary(
+                row.getInt("rating"), row.getObject("ar_place", Long.class))).optional()
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED));
+    }
 
     @Transactional(readOnly = true, isolation = Isolation.REPEATABLE_READ)
     Profile profile(long studentId, String viewer) {
         Student student = db.sql("""
             SELECT u.id, u.full_name, f.name AS faculty_name, g.name AS group_name, u.rating, points.*,
-                   avatar.revision AS avatar_revision,
-                   CASE WHEN u.email = :viewer AND u.group_verified AND u.email_verified THEN (
-                       SELECT 1 + count(DISTINCT participant.rating)
-                       FROM campus_user participant JOIN study_group participant_group ON participant_group.id = participant.group_id
-                       WHERE participant.role = 'STUDENT' AND participant.group_verified AND participant.email_verified
-                         AND participant.rating > u.rating
-                   ) END AS ar_place
+                   avatar.revision AS avatar_revision, %s AS ar_place
             FROM campus_user u
             JOIN study_group g ON g.id = u.group_id
             LEFT JOIN faculty f ON f.id = COALESCE(g.faculty_id, u.faculty_id)
@@ -55,7 +69,7 @@ class StudentProfileService {
                 WHERE award.student_id = u.id
             ) points
             WHERE u.id = :id AND u.role = 'STUDENT'
-            """).param("id", studentId).param("viewer", viewer).query((row, index) -> new Student(
+            """.formatted(ACADEMIC_PLACE)).param("id", studentId).param("viewer", viewer).query((row, index) -> new Student(
                 row.getLong("id"), row.getString("full_name"), row.getString("faculty_name"), row.getString("group_name"),
                 row.getInt("rating"), row.getObject("ar_place", Long.class), row.getBigDecimal("academic_activity_points"),
                 row.getBigDecimal("public_activity_points"),

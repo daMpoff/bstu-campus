@@ -1,76 +1,110 @@
-.ranking { display: grid; gap: var(--cabinet-gap); }
-.filterPanel h2 { margin-bottom: 1rem; }
-.filters { display: grid; gap: .75rem; }
-.filters label { display: grid; min-width: 0; gap: .3rem; align-content: start; }
+.ranking {
+  display: grid; gap: clamp(.875rem, 1.5vw, 1.25rem); container-type: inline-size;
+  --ranking-inset: clamp(.875rem, 1.7vw, 1.25rem);
+  --ranking-soft: color-mix(in srgb, var(--panel) 63%, var(--paper));
+  --ranking-highlight: color-mix(in srgb, var(--panel) 51%, var(--tint));
+}
+.pageTitle { margin-bottom: 1rem; font-size: clamp(1.75rem, 3vw, 2.25rem); }
+.filters { display: grid; gap: .65rem; }
+.filters label {
+  display: grid; min-width: 0; align-content: start; gap: .3rem;
+  color: var(--muted); font-size: var(--text-small);
+}
 .filters select { min-width: 0; }
-.sectionHead {
-  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .5rem 1rem;
-  margin-bottom: 1rem;
+.summaryPanel:global(.panel), .resultsPanel:global(.panel) { padding: 0; }
+.summaryPanel, .resultsPanel { overflow: clip; }
+.summaryTop { display: grid; }
+.personalCard, .comparison { min-width: 0; padding: var(--ranking-inset); }
+.personalCard { background: var(--ranking-highlight); }
+.personalCard h2, .comparisonHead h2, .podiumStrip h2 { font-size: 1rem; }
+.personalCard h2, .personalPlace, .personalPoints strong { color: var(--accent); }
+.personalPlace {
+  margin-block: .25rem .45rem; font-size: clamp(1.65rem, 4vw, 2.35rem); line-height: 1.12;
+  font-weight: var(--weight-heading); letter-spacing: -.035em; overflow-wrap: anywhere;
 }
-.sectionHead h3 { font-size: 1.25rem; }
-.viewerPlace {
-  border-radius: var(--radius-control); background: var(--tint); color: var(--accent); padding: .35rem .65rem;
-  font-size: .875rem; font-weight: var(--weight-control);
+.personalCard[data-ranked='false'] .personalPlace { font-size: 1.25rem; letter-spacing: -.015em; }
+.personalPoints { color: var(--muted); font-size: var(--text-small); font-variant-numeric: tabular-nums; }
+.personalPoints strong { font-size: 1.45rem; font-weight: var(--weight-heading); }
+.comparison { display: grid; align-content: center; gap: .55rem; }
+.comparisonHead, .comparisonLabel { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: .2rem .65rem; }
+.difference { color: var(--accent); font-size: var(--text-small); }
+.comparisonLabel { color: var(--muted); font-size: var(--text-small); }
+.comparisonLabel b { color: var(--text); font-weight: var(--weight-heading); font-variant-numeric: tabular-nums; }
+.comparisonRow meter {
+  --comparison-fill: color-mix(in srgb, var(--muted) 63%, var(--tint));
+  display: block; width: 100%; height: 4px; margin-top: .25rem; border: 0; border-radius: 3px;
+  appearance: none; background: var(--tint);
 }
-.podium { display: grid; gap: .5rem; margin: 0; padding: 0; list-style: none; }
-.podiumCard {
-  --medal-background: var(--review-bg);
-  --medal-ink: var(--review-text);
-  display: grid; grid-template-columns: auto minmax(0, 1fr) fit-content(36%); align-items: center;
-  gap: clamp(.4rem, 1.5vw, 1rem); min-width: 0; padding: .65rem;
-  border: 1px solid var(--border); border-radius: var(--radius-control);
-  background: color-mix(in srgb, var(--panel) 65%, var(--medal-background));
-}
-.podiumCard[data-place='1'] { --medal-background: var(--returned-bg); --medal-ink: var(--returned-text); }
-.podiumCard[data-place='3'] {
-  --medal-background: color-mix(in srgb, var(--returned-bg) 50%, var(--error-bg));
-  --medal-ink: var(--returned-text);
-}
+.comparisonRow meter[data-viewer='true'] { --comparison-fill: var(--accent); }
+.comparisonRow meter::-webkit-meter-bar { height: 100%; border: 0; border-radius: 3px; background: var(--tint); }
+.comparisonRow meter::-webkit-meter-optimum-value { border-radius: inherit; background: var(--comparison-fill); }
+.comparisonRow meter::-moz-meter-bar { border-radius: 3px; background: var(--comparison-fill); }
+
+.podiumStrip { padding: .75rem var(--ranking-inset); border-block-start: 1px solid var(--border); background: var(--ranking-soft); }
+.podiumStrip h2 { margin-bottom: .55rem; }
+.podium { display: grid; gap: .5rem 0; margin: 0; padding: 0; list-style: none; }
+.podiumEntry { display: flex; align-items: start; gap: .55rem; min-width: 0; }
+.podiumEntry + .podiumEntry { padding-block-start: .5rem; border-block-start: 1px solid var(--border); }
 .medal {
-  display: grid; place-items: center; inline-size: 2rem; aspect-ratio: 1; border-radius: 50%;
-  border: 1px solid color-mix(in srgb, var(--medal-background) 65%, var(--medal-ink));
-  background: var(--medal-background); color: var(--medal-ink); font-weight: var(--weight-heading);
+  display: inline-grid; place-items: center; flex: none; min-inline-size: 1.65rem; min-block-size: 1.65rem;
+  padding-inline: .24rem; border-radius: 1rem; background: var(--ranking-highlight); color: var(--accent);
+  font-size: .8125rem; font-weight: var(--weight-heading); font-variant-numeric: tabular-nums;
 }
-.podiumDetails { display: grid; gap: .15rem; overflow-wrap: anywhere; }
-.place, .tie, .group { font-size: var(--text-small); color: var(--muted); }
-.place { color: var(--medal-ink); font-weight: var(--weight-heading); }
-.leaderName { line-height: 1.25; }
+:is(.podiumEntry, .table tr, .table td)[data-place='1'] .medal, .medal[data-place='1'] {
+  background: var(--returned-bg); color: var(--returned-text);
+}
+:is(.podiumEntry, .table tr, .table td)[data-place='3'] .medal, .medal[data-place='3'] {
+  background: var(--review-bg); color: var(--review-text);
+}
+.podiumDetails { display: grid; gap: .15rem; min-width: 0; overflow-wrap: anywhere; }
+.podiumMeta, .podiumNames { display: flex; flex-wrap: wrap; align-items: baseline; gap: .15rem .4rem; }
+.place, .podiumScore, .tie, .group { font-size: var(--text-small); }
+.place { font-weight: var(--weight-heading); }
+.podiumScore, .tie, .group { color: var(--muted); }
+.podiumScore { font-variant-numeric: tabular-nums; }
 .group { display: block; }
-.podiumScore {
-  color: var(--text); font-size: clamp(1.05rem, 2.3vw, 1.65rem); font-weight: var(--weight-heading);
-  font-variant-numeric: tabular-nums; overflow-wrap: anywhere;
+
+.sectionHead {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .35rem 1rem;
+  padding: .75rem var(--ranking-inset);
 }
-.podiumScore small { color: var(--muted); font-size: var(--text-small); }
+.sectionHead :is(h2, h3) { font-size: 1.2rem; }
+.sectionHead p { font-size: var(--text-small); }
 .table { width: 100%; table-layout: fixed; border-collapse: collapse; text-align: start; }
-.table th { color: var(--muted); font-size: var(--text-small); font-weight: var(--weight-control); }
-.table :is(th, td) { padding: .55rem .4rem; border-bottom: 1px solid var(--border); overflow-wrap: anywhere; }
-.table :is(th, td):first-child { width: 3.5rem; text-align: center; }
-.table :is(th, td):last-child { width: clamp(4.5rem, 12vw, 7rem); text-align: end; }
+.table th {
+  border-block-start: 1px solid var(--border); background: var(--ranking-soft); color: var(--muted);
+  font-size: var(--text-small); font-weight: var(--weight-control);
+}
+.table :is(th, td) { padding: .55rem .5rem; overflow-wrap: anywhere; }
+.table tbody tr { border-block-start: 1px solid var(--border); }
+.table :is(th, td):first-child { width: clamp(3.65rem, 8vw, 5.25rem); text-align: center; }
+.table :is(th, td):last-child { width: clamp(4.65rem, 14vw, 8rem); text-align: end; padding-inline-end: var(--ranking-inset); }
+.table :is(th:first-child, th:last-child) { white-space: nowrap; }
 .table :is(th, td):nth-child(2) { text-align: start; }
 .table td:first-child, .table td:last-child { font-weight: var(--weight-heading); font-variant-numeric: tabular-nums; }
 .table td:last-child { font-size: clamp(.875rem, 3.9vw, 1rem); }
-.table tr[data-viewer='true'] { background: var(--tint); }
-.studentLink { display: inline-block; padding-block: .12rem; text-underline-offset: .16em; }
-.pagination {
-  display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: .6rem 1rem; margin-top: 1rem;
-  padding-right: 2rem;
+.table tr[data-viewer='true'] { background: var(--ranking-highlight); }
+.table tr[data-viewer='true'] td:last-child { color: var(--accent); }
+.studentLink { color: var(--text); font-weight: var(--weight-heading); text-decoration: none; text-underline-offset: .16em; }
+.studentLink:hover { color: var(--accent); text-decoration: underline; }
+.podiumNames .studentLink { font-size: var(--text-small); }
+.you {
+  display: inline-block; margin-inline-start: .35rem; padding: 0 .3rem; border-radius: .25rem;
+  background: var(--tint); color: var(--accent); font-size: .75rem; font-weight: var(--weight-control); vertical-align: middle;
 }
-.pagination p { color: var(--muted); font-size: .875rem; }
+.pagination {
+  display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: .6rem 1rem;
+  padding: .75rem var(--ranking-inset); border-block-start: 1px solid var(--border);
+}
+.pagination p { color: var(--muted); font-size: var(--text-small); }
 .placeholder { min-block-size: 6rem; }
 .error { display: grid; justify-items: start; gap: .65rem; }
 .filterPanel .error { margin-top: .8rem; }
 
-@media (min-width: 640px) {
-  .filters { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .podium { grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: end; gap: clamp(.75rem, 1.6vw, 1.3rem); }
-  .podiumCard {
-    grid-row: 1; grid-template-columns: minmax(0, 1fr); align-content: start; justify-items: center; text-align: center;
-    min-block-size: 10.5rem; padding: .9rem .7rem; border-top: 3px solid color-mix(in srgb, var(--medal-background) 56%, var(--medal-ink));
-    border-radius: var(--radius-panel) var(--radius-panel) var(--radius-control) var(--radius-control);
-  }
-  .podiumCard[data-place='1'] { grid-column: 2; min-block-size: 13rem; }
-  .podiumCard[data-place='2'] { grid-column: 1; min-block-size: 11.5rem; }
-  .podiumCard[data-place='3'] { grid-column: 3; }
-  .medal { inline-size: 2.45rem; }
-  .table :is(th, td):first-child { width: clamp(3.8rem, 9vw, 6rem); }
+@container (min-width: 39rem) {
+  .filters { grid-template-columns: minmax(0, 1.2fr) repeat(2, minmax(0, 1fr)); }
+  .summaryTop:has(.personalCard + .comparison) { grid-template-columns: minmax(0, 1fr) minmax(0, 1.95fr); }
+  .podium { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) minmax(0, .72fr); }
+  .podiumEntry + .podiumEntry { padding-block-start: 0; padding-inline-start: .65rem; border-block-start: 0; border-inline-start: 1px solid var(--border); }
+  .podiumEntry:not(:last-child) { padding-inline-end: .65rem; }
 }

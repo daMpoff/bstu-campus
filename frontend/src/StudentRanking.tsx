@@ -15,14 +15,17 @@ type Catalog = {
   groups: { id: number; name: string; facultyId: number | null }[];
 };
 type Entry = { studentId: number; fullName: string; groupName: string; place: number | null; points: number };
+type Leader = { student: Entry; tiedStudents: number; displayStudents: Entry[] };
 type Ranking = {
-  leaders: { student: Entry; tiedStudents: number }[];
+  leaders: Leader[];
   entries: Entry[];
   viewer: Entry | null;
   page: number;
   pageSize: number;
   total: number;
 };
+const maxAcademicRating = 1000;
+const participantCount = new Intl.PluralRules('ru-RU');
 
 function numericParam(value: string | null, max = Number.MAX_SAFE_INTEGER) {
   return value && /^[1-9][0-9]*$/.test(value) && Number(value) <= max ? value : '';
@@ -68,8 +71,8 @@ export function StudentRanking() {
   }
 
   return <section className={s.ranking} aria-labelledby="student-ranking-title">
-    <div className={`panel ${s.filterPanel}`}>
-      <h2 id="student-ranking-title">Рейтинг студентов</h2>
+    <div className={s.filterPanel}>
+      <h1 className={s.pageTitle} id="student-ranking-title">Рейтинг студентов</h1>
       <div className={s.filters}>
         <label>Показатель
           <select value={metric} onChange={event => updateFilter('metric', event.target.value)}>
@@ -99,6 +102,70 @@ export function StudentRanking() {
   </section>;
 }
 
+function PersonalResult({ viewer, leader, metric }: { viewer: Entry; leader?: Leader; metric: Metric }) {
+  const unit = pointLabels[metric];
+  const maximum = metric === 'AR' ? maxAcademicRating : leader?.student.points;
+
+  return <div className={s.summaryTop}>
+    <section className={s.personalCard} data-ranked={viewer.place !== null} aria-labelledby="personal-ranking-title">
+      <h2 id="personal-ranking-title">Ваш результат</h2>
+      <p className={s.personalPlace}>{viewer.place === null ? 'Место пока не определено' : `${formatPoints(viewer.place)}-е место`}</p>
+      <p className={s.personalPoints}><strong>{formatPoints(viewer.points)}</strong>{metric === 'AR' && ` / ${formatPoints(maxAcademicRating)}`} {unit}</p>
+    </section>
+    {leader && maximum !== undefined && <section className={s.comparison} aria-labelledby="ranking-comparison-title">
+      <div className={s.comparisonHead}>
+        <h2 id="ranking-comparison-title">Сравнение с лидерами</h2>
+        <p className={s.difference}>
+          {viewer.place === 1
+            ? leader.tiedStudents > 1 ? 'Вы делите первое место' : 'Вы на первом месте'
+            : `Разница ${formatPoints(leader.student.points - viewer.points)} ${unit}`}
+        </p>
+      </div>
+      <ComparisonScore label="Ваш результат" points={viewer.points} maximum={maximum} unit={unit} viewer />
+      <ComparisonScore label="Первое место" points={leader.student.points} maximum={maximum} unit={unit} />
+    </section>}
+  </div>;
+}
+
+function ComparisonScore({ label, points, maximum, unit, viewer = false }: {
+  label: string; points: number; maximum: number; unit: string; viewer?: boolean;
+}) {
+  return <div className={s.comparisonRow}>
+    <p className={s.comparisonLabel}><span>{label}</span><b>{formatPoints(points)} {unit}</b></p>
+    <meter aria-label={label} min={0} max={maximum} value={points} data-viewer={viewer} />
+  </div>;
+}
+
+function Podium({ leaders, unit }: { leaders: Leader[]; unit: string }) {
+  return <section className={s.podiumStrip} aria-labelledby="student-podium-title">
+    <h2 id="student-podium-title">Первые три места</h2>
+    {leaders.length === 0 ? <p className="muted">Пока нет начислений {unit}.</p> :
+      <ol className={s.podium} role="list" aria-labelledby="student-podium-title">
+        {[1, 2, 3].map(place => {
+          const leader = leaders.find(item => item.student.place === place);
+          const students = leader?.displayStudents ?? (leader ? [leader.student] : []);
+          const remaining = leader ? leader.tiedStudents - students.length : 0;
+          return <li key={place} className={s.podiumEntry} data-place={place}>
+            <span className={s.medal} aria-hidden="true">{place}</span>
+            <div className={s.podiumDetails}>
+              <div className={s.podiumMeta}>
+                <strong className={s.place}>{place}-е место</strong>
+                {leader && <span className={s.podiumScore}>{formatPoints(leader.student.points)} {unit}</span>}
+              </div>
+              {leader ? <div className={s.podiumNames}>
+                {students.map((student, index) => <span key={student.studentId}>
+                  {index > 0 && <span aria-hidden="true"> · </span>}
+                  <Link className={s.studentLink} to={`/profiles/${student.studentId}`}>{student.fullName}</Link>
+                </span>)}
+                {remaining > 0 && <span className={s.tie}>Ещё {formatPoints(remaining)} с тем же результатом</span>}
+              </div> : <span className={s.group}>Нет участника</span>}
+            </div>
+          </li>;
+        })}
+      </ol>}
+  </section>;
+}
+
 function RankingResults({ path, metric, updatePage, focusTable }: {
   path: string; metric: Metric; updatePage: (page: number) => void; focusTable: (node: HTMLHeadingElement | null) => void;
 }) {
@@ -111,46 +178,29 @@ function RankingResults({ path, metric, updatePage, focusTable }: {
   if (!data.total) return <p className={`panel muted ${s.placeholder}`} role="status">По этим фильтрам нет участников.</p>;
 
   const pointsUnit = pointLabels[metric];
+  const leader = data.leaders.find(item => item.student.place === 1);
   const lastPage = Math.ceil(data.total / data.pageSize);
+  const totalLabel = participantCount.select(data.total);
   return <>
-    <section className={`panel ${s.podiumPanel}`} aria-labelledby="student-podium-title">
-      <div className={s.sectionHead}>
-        <h3 id="student-podium-title">Пьедестал</h3>
-        {data.viewer && <p className={s.viewerPlace} role="status">
-          {data.viewer.place === null ? `У вас пока нет начислений ${pointsUnit}` : `Ваше место · ${data.viewer.place}`}
-        </p>}
-      </div>
-      {data.leaders.length === 0 ? <p className="muted">Пока нет начислений {pointsUnit}.</p> :
-        <ol className={s.podium} role="list" aria-label="Первые три места">
-          {[1, 2, 3].map(place => {
-            const leader = data.leaders.find(item => item.student.place === place);
-            return <li key={place} className={s.podiumCard} data-place={place}>
-              <span className={s.medal} aria-hidden="true">{place}</span>
-              <div className={s.podiumDetails}>
-                <small className={s.place}>{place}-е место</small>
-                {leader ? <>
-                  <strong className={s.leaderName}>{leader.student.fullName}</strong>
-                  <span className={s.group}>{leader.student.groupName}</span>
-                  {leader.tiedStudents > 1 && <span className={s.tie}>Ещё {leader.tiedStudents - 1} с тем же результатом</span>}
-                </> : <span className={s.group}>Нет участника</span>}
-              </div>
-              {leader && <div className={s.podiumScore}>{formatPoints(leader.student.points)} <small>{pointsUnit}</small></div>}
-            </li>;
-          })}
-        </ol>}
-    </section>
+    <div className={`panel ${s.summaryPanel}`}>
+      {data.viewer && <PersonalResult viewer={data.viewer} leader={leader} metric={metric} />}
+      <Podium leaders={data.leaders} unit={pointsUnit} />
+    </div>
     <section className={`panel ${s.resultsPanel}`} aria-labelledby="student-results-title">
       <div className={s.sectionHead}>
-        <h3 id="student-results-title" ref={focusTable} tabIndex={-1}>Все участники</h3>
-        <p className="muted" role="status">Всего · {formatPoints(data.total)}</p>
+        <h2 id="student-results-title" ref={focusTable} tabIndex={-1}>Все участники</h2>
+        <p className="muted" role="status">{formatPoints(data.total)} {totalLabel === 'one' ? 'участник' : totalLabel === 'few' ? 'участника' : 'участников'}</p>
       </div>
       <table className={s.table} aria-labelledby="student-results-title">
         <thead><tr><th scope="col">Место</th><th scope="col">Студент и группа</th><th scope="col">{pointsUnit}</th></tr></thead>
         <tbody>{data.entries.map(entry => <tr key={entry.studentId} data-viewer={entry.studentId === data.viewer?.studentId}>
-          <td>{entry.place ?? '—'}</td>
+          <td>{entry.place !== null && entry.place <= 3
+            ? <span className={s.medal} data-place={entry.place}>{entry.place}</span>
+            : entry.place ?? '—'}</td>
           <td>
             <Link className={s.studentLink} to={`/profiles/${entry.studentId}`}>{entry.fullName}</Link>
-            <span className={s.group}>{entry.groupName}{entry.studentId === data.viewer?.studentId && ' · Вы'}</span>
+            {entry.studentId === data.viewer?.studentId && <span className={s.you}>Вы</span>}
+            <span className={s.group}>{entry.groupName}</span>
           </td>
           <td>{formatPoints(entry.points)}</td>
         </tr>)}</tbody>

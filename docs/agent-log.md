@@ -298,6 +298,16 @@
 
 - Подключили локальные шрифты Medeo Sans и Medeo Mono из релиза 1.0.0 с лицензией OFL. Для Sans использовали официальные подмножества Unicode, чтобы браузер загружал только нужные символы. На отдельном стенде прошли 50 тестов Maven и 6 сценариев Playwright для входа, рейтинга и работы с группами.
 
+### Список заданий студента
+
+- Разделили список на активные и завершённые работы, добавили счётчики и переиспользовали блок АР из профиля. Новый короткий запрос возвращает только балл и место текущего студента. Сверили эти значения с профилем и общим рейтингом.
+- На отдельном стенде прошли 55 тестов Maven и 10 сценариев Playwright. Обновили проверку факультета и группы под текущую карточку профиля и добавили ответ нового запроса в тест таймера с фиксированным АР. В Edge проверили обе темы на ширинах 320–1440 px, переход по ссылке рейтинга, дедлайн и счётчики по фактическому набору демо-заданий.
+
+### Личный результат в рейтинге
+
+- Добавили сравнение результата студента с первым местом в текущей выборке. Шкала АР использует предел 1000, для БУА и БОА верхняя граница равна баллу лидера. В верхней тройке показываем до двух имён на одно место и число остальных с тем же результатом.
+- После первого снимка на телефоне расширили колонку баллов, чтобы 1 000 не переносилось. Сверили АР, БУА и БОА с API, проверили фильтр чужой группы и обе темы на ширинах 320–1440 px. На второй странице рейтинга с 26 участниками, делящими третье место, список лидеров и число равных результатов совпали с первой. Прошли 55 тестов Maven и 8 сценариев Playwright.
+
 ### Промпт для вечернего фото страницы входа
 
 > Use case: lighting-weather. Asset: portrait photograph for the dark theme of the university login page. Edit Image 1, the daylight portrait of the BGTU alley. Use Image 2, the existing night hero, for lighting and color only. Convert Image 1 to photorealistic late evening with a deep navy sky, naturally dark foliage, warm amber light in a few existing windows, and subtle warm spill onto the brick facade and pavement. Keep the alley and the facade readable in the narrow center-right crop used on the site. Preserve Image 1’s portrait aspect ratio (957:1277), camera position, framing, perspective, building geometry, path, stairs, trees and railings. Change only time of day and lighting. No added objects, graphics, text, or watermark.

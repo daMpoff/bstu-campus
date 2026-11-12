@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type FormEvent, type ReactNode } from 'rea
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { api, post, type Account, type Group, type Status, type StudentAssignment, type TeacherAssignment, type Work } from './api';
 import { AssignmentDraft } from './AssignmentDraft';
+import { AcademicRating } from './AcademicRating';
 import { canSubmitWork, DeadlineIndicator, formatRemainingPenalty, PenaltyAmounts, remainingPenalty } from './AssignmentDeadline';
 import { AssignmentMaterials } from './AssignmentMaterials';
 import { Attachments } from './AttachmentPreview';
@@ -31,42 +32,47 @@ export function StatusBadge({ status }: { status: Status }) {
 }
 
 export function AssignmentList({ user }: { user: Account }) {
-  const [items, setItems] = useState<StudentAssignment[]>();
-  const [rating, setRating] = useState(user.rating);
-  const [error, setError] = useState('');
-  useEffect(() => {
-    let active = true;
-    async function refresh() {
-      try {
-        const [items, account] = await Promise.all([api<StudentAssignment[]>('/student/assignments'), api<Account>('/me')]);
-        if (!active) return;
-        setItems(items);
-        setRating(account.rating);
-        setError('');
-      } catch (failure) {
-        if (active) setError(failureText(failure));
-      }
-    }
-    void refresh();
-    const timer = setInterval(() => void refresh(), 6000);
-    return () => { active = false; clearInterval(timer); };
-  }, [user.id]);
+  const { data: items, error } = useCabinetResource<StudentAssignment[]>('/student/assignments', 6000);
+  const { data: summary } = useCabinetResource<{ rating: number; arPlace: number | null }>('/student/ranking/summary', 6000);
+  const rating = summary?.rating ?? user.rating;
+  const active = items?.filter(item => item.status !== 'ACCEPTED') ?? [];
+  const completed = items?.filter(item => item.status === 'ACCEPTED') ?? [];
 
-  return <>
-    <Heading title="Задания" description="Следите за сроками и статусами ваших работ." />
-    <div className={s.rating}><span>Академический рейтинг</span><strong>{rating} <small>из 1000</small></strong></div>
+  return <div className={s.assignmentList}>
+    <header className={s.listHeading}>
+      <h1>Задания</h1>
+      <dl className={`panel ${s.listRating}`}>
+        <AcademicRating rating={rating} place={summary?.arPlace ?? null} ownProfile />
+      </dl>
+    </header>
     {error && <p className="error" role="alert">{error}</p>}
-    {!items && !error && <p className="muted">Загрузка заданий…</p>}
+    {!items && !error && <p className="muted" role="status">Загрузка заданий…</p>}
     {items?.length === 0 && <div className={`panel ${s.empty}`}><h2>Заданий пока нет</h2><p>Здесь появятся задания вашей группы.</p></div>}
-    <div className={s.cards}>{items?.map(item => <Link key={item.id} to={`/assignments/${item.id}`}
-      className={`panel ${s.card}`} aria-labelledby={`assignment-title-${item.id}`}>
-      <div><h2 id={`assignment-title-${item.id}`}>{item.title}</h2><p>{item.teacherName} · {item.individual && 'Личное задание · '}
-        до <time dateTime={item.deadline}>{dateTime(item.deadline)} МСК</time></p>
-        <DeadlineIndicator deadline={item.deadline} status={item.status} penalty={{ deducted: item.deducted, limit: item.penaltyLimit, rating }} />
-      </div>
-      <StatusBadge status={item.status} /><span className={s.arrow} aria-hidden="true">→</span>
-    </Link>)}</div>
-  </>;
+    {active.length > 0 && <AssignmentGroup items={active} rating={rating} active />}
+    {completed.length > 0 && <AssignmentGroup items={completed} rating={rating} />}
+  </div>;
+}
+
+function AssignmentGroup({ items, rating, active = false }: { items: StudentAssignment[]; rating: number; active?: boolean }) {
+  const headingId = active ? 'active-assignments' : 'completed-assignments';
+  return <section className={s.listGroup} aria-labelledby={headingId}>
+    <h2 id={headingId}>{active ? 'Активные' : 'Завершённые'} <span aria-hidden="true">{items.length}</span></h2>
+    <ul className={`panel ${s.taskRows}`} data-active={active}>
+      {items.map(item => <li key={item.id}>
+        <Link to={`/assignments/${item.id}`} className={s.taskRow} aria-labelledby={`assignment-title-${item.id}`}>
+          <div className={s.taskInfo}>
+            <h3 id={`assignment-title-${item.id}`}>{item.title}</h3>
+            <p>{item.teacherName} · {item.individual && 'Личное задание · '}
+              до <time dateTime={item.deadline}>{dateTime(item.deadline)} МСК</time></p>
+          </div>
+          {active && <div className={s.taskTiming}>
+            <DeadlineIndicator deadline={item.deadline} status={item.status} penalty={{ deducted: item.deducted, limit: item.penaltyLimit, rating }} />
+          </div>}
+          <div className={s.taskStatus}><StatusBadge status={item.status} /><span className={s.arrow} aria-hidden="true">→</span></div>
+        </Link>
+      </li>)}
+    </ul>
+  </section>;
 }
 
 export function NewAssignment() {

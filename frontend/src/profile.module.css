@@ -17,30 +17,15 @@
 }
 .metric { min-width: 0; padding: .875rem clamp(.875rem, 1.55vw, 1.25rem); }
 .metric + .metric + .metric { border-inline-start: 1px solid var(--border); }
-.metric dt { color: var(--muted); font-size: var(--text-small); line-height: 1.3; font-weight: var(--weight-control); }
-.metric dd {
+.activity dt { color: var(--muted); font-size: var(--text-small); line-height: 1.3; font-weight: var(--weight-control); }
+.activity dd {
   margin: .375rem 0 0; font-size: clamp(1.625rem, 2.6vw, 2rem); line-height: 1.15;
   font-weight: var(--weight-heading); font-variant-numeric: tabular-nums; overflow-wrap: anywhere;
 }
-.metric dd small { color: var(--muted); font-size: var(--text-small); font-weight: var(--weight-control); }
+.activity dd small { color: var(--muted); font-size: var(--text-small); font-weight: var(--weight-control); }
 .rating { grid-column: 1 / -1; border-bottom: 1px solid var(--border); }
-.ratingHeading { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: .125rem .5rem; }
-.ratingNumber { white-space: nowrap; }
-.ratingNumber strong { color: var(--accent); }
-.ratingMeter {
-  appearance: none; display: block; width: 100%; height: 4px; margin-top: .75rem;
-  border: 0; border-radius: 4px; background: var(--tint);
-}
-.ratingMeter::-webkit-meter-bar { height: 100%; border: 0; border-radius: 4px; background: var(--tint); }
-.ratingMeter::-webkit-meter-optimum-value { border-radius: inherit; background: var(--accent); }
-.ratingMeter::-moz-meter-bar { border-radius: 4px; background: var(--accent); }
-.ratingPlace {
-  display: inline-flex; align-items: center; gap: .35em; min-height: 44px; margin-block: -13px;
-  white-space: nowrap; line-height: 1.3; text-underline-offset: .2em;
-}
-.ratingPlace span { text-decoration: none; }
 @container (max-width: 40rem) {
-  .metric:not(.rating) { display: flex; flex-direction: column; justify-content: space-between; }
+  .activity { display: flex; flex-direction: column; justify-content: space-between; }
 }
 @container (min-width: 40.01rem) {
   .metrics { grid-template-columns: minmax(0, 1.45fr) minmax(0, .86fr) minmax(0, 1.06fr); }

@@ -18,4 +18,9 @@ class StudentProfileController {
     StudentProfileService.Profile profile(Principal viewer, @PathVariable long id) {
         return profiles.profile(id, viewer.getName());
     }
+
+    @GetMapping("/api/student/ranking/summary")
+    StudentProfileService.RatingSummary ratingSummary(Principal viewer) {
+        return profiles.ratingSummary(viewer.getName());
+    }
 }

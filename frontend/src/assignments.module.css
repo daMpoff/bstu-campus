@@ -31,15 +31,41 @@
 .reminder ul { margin: 0; list-style: none; padding: .6rem 1rem; }
 .reminder li { padding: .42rem 0 .42rem 1.55rem; position: relative; font-size: .94rem; }
 .reminder li::before { content: '✓'; position: absolute; left: 0; font-weight: var(--weight-heading); color: var(--accent); }
-.rating { display: flex; flex-wrap: wrap; align-items: center; gap: .65rem 1rem; padding: 1rem 1.25rem; border-radius: var(--radius-panel); background: var(--tint); color: var(--accent); margin-bottom: 1rem; font-weight: var(--weight-control); }
-.rating strong { font-size: 1.65rem; font-variant-numeric: tabular-nums; }
-.rating small { font-size: var(--text-small); }
-.empty p, .card p { color: var(--muted); margin-top: .3rem; }
-.cards { display: grid; gap: .65rem; margin-top: .65rem; }
-.card { display: flex; align-items: center; gap: .6rem 1rem; flex-wrap: wrap; color: var(--text); text-decoration: none; transition: border-color var(--interaction-duration) var(--interaction-ease); }
-.card:hover { border-color: var(--accent); }
-.card > div { flex: 1 1 220px; overflow-wrap: anywhere; }
-.card h2 { font-size: 1.25rem; }
+.assignmentList { display: grid; gap: clamp(16px, 1.7vw, 25px); container-type: inline-size; }
+.listHeading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px 24px; }
+.listRating:global(.panel) { width: min(100%, 21rem); margin: 0; padding: .8rem 1rem; }
+.listGroup { min-width: 0; }
+.listGroup > h2 { display: flex; align-items: baseline; gap: .65rem; margin: 0 0 .65rem; font-size: clamp(1.125rem, 1.8vw, 1.375rem); }
+.listGroup > h2 span { color: var(--muted); font-size: var(--text-small); font-weight: var(--weight-control); font-variant-numeric: tabular-nums; }
+.empty p { color: var(--muted); margin-top: .3rem; }
+.taskRows:global(.panel) { list-style: none; margin: 0; padding: 0; }
+.taskRows[data-active='true'] { border-inline-start: 3px solid var(--accent); }
+.taskRows li + li { border-top: 1px solid var(--border); }
+.taskRow {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: .6rem 1rem;
+  min-height: 66px; padding: .95rem clamp(.75rem, 1.6vw, 1.25rem); color: var(--text); text-decoration: none;
+  transition: background-color var(--interaction-duration) var(--interaction-ease);
+}
+.taskRows[data-active='true'] .taskRow { grid-template-columns: minmax(0, 1fr) fit-content(37%) auto; }
+.taskRows li:first-child .taskRow { border-start-start-radius: calc(var(--radius-panel) - 2px); border-start-end-radius: calc(var(--radius-panel) - 2px); }
+.taskRows li:last-child .taskRow { border-end-start-radius: calc(var(--radius-panel) - 2px); border-end-end-radius: calc(var(--radius-panel) - 2px); }
+.taskRow:hover { background: color-mix(in srgb, var(--panel) 80%, var(--tint)); }
+.taskRow:focus-visible { outline-offset: -3px; }
+.taskInfo { min-width: 0; overflow-wrap: anywhere; }
+.taskInfo h3 { font-size: 1rem; line-height: 1.35; }
+.taskInfo p { margin-top: .26rem; color: var(--muted); font-size: var(--text-small); }
+.taskTiming { display: flex; min-width: 0; }
+.taskStatus { display: flex; align-items: center; justify-content: flex-end; gap: clamp(.45rem, 1.3vw, .9rem); }
+.taskStatus .status { border-radius: .5rem; }
+.taskStatus .status[data-status='OPEN'] { border-color: transparent; background: var(--tint); color: var(--accent); }
+@container (max-width: 42rem) {
+  .taskRows[data-active='true'] .taskRow { grid-template-columns: minmax(0, 1fr) auto; }
+  .taskRows[data-active='true'] .taskInfo { grid-column: 1 / -1; }
+}
+@container (max-width: 24rem) {
+  .taskRows[data-active='true'] .taskTiming { grid-column: 1 / -1; }
+  .taskRows[data-active='true'] .taskStatus { grid-column: 1 / -1; justify-content: flex-start; }
+}
 .arrow { color: var(--accent); font-weight: var(--weight-heading); }
 .status { display: inline-flex; align-items: center; padding: .25rem .65rem; border-radius: 20px; background: var(--tint); color: var(--accent); font-weight: var(--weight-heading); font-size: var(--text-small); width: fit-content; }
 .status[data-status='ACCEPTED'] { background: var(--accepted-bg); color: var(--accepted-text); }

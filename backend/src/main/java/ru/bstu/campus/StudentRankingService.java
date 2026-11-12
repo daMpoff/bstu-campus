@@ -2,7 +2,9 @@ package ru.bstu.campus;
 
 import java.math.BigDecimal;
 import java.sql.Types;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.core.simple.JdbcClient;
@@ -33,9 +35,9 @@ class StudentRankingService {
     record Group(long id, String name, Long facultyId) {}
     record Catalog(List<AssignmentService.Group> faculties, List<Group> groups) {}
     record Entry(long studentId, String fullName, String groupName, Long place, BigDecimal points) {}
-    record Leader(Entry student, long tiedStudents) {}
+    record Leader(Entry student, long tiedStudents, List<Entry> displayStudents) {}
     record Ranking(List<Leader> leaders, List<Entry> entries, Entry viewer, int page, int pageSize, long total) {}
-    private record RankedRow(Entry entry, long peers, boolean leader, boolean onPage, int page, long total) {}
+    private record RankedRow(Entry entry, long peers, boolean topPlaceMember, boolean onPage, int page, long total) {}
 
     Catalog catalog() {
         var faculties = db.sql("SELECT id, name FROM faculty ORDER BY name").query(AssignmentService.Group.class).list();
@@ -69,13 +71,13 @@ class StudentRankingService {
                 FROM scores
             ), paged AS (
                 SELECT *, least(:page, (total + :size - 1) / :size) AS page,
-                       (place <= 3 AND tie_order = 1 AND (:kind IS NULL OR points > 0)) AS leader
+                       (place <= 3 AND tie_order <= 2 AND (:kind IS NULL OR points > 0)) AS top_place_member
                 FROM ranked
             ), visible AS (
                 SELECT *, position > (page - 1) * :size AND position <= page * :size AS on_page
                 FROM paged
             )
-            SELECT * FROM visible WHERE leader OR on_page OR id = :viewer ORDER BY position
+            SELECT * FROM visible WHERE top_place_member OR on_page OR id = :viewer ORDER BY position
             """).param("kind", metric.activityKind, Types.VARCHAR)
             .param("faculty", facultyId, Types.BIGINT).param("group", groupId, Types.BIGINT)
             .param("page", requestedPage).param("size", PAGE_SIZE).param("viewer", viewerId)
@@ -83,13 +85,18 @@ class StudentRankingService {
                 var points = row.getBigDecimal("points");
                 Long place = metric != Metric.AR && points.signum() == 0 ? null : row.getLong("place");
                 var entry = new Entry(row.getLong("id"), row.getString("full_name"), row.getString("group_name"), place, points);
-                return new RankedRow(entry, row.getLong("peers"), row.getBoolean("leader"), row.getBoolean("on_page"),
+                return new RankedRow(entry, row.getLong("peers"), row.getBoolean("top_place_member"), row.getBoolean("on_page"),
                     row.getInt("page"), row.getLong("total"));
             }).list();
         if (rows.isEmpty()) {
             return new Ranking(List.of(), List.of(), null, 1, PAGE_SIZE, 0);
         }
-        var leaders = rows.stream().filter(RankedRow::leader).map(row -> new Leader(row.entry(), row.peers())).toList();
+        var topPlaces = rows.stream().filter(RankedRow::topPlaceMember).collect(Collectors.groupingBy(
+            row -> row.entry().place(), LinkedHashMap::new, Collectors.toList()));
+        var leaders = topPlaces.values().stream().map(members -> {
+            var first = members.getFirst();
+            return new Leader(first.entry(), first.peers(), members.stream().map(RankedRow::entry).toList());
+        }).toList();
         var entries = rows.stream().filter(RankedRow::onPage).map(RankedRow::entry).toList();
         var viewer = rows.stream().map(RankedRow::entry).filter(entry -> entry.studentId() == viewerId).findFirst().orElse(null);
         return new Ranking(leaders, entries, viewer, rows.getFirst().page(), PAGE_SIZE, rows.getFirst().total());
